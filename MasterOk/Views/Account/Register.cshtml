@@ -1,0 +1,49 @@
+﻿@model MasterOk.Models.ModelAuthorization.RegisterModel;
+@{
+    ViewData["Title"] = "Register";
+}
+
+<h1>Register</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Register" asp-controller="Account">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div>
+                <div class="form-group">
+                    <label asp-for="LoginClient" class="control-label"></label>
+                    <input type="text" asp-for="LoginClient" class="form-control" />
+                    <span asp-validation-for="LoginClient" class="text-danger" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="EmailClient" class="control-label"></label>
+                    <input asp-for="EmailClient" class="form-control" />
+                    <span asp-validation-for="EmailClient" class="text-danger" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="PasswordClient" class="control-label"></label>
+                    <input asp-for="PasswordClient" class="form-control" />
+                    <span asp-validation-for="PasswordClient" class="text-danger" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="ConfirmPassword" class="control-label"></label>
+                    <input asp-for="ConfirmPassword" class="form-control" />
+                    <span asp-validation-for="ConfirmPassword" class="text-danger" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="FirstNameClient" class="control-label"></label>
+                    <input asp-for="FirstNameClient" class="form-control" />
+                    <span asp-validation-for="FirstNameClient" class="text-danger" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="LastNameClient" class="control-label"></label>
+                    <input asp-for="LastNameClient" class="form-control" />
+                    <span asp-validation-for="LastNameClient" class="text-danger" />
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Регистрация" class="btn btn-outline-dark" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

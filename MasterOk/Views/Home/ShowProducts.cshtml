@@ -1,0 +1,23 @@
+﻿@model IEnumerable<MasterOk.Models.ModelDataBase.Product>
+@{
+    ViewData["Title"] = "ShowProducts";
+}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <div class="row">
+                @foreach (var item in Model)
+                {
+                    <div class="col-md-3 pb-4">
+                        <div class="card">
+                            <img class="card-img-top" />
+                            <div class="card-body">
+                                <h5 class="card-title">@Html.ActionLink(item.TitleProduct,"Product", new{productId= item.Id})</h5>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

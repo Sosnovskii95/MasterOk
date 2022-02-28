@@ -1,0 +1,21 @@
+﻿@model MasterOk.Models.ModelDataBase.Client;
+@{
+    ViewData["Title"] = "History";
+}
+
+<h1>History</h1>
+
+<div class="row">
+    <div class="col">
+        @foreach (var item in Model.ProductChecks)
+        {
+            <div>
+                @item.DateTimeSale
+                @foreach (var items in item.ProductSolds)
+                {
+                    @items.Product.TitleProduct
+                }
+            </div>
+        }
+    </div>
+</div>

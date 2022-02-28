@@ -1,0 +1,11 @@
+﻿@model MasterOk.Models.ModelDataBase.Client;
+@{
+    ViewData["Title"] = "Cart";
+}
+
+<h1>Cart</h1>
+
+@foreach (var item in Model.CartClients)
+{
+    @item.Product.TitleProduct @item.CountCartProduct
+}

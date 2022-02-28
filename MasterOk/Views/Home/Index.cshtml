@@ -1,0 +1,49 @@
+﻿@model IEnumerable<MasterOk.Models.ModelDataBase.Category>
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div id="blockFile">
+    <input type="file" name="file" onchange="click(this.files)"/>
+</div>
+<div id="outFile">
+
+</div>
+
+<script type="text/javascript">
+    function click(){
+        alert("1");
+        var divBlockFile = document.getElementById("blockFile");
+
+        var countInputFile = divBlockFile.querySelectorAll("input type=file");
+
+        console.log(countInputFile.length);
+
+        var inputFile = document.createElement("input");
+        inputFile.setAttribute("type", "file");
+        inputFile.setAttribute("name", "file");
+        inputFile.setAttribute("onchange", "click()");
+
+        divBlockFile.append(inputFile);
+    }
+</script>
+
+@*<div class="container-fluid">
+    <div class=row>
+    <div class="col">
+    <div class="row">
+    @foreach (var item in Model)
+    {
+    <div class="col-md-3 pb-4">
+    <div class="card">
+    <img class="card-img-top" />
+    <div class="card-body">
+    <h5 class="card-title">@Html.ActionLink(item.TitleCategory, "ShowSubCategories", new{categoriesId = item.Id})</h5>
+    </div>
+    </div>
+    </div>
+    }
+    </div>
+    </div>
+    </div>
+    </div>*@
