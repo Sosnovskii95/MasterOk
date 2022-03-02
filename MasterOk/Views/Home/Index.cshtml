@@ -4,27 +4,68 @@
 }
 
 <div id="blockFile">
-    <input type="file" name="file" onchange="click(this.files)"/>
+    <input type="file" id="file1" name="file" onchange="clickBtn(this.id); outImage(this.files, this.id)" />
 </div>
-<div id="outFile">
+<div id="outFile" class="row">
+</div>
 
-</div>
 
 <script type="text/javascript">
-    function click(){
-        alert("1");
+    var massFile = [];
+    var massNameFile = [];
+    //функция генерирования input для загрузки файлов
+    function clickBtn(fileId){
         var divBlockFile = document.getElementById("blockFile");
 
-        var countInputFile = divBlockFile.querySelectorAll("input type=file");
-
-        console.log(countInputFile.length);
+        var countInputFile = divBlockFile.querySelectorAll("input[type=file]");
 
         var inputFile = document.createElement("input");
         inputFile.setAttribute("type", "file");
+        inputFile.setAttribute("id", "file"+(countInputFile.length+1));
         inputFile.setAttribute("name", "file");
-        inputFile.setAttribute("onchange", "click()");
+        inputFile.setAttribute("onchange", "clickBtn(this.id); outImage(this.files, this.id)");
 
         divBlockFile.append(inputFile);
+    }
+
+    //функция предварительного отображения файлов
+    function outImage(fileUpload, fileIds){
+        massFile.push(fileIds);
+        massNameFile.push(fileUpload.name);
+        var divOutFile = document.getElementById("outFile");
+
+        var countDiv = divOutFile.querySelectorAll("div");
+        for(var i=0;i<massFile.length;i++){
+            if(massFile[i] == fileIds){
+                if(countDiv.length < massFile.length){
+                    var divColImg = document.createElement("div");
+                    divColImg.setAttribute("class","col-md-2 d-grid gap-2");
+
+                    var file = fileUpload[0];
+                    var img = document.createElement("img");
+                    img.setAttribute("class","img-thumbnail");
+                    var reader = new FileReader();
+                    reader.onload = (function(theFile){
+                        return function(e){
+                            img.setAttribute("src", e.target.result);
+                        };
+                    })(file);
+                    reader.readAsDataURL(file);
+
+                    var buttonDelete = document.createElement("input");
+                    buttonDelete.setAttribute("type", "button");
+                    buttonDelete.setAttribute("class", "btn btn-danger btn-sm");
+                    buttonDelete.setAttribute("value","Удалить");
+
+                    divColImg.append(img);
+                    divColImg.append(buttonDelete);
+                    divOutFile.append(divColImg);
+                }
+                else{
+                    alert("1");
+                }
+            }
+        }
     }
 </script>
 
