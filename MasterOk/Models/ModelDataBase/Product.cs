@@ -10,6 +10,9 @@ namespace MasterOk.Models.ModelDataBase
         [Display(Name = "Название товара")]
         public string TitleProduct { get; set; }
 
+        [Display(Name ="Описание товара")]
+        public string DescriptionProduct { get; set; }
+
         [Display(Name = "Гарантия")]
         public int Warranty { get; set; }
 

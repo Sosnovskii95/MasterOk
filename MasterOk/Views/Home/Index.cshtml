@@ -3,70 +3,138 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div id="blockFile">
+@*<div id="blockFile">
     <input type="file" id="file1" name="file" onchange="clickBtn(this.id); outImage(this.files, this.id)" />
+    </div>
+    <div id="outFile" class="row">
+    </div>*@
+
+<div id="blockFile">
+    <form asp-action="Test" enctype="multipart/form-data">
+        <input type="file" id="fileName" name="fileName" multiple onchange="prewieImg()" />
+        <input type="submit" value="Send" />
+    </form>
 </div>
 <div id="outFile" class="row">
 </div>
 
 
 <script type="text/javascript">
-    var massFile = [];
-    var massNameFile = [];
-    //функция генерирования input для загрузки файлов
-    function clickBtn(fileId){
-        var divBlockFile = document.getElementById("blockFile");
 
-        var countInputFile = divBlockFile.querySelectorAll("input[type=file]");
+    function prewieImg(){
+        var massFileName = document.getElementById("fileName");
+        var outFile = document.getElementById("outFile");
+        outFile.innerHTML = "";
 
-        var inputFile = document.createElement("input");
-        inputFile.setAttribute("type", "file");
-        inputFile.setAttribute("id", "file"+(countInputFile.length+1));
-        inputFile.setAttribute("name", "file");
-        inputFile.setAttribute("onchange", "clickBtn(this.id); outImage(this.files, this.id)");
+        for(var i = 0; i < massFileName.files.length; i++){
+            var divColImg = document.createElement("div");
+            divColImg.setAttribute("class","col-md-2 d-grid gap-2");
+            divColImg.setAttribute("id", massFileName.files[i].name);
 
-        divBlockFile.append(inputFile);
+            var img = document.createElement("img");
+            img.setAttribute("class","img-thumbnail");
+
+            readFilePrewei(img, massFileName.files[i]);
+
+            var buttonDelete = document.createElement("input");
+            buttonDelete.setAttribute("id", massFileName.files[i].name);
+            buttonDelete.setAttribute("type", "button");
+            buttonDelete.setAttribute("class", "btn btn-danger btn-sm");
+            buttonDelete.setAttribute("value","Удалить");
+            buttonDelete.setAttribute("onclick","deleteFileUpload(this.id)");
+
+            divColImg.append(img);
+            divColImg.append(buttonDelete);
+            outFile.append(divColImg);
+        }
     }
 
-    //функция предварительного отображения файлов
-    function outImage(fileUpload, fileIds){
-        massFile.push(fileIds);
-        massNameFile.push(fileUpload.name);
-        var divOutFile = document.getElementById("outFile");
+    function readFilePrewei(img, file){
+        var reader = new FileReader();
+        reader.onload = (function(theFile){
+            return function(e){
+                img.setAttribute("src", e.target.result);
+            };
+            })(file);
+            reader.readAsDataURL(file);
+    }
 
-        var countDiv = divOutFile.querySelectorAll("div");
-        for(var i=0;i<massFile.length;i++){
-            if(massFile[i] == fileIds){
-                if(countDiv.length < massFile.length){
-                    var divColImg = document.createElement("div");
-                    divColImg.setAttribute("class","col-md-2 d-grid gap-2");
 
-                    var file = fileUpload[0];
-                    var img = document.createElement("img");
-                    img.setAttribute("class","img-thumbnail");
-                    var reader = new FileReader();
-                    reader.onload = (function(theFile){
-                        return function(e){
-                            img.setAttribute("src", e.target.result);
-                        };
-                    })(file);
-                    reader.readAsDataURL(file);
+    function deleteFileUpload(id)
+    {
+        document.getElementById(id).remove();
 
-                    var buttonDelete = document.createElement("input");
-                    buttonDelete.setAttribute("type", "button");
-                    buttonDelete.setAttribute("class", "btn btn-danger btn-sm");
-                    buttonDelete.setAttribute("value","Удалить");
+        var massFiles = document.getElementById("fileName");
+        const mass = new DataTransfer();
+        var outFile = document.getElementById("outFile").querySelectorAll("div");
 
-                    divColImg.append(img);
-                    divColImg.append(buttonDelete);
-                    divOutFile.append(divColImg);
-                }
-                else{
-                    alert("1");
+        for(var i=0;i<massFiles.files.length;i++){
+            for(var j=0;j<outFile.length;j++){
+                if(massFiles.files[i].name == outFile[j].getAttribute("id")){
+                    mass.items.add(massFiles.files[i]);
                 }
             }
         }
+
+        document.getElementById("fileName").files = mass.files;
     }
+
+    //var massFile = [];
+    //var massNameFile = [];
+    ////функция генерирования input для загрузки файлов
+    //function clickBtn(fileId){
+    //    var divBlockFile = document.getElementById("blockFile");
+
+    //    var countInputFile = divBlockFile.querySelectorAll("input[type=file]");
+
+    //    var inputFile = document.createElement("input");
+    //    inputFile.setAttribute("type", "file");
+    //    inputFile.setAttribute("id", "file"+(countInputFile.length+1));
+    //    inputFile.setAttribute("name", "file");
+    //    inputFile.setAttribute("onchange", "clickBtn(this.id); outImage(this.files, this.id)");
+
+    //    divBlockFile.append(inputFile);
+    //}
+
+    ////функция предварительного отображения файлов
+    //function outImage(fileUpload, fileIds){
+    //    massFile.push(fileIds);
+    //    massNameFile.push(fileUpload.name);
+    //    var divOutFile = document.getElementById("outFile");
+
+    //    var countDiv = divOutFile.querySelectorAll("div");
+    //    for(var i=0;i<massFile.length;i++){
+    //        if(massFile[i] == fileIds){
+    //            if(countDiv.length < massFile.length){
+    //                var divColImg = document.createElement("div");
+    //                divColImg.setAttribute("class","col-md-2 d-grid gap-2");
+
+    //                var file = fileUpload[0];
+    //                var img = document.createElement("img");
+    //                img.setAttribute("class","img-thumbnail");
+    //                var reader = new FileReader();
+    //                reader.onload = (function(theFile){
+    //                    return function(e){
+    //                        img.setAttribute("src", e.target.result);
+    //                    };
+    //                })(file);
+    //                reader.readAsDataURL(file);
+
+    //                var buttonDelete = document.createElement("input");
+    //                buttonDelete.setAttribute("type", "button");
+    //                buttonDelete.setAttribute("class", "btn btn-danger btn-sm");
+    //                buttonDelete.setAttribute("value","Удалить");
+
+    //                divColImg.append(img);
+    //                divColImg.append(buttonDelete);
+    //                divOutFile.append(divColImg);
+    //            }
+    //            else{
+    //                alert("1");
+    //            }
+    //        }
+    //    }
+    //}
 </script>
 
 @*<div class="container-fluid">

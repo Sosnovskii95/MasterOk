@@ -17,7 +17,7 @@ namespace MasterOk.Controllers
             _context = context;
         }
 
-        public IActionResult Test(IFormFileCollection file)
+        public IActionResult Test(IFormFileCollection fileName)
         {
             return null;
         }

@@ -22,6 +22,15 @@ namespace MasterOk.Models.ModelDataBase
         [Display(Name = "Имя")]
         public string LastNameClient { get; set; }
 
+        [Display(Name = "Номер телефона")]
+        public string NumberPhone { get; set; }
+
+        [Display(Name ="Адрес доставки")]
+        public string Address { get; set; }
+
+        [Display(Name ="Процент скидки")]
+        public int ProcentSalary { get; set; }
+
         public ICollection<ProductCheck>? ProductChecks { get; set; }
 
         public ICollection<CartClient>? CartClients { get; set; }
