@@ -11,8 +11,8 @@
 
 <div id="blockFile">
     <form asp-action="Test" enctype="multipart/form-data">
-        <input type="file" id="fileName" name="fileName" multiple onchange="prewieImg()" />
-        <input type="submit" value="Send" />
+        <input type="file" id="fileName" name="fileName" multiple onchange="previewImg()" />
+        <input type="submit" value="Send" onclick="setFileUpload()"/>
     </form>
 </div>
 <div id="outFile" class="row">
@@ -20,11 +20,11 @@
 
 
 <script type="text/javascript">
+    var sendImg = new DataTransfer();
 
-    function prewieImg(){
+    function previewImg(){
         var massFileName = document.getElementById("fileName");
         var outFile = document.getElementById("outFile");
-        outFile.innerHTML = "";
 
         for(var i = 0; i < massFileName.files.length; i++){
             var divColImg = document.createElement("div");
@@ -34,22 +34,24 @@
             var img = document.createElement("img");
             img.setAttribute("class","img-thumbnail");
 
-            readFilePrewei(img, massFileName.files[i]);
+            readFileFromPreview(img, massFileName.files[i]);
+            sendImg.items.add(massFileName.files[i]);
 
             var buttonDelete = document.createElement("input");
             buttonDelete.setAttribute("id", massFileName.files[i].name);
             buttonDelete.setAttribute("type", "button");
             buttonDelete.setAttribute("class", "btn btn-danger btn-sm");
             buttonDelete.setAttribute("value","Удалить");
-            buttonDelete.setAttribute("onclick","deleteFileUpload(this.id)");
+            buttonDelete.setAttribute("onclick","delFileUpload(this.id)");
 
             divColImg.append(img);
             divColImg.append(buttonDelete);
             outFile.append(divColImg);
         }
+        document.getElementById("fileName").value = "";
     }
 
-    function readFilePrewei(img, file){
+    function readFileFromPreview(img, file){
         var reader = new FileReader();
         reader.onload = (function(theFile){
             return function(e){
@@ -60,11 +62,15 @@
     }
 
 
-    function deleteFileUpload(id)
+    function delFileUpload(id)
     {
         document.getElementById(id).remove();
 
-        var massFiles = document.getElementById("fileName");
+        var massFiles = new DataTransfer();
+        for(var i= 0; i < sendImg.files.length;i++){
+            massFiles.items.add(sendImg.files[i]);
+        }
+
         const mass = new DataTransfer();
         var outFile = document.getElementById("outFile").querySelectorAll("div");
 
@@ -76,7 +82,14 @@
             }
         }
 
-        document.getElementById("fileName").files = mass.files;
+        sendImg = new DataTransfer();
+        for(var i= 0; i < mass.files.length;i++){
+            sendImg.items.add(mass.files[i]);
+        }
+    }
+
+    function setFileUpload(){
+        document.getElementById("fileName").files = sendImg.files;
     }
 
     //var massFile = [];
