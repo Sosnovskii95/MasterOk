@@ -8,16 +8,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MasterOk.Data;
 using MasterOk.Models.ModelDataBase;
+using MasterOk.Models.FilesModify;
 
 namespace MasterOk.Controllers
 {
     public class SubCategoriesController : Controller
     {
         private readonly DataBaseContext _context;
+        private readonly IWebHostEnvironment _webHost;
 
-        public SubCategoriesController(DataBaseContext context)
+        public SubCategoriesController(DataBaseContext context, IWebHostEnvironment webHost)
         {
             _context = context;
+            _webHost = webHost;
         }
 
         // GET: SubCategories
@@ -58,12 +61,26 @@ namespace MasterOk.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,TitleSubCategory,NameImages,CategoryId")] SubCategory subCategory)
+        public async Task<IActionResult> Create([Bind("Id,TitleSubCategory,CategoryId")] SubCategory subCategory, IFormFileCollection nameImages)
         {
             if (ModelState.IsValid)
             {
                 _context.Add(subCategory);
                 await _context.SaveChangesAsync();
+
+                Dictionary<string, string> listNameFiles = await ChangeFiles.SaveCreateUploadFiles(subCategory.Id, _webHost.WebRootPath + "/Content/SubCategory", nameImages);
+
+                foreach(var file in listNameFiles)
+                {
+                    _context.Add(new PathImage
+                    {
+                        SubCategoryId = subCategory.Id,
+                        PathNameImage = file.Key,
+                        TypeImage = file.Value
+                    });
+                }
+                await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
             ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "TitleCategory", subCategory.CategoryId);
@@ -92,7 +109,7 @@ namespace MasterOk.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,TitleSubCategory,NameImages,CategoryId")] SubCategory subCategory)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,TitleSubCategory,CategoryId")] SubCategory subCategory)
         {
             if (id != subCategory.Id)
             {

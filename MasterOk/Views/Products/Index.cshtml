@@ -16,45 +16,44 @@
                 @Html.DisplayNameFor(model => model.TitleProduct)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.DescriptionProduct)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Warranty)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Price)
             </th>
-            @*<th>
-                @Html.DisplayNameFor(model => model.NameImages)
-            </th>*@
             <th>
-                @Html.DisplayNameFor(model => model.SubCategory.TitleSubCategory)
+                @Html.DisplayNameFor(model => model.SubCategory)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.TitleProduct)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Warranty)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Price)
-                </td>
-                @*<td>
-                    @Html.DisplayFor(modelItem => item.NameImages)
-                </td>*@
-                <td>
-                    @Html.DisplayFor(modelItem => item.SubCategory.TitleSubCategory)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                </td>
-            </tr>
-        }
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.TitleProduct)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DescriptionProduct)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Warranty)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SubCategory.Id)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
     </tbody>
 </table>

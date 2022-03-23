@@ -15,6 +15,8 @@ namespace MasterOk.Models.ModelDataBase
 
         public string PathNameImage { get; set; }
 
+        public string TypeImage { get; set; }
+
         public Product Product { get; set; }
 
         public SubCategory SubCategory { get; set; }

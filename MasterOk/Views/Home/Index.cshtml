@@ -3,169 +3,25 @@
     ViewData["Title"] = "Home Page";
 }
 
-@*<div id="blockFile">
-    <input type="file" id="file1" name="file" onchange="clickBtn(this.id); outImage(this.files, this.id)" />
-    </div>
-    <div id="outFile" class="row">
-    </div>*@
-
-<div id="blockFile">
-    <form asp-action="Test" enctype="multipart/form-data">
-        <input type="file" id="fileName" name="fileName" multiple onchange="previewImg()" />
-        <input type="submit" value="Send" onclick="setFileUpload()"/>
-    </form>
-</div>
-<div id="outFile" class="row">
-</div>
-
-
-<script type="text/javascript">
-    var sendImg = new DataTransfer();
-
-    function previewImg(){
-        var massFileName = document.getElementById("fileName");
-        var outFile = document.getElementById("outFile");
-
-        for(var i = 0; i < massFileName.files.length; i++){
-            var divColImg = document.createElement("div");
-            divColImg.setAttribute("class","col-md-2 d-grid gap-2");
-            divColImg.setAttribute("id", massFileName.files[i].name);
-
-            var img = document.createElement("img");
-            img.setAttribute("class","img-thumbnail");
-
-            readFileFromPreview(img, massFileName.files[i]);
-            sendImg.items.add(massFileName.files[i]);
-
-            var buttonDelete = document.createElement("input");
-            buttonDelete.setAttribute("id", massFileName.files[i].name);
-            buttonDelete.setAttribute("type", "button");
-            buttonDelete.setAttribute("class", "btn btn-danger btn-sm");
-            buttonDelete.setAttribute("value","Удалить");
-            buttonDelete.setAttribute("onclick","delFileUpload(this.id)");
-
-            divColImg.append(img);
-            divColImg.append(buttonDelete);
-            outFile.append(divColImg);
-        }
-        document.getElementById("fileName").value = "";
-    }
-
-    function readFileFromPreview(img, file){
-        var reader = new FileReader();
-        reader.onload = (function(theFile){
-            return function(e){
-                img.setAttribute("src", e.target.result);
-            };
-            })(file);
-            reader.readAsDataURL(file);
-    }
-
-
-    function delFileUpload(id)
-    {
-        document.getElementById(id).remove();
-
-        var massFiles = new DataTransfer();
-        for(var i= 0; i < sendImg.files.length;i++){
-            massFiles.items.add(sendImg.files[i]);
-        }
-
-        const mass = new DataTransfer();
-        var outFile = document.getElementById("outFile").querySelectorAll("div");
-
-        for(var i=0;i<massFiles.files.length;i++){
-            for(var j=0;j<outFile.length;j++){
-                if(massFiles.files[i].name == outFile[j].getAttribute("id")){
-                    mass.items.add(massFiles.files[i]);
-                }
-            }
-        }
-
-        sendImg = new DataTransfer();
-        for(var i= 0; i < mass.files.length;i++){
-            sendImg.items.add(mass.files[i]);
-        }
-    }
-
-    function setFileUpload(){
-        document.getElementById("fileName").files = sendImg.files;
-    }
-
-    //var massFile = [];
-    //var massNameFile = [];
-    ////функция генерирования input для загрузки файлов
-    //function clickBtn(fileId){
-    //    var divBlockFile = document.getElementById("blockFile");
-
-    //    var countInputFile = divBlockFile.querySelectorAll("input[type=file]");
-
-    //    var inputFile = document.createElement("input");
-    //    inputFile.setAttribute("type", "file");
-    //    inputFile.setAttribute("id", "file"+(countInputFile.length+1));
-    //    inputFile.setAttribute("name", "file");
-    //    inputFile.setAttribute("onchange", "clickBtn(this.id); outImage(this.files, this.id)");
-
-    //    divBlockFile.append(inputFile);
-    //}
-
-    ////функция предварительного отображения файлов
-    //function outImage(fileUpload, fileIds){
-    //    massFile.push(fileIds);
-    //    massNameFile.push(fileUpload.name);
-    //    var divOutFile = document.getElementById("outFile");
-
-    //    var countDiv = divOutFile.querySelectorAll("div");
-    //    for(var i=0;i<massFile.length;i++){
-    //        if(massFile[i] == fileIds){
-    //            if(countDiv.length < massFile.length){
-    //                var divColImg = document.createElement("div");
-    //                divColImg.setAttribute("class","col-md-2 d-grid gap-2");
-
-    //                var file = fileUpload[0];
-    //                var img = document.createElement("img");
-    //                img.setAttribute("class","img-thumbnail");
-    //                var reader = new FileReader();
-    //                reader.onload = (function(theFile){
-    //                    return function(e){
-    //                        img.setAttribute("src", e.target.result);
-    //                    };
-    //                })(file);
-    //                reader.readAsDataURL(file);
-
-    //                var buttonDelete = document.createElement("input");
-    //                buttonDelete.setAttribute("type", "button");
-    //                buttonDelete.setAttribute("class", "btn btn-danger btn-sm");
-    //                buttonDelete.setAttribute("value","Удалить");
-
-    //                divColImg.append(img);
-    //                divColImg.append(buttonDelete);
-    //                divOutFile.append(divColImg);
-    //            }
-    //            else{
-    //                alert("1");
-    //            }
-    //        }
-    //    }
-    //}
-</script>
-
-@*<div class="container-fluid">
+<div class="container-fluid">
     <div class=row>
-    <div class="col">
-    <div class="row">
-    @foreach (var item in Model)
-    {
-    <div class="col-md-3 pb-4">
-    <div class="card">
-    <img class="card-img-top" />
-    <div class="card-body">
-    <h5 class="card-title">@Html.ActionLink(item.TitleCategory, "ShowSubCategories", new{categoriesId = item.Id})</h5>
+        <div class="col">
+            <div class="row">
+                @foreach (var item in Model)
+                {
+                    <div class="col-md-3 pb-4">
+                        <div class="card">
+                            @foreach (var items in item.NameImages)
+                            {
+                                <img class="card-img-top" src="@Url.Action("GetImage", "Home", new {id = items.Id, typeObject="category"})" />
+                            }
+                            <div class="card-body">
+                                <h5 class="card-title">@Html.ActionLink(item.TitleCategory, "ShowSubCategories", new{categoriesId = item.Id})</h5>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
     </div>
-    </div>
-    </div>
-    }
-    </div>
-    </div>
-    </div>
-    </div>*@
+</div>

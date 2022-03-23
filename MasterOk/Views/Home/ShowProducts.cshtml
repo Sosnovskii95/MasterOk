@@ -10,9 +10,12 @@
                 {
                     <div class="col-md-3 pb-4">
                         <div class="card">
-                            <img class="card-img-top" />
+                            @foreach (var items in item.NameImages)
+                            {
+                                <img class="card-img-top" src="@Url.Action("GetImage", "Home", new {id = items.Id, typeObject = "product"})" />
+                            }
                             <div class="card-body">
-                                <h5 class="card-title">@Html.ActionLink(item.TitleProduct,"Product", new{productId= item.Id})</h5>
+                                <h5 class="card-title">@Html.ActionLink(item.TitleProduct, "Product", new{productId = item.Id})</h5>
                             </div>
                         </div>
                     </div>

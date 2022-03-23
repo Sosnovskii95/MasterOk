@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MasterOk.Data;
 using MasterOk.Models.ModelDataBase;
-using MasterOk.Models.CreateFiles;
+using MasterOk.Models.FilesModify;
 
 namespace MasterOk.Controllers
 {
@@ -61,27 +61,24 @@ namespace MasterOk.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,TitleProduct,Warranty,Price,SubCategoryId")] Product product, IFormFileCollection NameImages)
+        public async Task<IActionResult> Create([Bind("Id,TitleProduct,DescriptionProduct,Warranty,Price,SubCategoryId")] Product product, IFormFileCollection nameImages)
         {
             if (ModelState.IsValid)
-            { 
+            {
                 _context.Add(product);
                 await _context.SaveChangesAsync();
 
-                List<string> nameFiles = await SaveRenameUploadFiles.SaveCreateFiles(product.Id, _webHost.WebRootPath + "/Content/Product", NameImages);
+                Dictionary<string, string> listNameFiles = await ChangeFiles.SaveCreateUploadFiles(product.Id, _webHost.WebRootPath + "/Content/Product", nameImages);
 
-                foreach(string fileName in nameFiles)
+                foreach (var file in listNameFiles)
                 {
-                    PathImage pathImage = new PathImage
+                    _context.Add(new PathImage
                     {
-                        PathNameImage = fileName,
-                        CategoryId = null,
-                        SubCategoryId = null,
-                        Product = product
-                    };
-                    _context.Add(pathImage);
+                        ProductId = product.Id,
+                        PathNameImage = file.Key,
+                        TypeImage = file.Value
+                    });
                 }
-
                 await _context.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
@@ -112,7 +109,7 @@ namespace MasterOk.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,TitleProduct,Warranty,Price,NameImages,SubCategoryId")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,TitleProduct,DescriptionProduct,Warranty,Price,SubCategoryId")] Product product)
         {
             if (id != product.Id)
             {

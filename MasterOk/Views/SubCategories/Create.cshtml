@@ -9,8 +9,8 @@
 <h4>SubCategory</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
+    <form asp-action="Create" enctype="multipart/form-data">
+        <div class="col-md-4">
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="TitleSubCategory" class="control-label"></label>
@@ -18,22 +18,32 @@
                 <span asp-validation-for="TitleSubCategory" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="NameImages" class="control-label"></label>
-                <input asp-for="NameImages" class="form-control" />
-                <span asp-validation-for="NameImages" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <label asp-for="CategoryId" class="control-label"></label>
-                <select asp-for="CategoryId" class ="form-control" asp-items="ViewBag.CategoryId"></select>
+                <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.CategoryId"></select>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <div id="blockFile">
+                    <input type="file" id="NameImages" name="NameImages" multiple onchange="previewImg()" />
+                </div>
             </div>
-        </form>
-    </div>
+        </div>
+        <div class="form-group">
+            <div id="outFile" class="row">
+            </div>
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Create" class="btn btn-primary" onclick="setFileUpload()" />
+
+        </div>
+    </form>
 </div>
 
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
 
+@section Scripts {
+    @{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+}
+}
