@@ -53,7 +53,9 @@ namespace MasterOk.Controllers
                 }
                 else
                 {
-                    return null;
+                    currentDirectory = "/Content/";
+                    image.PathNameImage = "imagenot.jpg";
+                    image.TypeImage = "image/jpg";
                 }
             }
             if (CheckFile(_webHost.WebRootPath + currentDirectory, image.PathNameImage))
@@ -62,7 +64,7 @@ namespace MasterOk.Controllers
             }
             else
             {
-                return null;
+                return File(Path.Combine("~" + currentDirectory, image.PathNameImage), image.TypeImage, image.PathNameImage);
             }
             /*string currentDirectory = "";
             PathImage image = null;
