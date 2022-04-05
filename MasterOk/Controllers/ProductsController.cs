@@ -68,17 +68,28 @@ namespace MasterOk.Controllers
                 _context.Add(product);
                 await _context.SaveChangesAsync();
 
-                Dictionary<string, string> listNameFiles = await ChangeFiles.SaveCreateUploadFiles(product.Id, _webHost.WebRootPath + "/Content/Product", nameImages);
+                List<PathImage> pathImage = new List<PathImage>();
 
-                foreach (var file in listNameFiles)
+                if (nameImages.Count > 0)
                 {
-                    _context.Add(new PathImage
+                    Dictionary<string, string> listNameFiles = await ChangeFiles.SaveCreateUploadFiles(product.Id, _webHost.WebRootPath + PathImageExtensions.GetDirectorySaveFile(product), nameImages);
+
+                    foreach (var file in listNameFiles)
                     {
-                        ProductId = product.Id,
-                        PathNameImage = file.Key,
-                        TypeImage = file.Value
-                    });
+                        pathImage.Add(new PathImage
+                        {
+                            Product = product,
+                            PathNameImage = file.Key,
+                            TypeImage = file.Value
+                        });
+                    }
                 }
+                else
+                {
+                    pathImage.Add(PathImageExtensions.GetDefaultPathNameFile(product));
+                }
+
+                _context.AddRange(pathImage);
                 await _context.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
@@ -95,7 +106,16 @@ namespace MasterOk.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Products.FindAsync(id);
+            var product = await _context.Products.Include(n => n.NameImages).FirstOrDefaultAsync(i => i.Id == id);
+
+            foreach (var item in product.NameImages)
+            {
+                if (item.PathNameImage.Equals(PathImageExtensions.GetPathNameImage()))
+                {
+                    product.NameImages.Remove(item);
+                }
+            }
+
             if (product == null)
             {
                 return NotFound();
@@ -109,7 +129,7 @@ namespace MasterOk.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,TitleProduct,DescriptionProduct,Warranty,Price,SubCategoryId")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,TitleProduct,DescriptionProduct,Warranty,Price,SubCategoryId")] Product product, IFormFileCollection nameImages)
         {
             if (id != product.Id)
             {
@@ -121,6 +141,42 @@ namespace MasterOk.Controllers
                 try
                 {
                     _context.Update(product);
+
+                    if (nameImages.Count > 0)
+                    {
+                        var pathNameImages = await _context.PathImages.Where(i => i.ProductId == product.Id).ToListAsync();
+
+                        foreach (var item in pathNameImages)
+                        {
+                            if (item.PathNameImage.Equals(PathImageExtensions.GetPathNameImage()))
+                            {
+                                _context.Remove(item);
+                            }
+                        }
+
+                        Dictionary<string, string> listNameFiles = await ChangeFiles.SaveCreateUploadFiles(product.Id,
+                            _webHost.WebRootPath + PathImageExtensions.GetDirectorySaveFile(product), nameImages);
+
+                        foreach (var nameFiles in listNameFiles)
+                        {
+                            _context.Add(new PathImage
+                            {
+                                Product = product,
+                                PathNameImage = nameFiles.Key,
+                                TypeImage = nameFiles.Value
+                            });
+                        }
+                    }
+                    else
+                    {
+                        var pathImagesDb = await _context.PathImages.Where(p => p.ProductId == id).ToListAsync();
+
+                        if (pathImagesDb.Count == 0)
+                        {
+                            _context.Add(PathImageExtensions.GetDefaultPathNameFile(product));
+                        }
+                    }
+
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -164,7 +220,16 @@ namespace MasterOk.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var product = await _context.Products.FindAsync(id);
+            var product = await _context.Products.Include(p => p.NameImages).FirstOrDefaultAsync(i => i.Id == id);
+
+            foreach (var item in product.NameImages)
+            {
+                if (!item.PathNameImage.Equals(PathImageExtensions.GetPathNameImage()))
+                {
+                    ChangeFiles.DeleteFiles(product.Id, _webHost.WebRootPath + PathImageExtensions.GetDirectorySaveFile(product), item.PathNameImage);
+                }
+            }
+
             _context.Products.Remove(product);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -173,6 +238,42 @@ namespace MasterOk.Controllers
         private bool ProductExists(int id)
         {
             return _context.Products.Any(e => e.Id == id);
+        }
+
+        public async Task<VirtualFileResult> GetImage(int id)
+        {
+            if (id != null)
+            {
+                PathImage image = await _context.PathImages.FindAsync(id);
+                if (image != null)
+                {
+                    string current = PathImageExtensions.GetDirectorySaveFile(image.Product) + image.ProductId;
+                    return File(Path.Combine("~" + current, image.PathNameImage), image.TypeImage, image.PathNameImage);
+                }
+                return null;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public async Task<IActionResult> DeleteImage(int id)
+        {
+            PathImage image = new PathImage();
+            if (id != null)
+            {
+                image = await _context.PathImages.FindAsync(id);
+                if (image != null)
+                {
+                    ChangeFiles.DeleteFiles(image.ProductId.Value, _webHost.WebRootPath + PathImageExtensions.GetDirectorySaveFile(image.Product), image.PathNameImage);
+
+                    _context.PathImages.Remove(image);
+                    await _context.SaveChangesAsync();
+                }
+            }
+
+            return RedirectToAction(nameof(Edit), new { id = image.ProductId.Value });
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using MasterOk.Data;
 using Microsoft.EntityFrameworkCore;
 using MasterOk.Models.ModelDataBase;
+using MasterOk.Models.Serealize;
 
 namespace MasterOk.Controllers
 {
@@ -35,66 +36,30 @@ namespace MasterOk.Controllers
                 image = await _context.PathImages.FindAsync(id);
                 if (image != null)
                 {
-                    if (!String.IsNullOrEmpty(typeObject))
+                    if (!image.PathNameImage.Equals(PathImageExtensions.GetPathNameImage()))
                     {
-                        switch (typeObject)
+                        if (!String.IsNullOrEmpty(typeObject))
                         {
-                            case "category":
-                                currentDirectory = "/Content/Category/" + image.CategoryId;
-                                break;
-                            case "subCategory":
-                                currentDirectory = "/Content/SubCategory/" + image.SubCategoryId;
-                                break;
-                            case "product":
-                                currentDirectory = "/Content/Product" + image.ProductId;
-                                break;
+                            switch (typeObject)
+                            {
+                                case "category":
+                                    currentDirectory = PathImageExtensions.GetDirectorySaveFile(image.Category) + image.CategoryId;
+                                    break;
+                                case "subCategory":
+                                    currentDirectory = PathImageExtensions.GetDirectorySaveFile(image.SubCategory) + image.SubCategoryId;
+                                    break;
+                                case "product":
+                                    currentDirectory = PathImageExtensions.GetDirectorySaveFile(image.Product) + image.ProductId;
+                                    break;
+                            }
                         }
                     }
-                }
-                else
-                {
-                    currentDirectory = "/Content/";
-                    image.PathNameImage = "imagenot.jpg";
-                    image.TypeImage = "image/jpg";
-                }
-            }
-            if (CheckFile(_webHost.WebRootPath + currentDirectory, image.PathNameImage))
-            {
-                return File(Path.Combine("~" + currentDirectory, image.PathNameImage), image.TypeImage, image.PathNameImage);
-            }
-            else
-            {
-                return File(Path.Combine("~" + currentDirectory, image.PathNameImage), image.TypeImage, image.PathNameImage);
-            }
-            /*string currentDirectory = "";
-            PathImage image = null;
-
-            if (!String.IsNullOrEmpty(typeObject))
-            {
-                if (typeObject.Equals("product"))
-                {
-                    image = await _context.PathImages.FirstOrDefaultAsync(i => i.ProductId == id);
-                    currentDirectory += "/Content/Product/" + id;
-                }
-                else if (typeObject.Equals("subCategory"))
-                {
-                    image = await _context.PathImages.FirstOrDefaultAsync(i => i.SubCategoryId == id);
-                    currentDirectory += "/Content/SubCategory/" + id;
-                }
-                else if (typeObject.Equals("category"))
-                {
-                    image = await _context.PathImages.FirstOrDefaultAsync(i => i.CategoryId == id);
-                    currentDirectory += "/Content/Category/" + id;
-                }
-                else if (typeObject.Equals("slider"))
-                {
-                    image = await _context.PathImages.FindAsync(id);
-                    currentDirectory += "/Content/Slider/" + image.Id;
-                }
-                else if (typeObject.Equals("maps"))
-                {
-                    image = new PathImage { NameImage = "maps.png", TypeImage = "image/png" };
-                    currentDirectory = "/Content/";
+                    else
+                    {
+                        currentDirectory = PathImageExtensions.GetDirectoryFile();
+                        image.PathNameImage = PathImageExtensions.GetPathNameImage();
+                        image.TypeImage = PathImageExtensions.GetTypeImage();
+                    }
                 }
             }
             if (CheckFile(_webHost.WebRootPath + currentDirectory, image.PathNameImage))
@@ -103,10 +68,8 @@ namespace MasterOk.Controllers
             }
             else
             {
-                currentDirectory = "~/Content/";
-                image = new PathImage { NameImage = "image-aborted.jpg" };
-                return File(Path.Combine(currentDirectory, image.NameImage), "image/jpg", image.NameImage);
-            }*/
+                return File(Path.Combine("~" + currentDirectory, image.PathNameImage), image.TypeImage, image.PathNameImage);
+            }
         }
 
         private bool CheckFile(string currentDirectory, string fileName)
@@ -139,7 +102,7 @@ namespace MasterOk.Controllers
         {
             if (subCategoriesId > 0)
             {
-                return View(await _context.Products.Where(i => i.SubCategoryId == subCategoriesId).Include(p=>p.NameImages).ToListAsync());
+                return View(await _context.Products.Where(i => i.SubCategoryId == subCategoriesId).Include(p => p.NameImages).ToListAsync());
             }
             else
             {
@@ -157,6 +120,64 @@ namespace MasterOk.Controllers
             {
                 return RedirectToAction(nameof(Index));
             }
+        }
+
+        public async Task<IActionResult> AddCart(int id, int countCart)
+        {
+            if (id != null)
+            {
+                var product = await _context.Products.FindAsync(id);
+                if (product != null)
+                {
+                    if (HttpContext.Session.Keys.Contains("cart"))
+                    {
+                        List<CartClient> cartClients = HttpContext.Session.Get<List<CartClient>>("cart");
+
+                        if (cartClients.Where(p => p.Product.Id == product.Id).Count() > 0)
+                        {
+                            cartClients.Where(p => p.Product.Id == product.Id).ToList().ForEach(f => f.CountCartProduct += countCart);
+                        }
+                        else
+                        {
+                            cartClients.Add(new CartClient { Product = product, CountCartProduct = countCart });
+                        }
+
+                        HttpContext.Session.Set<List<CartClient>>("cart", cartClients);
+                    }
+                    else
+                    {
+                        HttpContext.Session.Set<List<CartClient>>("cart", new List<CartClient> {
+                            new CartClient {
+                                Product =product,
+                                CountCartProduct = countCart
+                            }
+                        });
+                    }
+                }
+                return Redirect(HttpContext.Request.Headers.Referer);
+            }
+            return null;
+        }
+
+        public async Task<PartialViewResult> GetCountCartPartital()
+        {
+            List<CartClient> carts = new List<CartClient>();
+            if (HttpContext.Session.Keys.Contains("cart"))
+            {
+                carts = HttpContext.Session.Get<List<CartClient>>("cart");
+            }
+            return PartialView(carts);
+        }
+
+        public async Task<IActionResult> SummaryCart()
+        {
+            List<CartClient> carts = new List<CartClient>();
+            if (HttpContext.Session.Keys.Contains("cart"))
+            {
+                carts = HttpContext.Session.Get<List<CartClient>>("cart");
+
+            }
+            return View(carts);
         }
 
         public IActionResult Privacy()

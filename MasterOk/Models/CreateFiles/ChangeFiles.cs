@@ -7,7 +7,7 @@
         //в качестве ключа используется название файла поскольку реализацией любой ос запрещено два одинаковых название файла. Нет колезий.
         public static async Task<Dictionary<string, string>> SaveCreateUploadFiles(int idFolderFiles, string nameFolderFiles, IFormFileCollection listUploadsFiles)
         {
-            string pathCreateFiles = nameFolderFiles + "/" + idFolderFiles;
+            string pathCreateFiles = nameFolderFiles + idFolderFiles;
             Dictionary<string, string> nameFiles = new Dictionary<string, string>();
             if (!Directory.Exists(pathCreateFiles))
             {

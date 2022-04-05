@@ -20,7 +20,7 @@ builder.Services.AddDistributedMemoryCache();
 
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromSeconds(300);
+    options.IdleTimeout = TimeSpan.FromSeconds(3600);
     options.Cookie.Name = "MasterOk.Session";
     options.Cookie.IsEssential = true;
     options.Cookie.HttpOnly = true;

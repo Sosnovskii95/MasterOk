@@ -65,19 +65,31 @@ namespace MasterOk.Controllers
                 _context.Add(category);
                 await _context.SaveChangesAsync();
 
-                Dictionary<string, string> listNameFiles = await ChangeFiles.SaveCreateUploadFiles(category.Id, _webHost.WebRootPath + "/Content/Category", nameImages);
+                List<PathImage> pathImage = new List<PathImage>();
 
-                foreach (var nameFiles in listNameFiles)
+                if (nameImages.Count > 0)
                 {
-                    _context.Add(new PathImage
+                    Dictionary<string, string> listNameFiles = await ChangeFiles.SaveCreateUploadFiles(category.Id,
+                        _webHost.WebRootPath + PathImageExtensions.GetDirectorySaveFile(category), nameImages);
+
+                    foreach (var nameFiles in listNameFiles)
                     {
-                        CategoryId = category.Id,
-                        PathNameImage = nameFiles.Key,
-                        TypeImage = nameFiles.Value
-                    });
+                        pathImage.Add(new PathImage
+                        {
+                            Category = category,
+                            PathNameImage = nameFiles.Key,
+                            TypeImage = nameFiles.Value
+                        });
+                    }
+                }
+                else
+                {
+                    pathImage.Add(PathImageExtensions.GetDefaultPathNameFile(category));
                 }
 
+                _context.AddRange(pathImage);
                 await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
             return View(category);
@@ -92,6 +104,15 @@ namespace MasterOk.Controllers
             }
 
             var category = await _context.Categories.Include(p => p.NameImages).FirstOrDefaultAsync(i => i.Id == id);
+
+            foreach (var item in category.NameImages)
+            {
+                if (item.PathNameImage.Equals(PathImageExtensions.GetPathNameImage()))
+                {
+                    category.NameImages.Remove(item);
+                }
+            }
+
             if (category == null)
             {
                 return NotFound();
@@ -116,20 +137,41 @@ namespace MasterOk.Controllers
                 try
                 {
                     _context.Update(category);
-                    await _context.SaveChangesAsync();
 
-                    Dictionary<string, string> listNameFiles = await ChangeFiles.SaveCreateUploadFiles(category.Id, _webHost.WebRootPath + "/Content/Category", nameImages);
-
-                    foreach (var nameFiles in listNameFiles)
+                    if (nameImages.Count > 0)
                     {
-                        _context.Add(new PathImage
-                        {
-                            CategoryId = category.Id,
-                            PathNameImage = nameFiles.Key,
-                            TypeImage = nameFiles.Value
-                        });
-                    }
+                        var pathNameImages = await _context.PathImages.Where(i => i.CategoryId == category.Id).ToListAsync();
 
+                        foreach (var item in pathNameImages)
+                        {
+                            if (item.PathNameImage.Equals(PathImageExtensions.GetPathNameImage()))
+                            {
+                                _context.Remove(item);
+                            }
+                        }
+
+                        Dictionary<string, string> listNameFiles = await ChangeFiles.SaveCreateUploadFiles(category.Id,
+                            _webHost.WebRootPath + PathImageExtensions.GetDirectorySaveFile(category), nameImages);
+
+                        foreach (var nameFiles in listNameFiles)
+                        {
+                            _context.Add(new PathImage
+                            {
+                                Category = category,
+                                PathNameImage = nameFiles.Key,
+                                TypeImage = nameFiles.Value
+                            });
+                        }
+                    }
+                    else
+                    {
+                        var pathImagesDb = await _context.PathImages.Where(p => p.CategoryId == id).ToListAsync();
+
+                        if (pathImagesDb.Count == 0)
+                        {
+                            _context.Add(PathImageExtensions.GetDefaultPathNameFile(category));
+                        }
+                    }
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -171,7 +213,16 @@ namespace MasterOk.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var category = await _context.Categories.FindAsync(id);
+            var category = await _context.Categories.Include(p => p.NameImages).FirstOrDefaultAsync(i => i.Id == id);
+
+            foreach (var item in category.NameImages)
+            {
+                if (!item.PathNameImage.Equals(PathImageExtensions.GetPathNameImage()))
+                {
+                    ChangeFiles.DeleteFiles(category.Id, _webHost.WebRootPath + PathImageExtensions.GetDirectorySaveFile(category), item.PathNameImage);
+                }
+            }
+
             _context.Categories.Remove(category);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -189,7 +240,7 @@ namespace MasterOk.Controllers
                 PathImage image = await _context.PathImages.FindAsync(id);
                 if (image != null)
                 {
-                    string current = "/Content/Category/" + image.CategoryId;
+                    string current = PathImageExtensions.GetDirectorySaveFile(image.Category) + image.CategoryId;
                     return File(Path.Combine("~" + current, image.PathNameImage), image.TypeImage, image.PathNameImage);
                 }
                 return null;
@@ -208,7 +259,7 @@ namespace MasterOk.Controllers
                 image = await _context.PathImages.FindAsync(id);
                 if (image != null)
                 {
-                    ChangeFiles.DeleteFiles(image.CategoryId.Value, _webHost.WebRootPath + "/Content/Category/", image.PathNameImage);
+                    ChangeFiles.DeleteFiles(image.CategoryId.Value, _webHost.WebRootPath + PathImageExtensions.GetDirectorySaveFile(image.Category), image.PathNameImage);
 
                     _context.PathImages.Remove(image);
                     await _context.SaveChangesAsync();

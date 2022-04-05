@@ -17,6 +17,13 @@
                             <div class="card-body">
                                 <h5 class="card-title">@Html.ActionLink(item.TitleProduct, "Product", new{productId = item.Id})</h5>
                             </div>
+                            <div class="card-footer">
+                                <form asp-action="AddCart">
+                                    @Html.Hidden("id", item.Id)
+                                    <input type="text" name="countCart" value="количество" />
+                                    <input type="submit" value="Добавить" />
+                                </form>
+                            </div>
                         </div>
                     </div>
                 }

@@ -68,17 +68,29 @@ namespace MasterOk.Controllers
                 _context.Add(subCategory);
                 await _context.SaveChangesAsync();
 
-                Dictionary<string, string> listNameFiles = await ChangeFiles.SaveCreateUploadFiles(subCategory.Id, _webHost.WebRootPath + "/Content/SubCategory", nameImages);
+                List<PathImage> pathImage = new List<PathImage>();
 
-                foreach(var file in listNameFiles)
+                if (nameImages.Count > 0)
                 {
-                    _context.Add(new PathImage
+                    Dictionary<string, string> listNameFiles = await ChangeFiles.SaveCreateUploadFiles(subCategory.Id, 
+                        _webHost.WebRootPath + PathImageExtensions.GetDirectorySaveFile(subCategory), nameImages);
+
+                    foreach (var file in listNameFiles)
                     {
-                        SubCategoryId = subCategory.Id,
-                        PathNameImage = file.Key,
-                        TypeImage = file.Value
-                    });
+                        pathImage.Add(new PathImage
+                        {
+                            SubCategory = subCategory,
+                            PathNameImage = file.Key,
+                            TypeImage = file.Value
+                        });
+                    }
                 }
+                else
+                {
+                    pathImage.Add(PathImageExtensions.GetDefaultPathNameFile(subCategory));
+                }
+
+                _context.AddRange(pathImage);
                 await _context.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
@@ -95,7 +107,16 @@ namespace MasterOk.Controllers
                 return NotFound();
             }
 
-            var subCategory = await _context.SubCategories.FindAsync(id);
+            var subCategory = await _context.SubCategories.Include(n => n.NameImages).FirstOrDefaultAsync(i => i.Id == id);
+
+            foreach(var item in subCategory.NameImages)
+            {
+                if (item.PathNameImage.Equals(PathImageExtensions.GetPathNameImage()))
+                {
+                    subCategory.NameImages.Remove(item);
+                }
+            }
+
             if (subCategory == null)
             {
                 return NotFound();
@@ -109,7 +130,7 @@ namespace MasterOk.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,TitleSubCategory,CategoryId")] SubCategory subCategory)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,TitleSubCategory,CategoryId")] SubCategory subCategory, IFormFileCollection nameImages)
         {
             if (id != subCategory.Id)
             {
@@ -121,6 +142,42 @@ namespace MasterOk.Controllers
                 try
                 {
                     _context.Update(subCategory);
+
+                    if (nameImages.Count > 0)
+                    {
+                        var pathNameImages = await _context.PathImages.Where(i => i.SubCategoryId == subCategory.Id).ToListAsync();
+
+                        foreach (var item in pathNameImages)
+                        {
+                            if (item.PathNameImage.Equals(PathImageExtensions.GetPathNameImage()))
+                            {
+                                _context.Remove(item);
+                            }
+                        }
+
+                        Dictionary<string, string> listNameFiles = await ChangeFiles.SaveCreateUploadFiles(subCategory.Id,
+                            _webHost.WebRootPath + PathImageExtensions.GetDirectorySaveFile(subCategory), nameImages);
+
+                        foreach (var nameFiles in listNameFiles)
+                        {
+                            _context.Add(new PathImage
+                            {
+                                SubCategory = subCategory,
+                                PathNameImage = nameFiles.Key,
+                                TypeImage = nameFiles.Value
+                            });
+                        }
+                    }
+                    else
+                    {
+                        var pathImagesDb = await _context.PathImages.Where(p => p.SubCategoryId == id).ToListAsync();
+
+                        if (pathImagesDb.Count == 0)
+                        {
+                            _context.Add(PathImageExtensions.GetDefaultPathNameFile(subCategory));
+                        }
+                    }
+
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -164,7 +221,16 @@ namespace MasterOk.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var subCategory = await _context.SubCategories.FindAsync(id);
+            var subCategory = await _context.SubCategories.Include(n => n.NameImages).FirstOrDefaultAsync(i => i.Id == id);
+
+            foreach(var item in subCategory.NameImages)
+            {
+                if (!item.PathNameImage.Equals(PathImageExtensions.GetPathNameImage()))
+                {
+                    ChangeFiles.DeleteFiles(subCategory.Id, _webHost.WebRootPath + PathImageExtensions.GetDirectorySaveFile(subCategory), item.PathNameImage);
+                }
+            }
+
             _context.SubCategories.Remove(subCategory);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -173,6 +239,38 @@ namespace MasterOk.Controllers
         private bool SubCategoryExists(int id)
         {
             return _context.SubCategories.Any(e => e.Id == id);
+        }
+
+        public async Task<VirtualFileResult> GetImage(int id)
+        {
+            if(id != null)
+            {
+                PathImage image = await _context.PathImages.FindAsync(id);
+                if(image != null)
+                {
+                    string current = PathImageExtensions.GetDirectorySaveFile(image.SubCategory) + image.SubCategoryId;
+                    return File(Path.Combine("~" + current, image.PathNameImage), image.TypeImage, image.PathNameImage);
+                }
+
+            }
+            return null;
+        }
+
+        public async Task<IActionResult> DeleteImage(int id)
+        {
+            PathImage image = new PathImage();
+            if (id != null)
+            {
+                image = await _context.PathImages.FindAsync(id);
+                if (image != null)
+                {
+                    ChangeFiles.DeleteFiles(image.SubCategoryId.Value, _webHost.WebRootPath + PathImageExtensions.GetDirectorySaveFile(image.SubCategory), image.PathNameImage);
+
+                    _context.PathImages.Remove(image);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            return RedirectToAction(nameof(Edit), new { id = image.SubCategoryId.Value });
         }
     }
 }

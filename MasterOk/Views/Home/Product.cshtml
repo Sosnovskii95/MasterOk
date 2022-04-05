@@ -1,5 +1,12 @@
-﻿@{
+﻿@model MasterOk.Models.ModelDataBase.Product
+@{
     ViewData["Title"] = "Product";
 }
 
 <h1>Product</h1>
+
+<form asp-action="AddCart">
+    @Html.HiddenFor(m=>Model.Id)
+    <input type="text" name="countCart" value="количество" />
+    <input type="submit" value="Добавить" />
+</form>

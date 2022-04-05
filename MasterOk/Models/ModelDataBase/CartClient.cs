@@ -16,8 +16,8 @@ namespace MasterOk.Models.ModelDataBase
         public Product Product { get; set; }
 
         [Display(Name = "Клиент")]
-        public int ClientId { get; set; }
+        public int? ClientId { get; set; }
 
-        public Client Client { get; set; }
+        public Client? Client { get; set; }
     }
 }
