@@ -122,64 +122,6 @@ namespace MasterOk.Controllers
             }
         }
 
-        public async Task<IActionResult> AddCart(int id, int countCart)
-        {
-            if (id != null)
-            {
-                var product = await _context.Products.FindAsync(id);
-                if (product != null)
-                {
-                    if (HttpContext.Session.Keys.Contains("cart"))
-                    {
-                        List<CartClient> cartClients = HttpContext.Session.Get<List<CartClient>>("cart");
-
-                        if (cartClients.Where(p => p.Product.Id == product.Id).Count() > 0)
-                        {
-                            cartClients.Where(p => p.Product.Id == product.Id).ToList().ForEach(f => f.CountCartProduct += countCart);
-                        }
-                        else
-                        {
-                            cartClients.Add(new CartClient { Product = product, CountCartProduct = countCart });
-                        }
-
-                        HttpContext.Session.Set<List<CartClient>>("cart", cartClients);
-                    }
-                    else
-                    {
-                        HttpContext.Session.Set<List<CartClient>>("cart", new List<CartClient> {
-                            new CartClient {
-                                Product =product,
-                                CountCartProduct = countCart
-                            }
-                        });
-                    }
-                }
-                return Redirect(HttpContext.Request.Headers.Referer);
-            }
-            return null;
-        }
-
-        public async Task<PartialViewResult> GetCountCartPartital()
-        {
-            List<CartClient> carts = new List<CartClient>();
-            if (HttpContext.Session.Keys.Contains("cart"))
-            {
-                carts = HttpContext.Session.Get<List<CartClient>>("cart");
-            }
-            return PartialView(carts);
-        }
-
-        public async Task<IActionResult> SummaryCart()
-        {
-            List<CartClient> carts = new List<CartClient>();
-            if (HttpContext.Session.Keys.Contains("cart"))
-            {
-                carts = HttpContext.Session.Get<List<CartClient>>("cart");
-
-            }
-            return View(carts);
-        }
-
         public IActionResult Privacy()
         {
             return View();
