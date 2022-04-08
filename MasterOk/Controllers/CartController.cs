@@ -102,5 +102,63 @@ namespace MasterOk.Controllers
 
             return Redirect(HttpContext.Request.Headers.Referer);
         }
+
+        [HttpPost]
+        public IActionResult Change(int id, int valueId)
+        {
+            if (id != null)
+            {
+                if (HttpContext.Session.Keys.Contains("cart"))
+                {
+                    List<CartClient> cartClients = HttpContext.Session.Get<List<CartClient>>("cart");
+
+                    if (cartClients.Where(c => c.Product.Id == id).Count() > 0)
+                    {
+                        cartClients.Where(c => c.Product.Id == id).ToList().ForEach(f => { f.CountCartProduct = valueId; f.TotalCartProduct = valueId * f.PriceCartProduct; });
+                    }
+
+                    HttpContext.Session.Set<List<CartClient>>("cart", cartClients);
+
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+            return Redirect(HttpContext.Request.Headers.Referer);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateOrder(List<int> check)
+        {
+            if (check.Count() > 0)
+            {
+                List<CartClient> cartClients = HttpContext.Session.Get<List<CartClient>>("cart");
+
+                var list = cartClients.Where(p => check.Contains(p.Product.Id)).ToList();
+
+                if (list.Count() > 0)
+                {
+                    ProductCheck productCheck = new ProductCheck
+                    {
+                        DateTimeSale = DateTime.Now,
+                        StateOrder = "В обработке"
+                    };
+
+                    _context.ProductChecks.Add(productCheck);
+
+                    foreach(var item in list)
+                    {
+                        _context.Add(new ProductSold
+                        {
+                            Product = await _context.Products.FindAsync(item.Product.Id),
+                            ProductCheck = productCheck,
+                            CountSold = item.CountCartProduct
+                        });
+                        await _context.SaveChangesAsync();
+                    }
+                }
+                //Нужно сделать авторизацию и регистрацию дабы не падало с ошибкой
+            }
+
+            return null;
+        }
     }
 }
