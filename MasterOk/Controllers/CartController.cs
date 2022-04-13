@@ -23,7 +23,7 @@ namespace MasterOk.Controllers
         //  [Authorize(Roles = "client")]
         public async Task<IActionResult> Index()
         {
-            List<CartClient> carts = new List<CartClient>();
+            /*List<CartClient> carts = new List<CartClient>();
 
             if (HttpContext.Session.Keys.Contains("cart"))
             {
@@ -33,7 +33,70 @@ namespace MasterOk.Controllers
             ViewBag.PayMethod = await _context.PayMethods.ToListAsync();
             ViewBag.DeliveryMethod = await _context.DeliveryMethods.ToListAsync();
 
-            return View(new CartRegisterModel { CartClients = carts });
+            var clientAut = HttpContext.User.Identity;
+
+            RegisterModel registerModel = new RegisterModel();
+
+            if(clientAut is not null && clientAut.IsAuthenticated)
+            {
+                var role = HttpContext.User.FindFirst(ClaimsIdentity.DefaultRoleClaimType);
+                var clientId = HttpContext.User.FindFirst(ClaimTypes.Name);
+
+                if (role.Value.Equals("client"))
+                {
+                    var client = await _context.Clients.FindAsync(Convert.ToInt32(clientId.Value));
+
+                    if(client != null)
+                    {
+                        registerModel.Address = client.Address;
+                        registerModel.FirstLastNameClient = client.FirstLastNameClient;
+                        registerModel.EmailClient = client.EmailClient;
+                        registerModel.NumberPhone = client.NumberPhone;
+                    }
+                }
+            }*/
+
+            List<CartClient> carts = new List<CartClient>();
+            RegisterModel registerModel = new RegisterModel();
+
+            ViewBag.PayMethod = await _context.PayMethods.ToListAsync();
+            ViewBag.DeliveryMethod = await _context.DeliveryMethods.ToListAsync();
+
+            var clientAunt = HttpContext.User.Identity;
+
+            if(clientAunt is not null && clientAunt.IsAuthenticated)
+            {
+                var roleClient = HttpContext.User.FindFirst(ClaimsIdentity.DefaultRoleClaimType);
+                var idClient = HttpContext.User.FindFirst(ClaimsIdentity.DefaultNameClaimType);
+
+                if (roleClient.Value.Equals("client"))
+                {
+                    var client = await _context.Clients.FindAsync(Convert.ToInt32(idClient.Value));
+
+                    if(client != null)
+                    {
+                        registerModel.Address = client.Address;
+                        registerModel.FirstLastNameClient = client.FirstLastNameClient;
+                        registerModel.EmailClient = client.EmailClient;
+                        registerModel.NumberPhone = client.NumberPhone;
+
+                        carts = await _context.CartClients.Include(p=>p.Product).Where(i => i.ClientId == client.Id).ToListAsync();
+                    }
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                if (HttpContext.Session.Keys.Contains("cart"))
+                {
+                    carts = HttpContext.Session.Get<List<CartClient>>("cart");
+                }
+            }
+
+            return View(new CartRegisterModel { CartClients = carts, RegisterModel = registerModel });
         }
 
         public async Task<PartialViewResult> IndexPartital()
@@ -183,14 +246,29 @@ namespace MasterOk.Controllers
                     {
                         _context.Add(new ProductSold
                         {
-                            Product = await _context.Products.FindAsync(item.Product.Id),
-                            ProductCheck = productCheck,
+                            ProductId = item.Product.Id,
+                            ProductCheckId = productCheck.Id,
                             CountSold = item.CountCartProduct
                         });
                         await _context.SaveChangesAsync();
                     }
 
+                    foreach(var item in cartClients)
+                    {
+                        _context.Add(new CartClient
+                        {
+                            ClientId = client.Id,
+                            PriceCartProduct = item.Product.Price,
+                            CountCartProduct = item.CountCartProduct,
+                            ProductId = item.Product.Id,
+                            TotalCartProduct = item.TotalCartProduct
+                        });
+                        await _context.SaveChangesAsync();
+                    }
+
                     await Authenticate(client.Id, "client");
+
+                    return RedirectToAction(nameof(Index));
                 }
                 //Нужно сделать авторизацию и регистрацию дабы не падало с ошибкой
             }
@@ -213,7 +291,7 @@ namespace MasterOk.Controllers
             // создаем один claim
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, idClientUser.ToString()),
+                new Claim(ClaimsIdentity.DefaultNameClaimType, idClientUser.ToString()),
                 new Claim(ClaimsIdentity.DefaultRoleClaimType, titleRole)
             };
             // создаем объект ClaimsIdentity
