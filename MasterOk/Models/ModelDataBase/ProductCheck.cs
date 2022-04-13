@@ -24,5 +24,13 @@ namespace MasterOk.Models.ModelDataBase
         public User? User { get; set; }
 
         public ICollection<ProductSold> ProductSolds { get; set; }
+
+        public int? PayMethodId { get; set; }
+
+        public PayMethod? PayMethod { get; set; }
+
+        public int? DeliveryMethodId { get; set; }
+
+        public DeliveryMethod? DeliveryMethod { get; set; }
     }
 }

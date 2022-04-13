@@ -20,7 +20,7 @@
                             <div class="card-footer">
                                 <form asp-action="AddProductCart" asp-controller="Cart">
                                     @Html.Hidden("id", item.Id)
-                                    <input type="text" name="countCart" value="количество" />
+                                    <input type="text" name="countCart" />
                                     <input type="submit" value="Добавить" />
                                 </form>
                             </div>

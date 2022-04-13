@@ -30,21 +30,20 @@ namespace MasterOk.Controllers
             if (ModelState.IsValid)
             {
                 Client client = await _context.Clients.FirstOrDefaultAsync(
-                    l => l.LoginClient.Equals(loginModel.LoginEmail) 
-                    || l.EmailClient.Equals(loginModel.LoginEmail)
+                    l => l.EmailClient.Equals(loginModel.LoginEmail)
                     && l.PasswordClient.Equals(loginModel.Password));
 
-                if(client != null)
+                if (client != null)
                 {
                     Authenticate(client.Id, "client");
                 }
                 else
                 {
-                    User user = await _context.Users.Include(r=>r.Role).FirstOrDefaultAsync(
+                    User user = await _context.Users.Include(r => r.Role).FirstOrDefaultAsync(
                     l => l.LoginUser.Equals(loginModel.LoginEmail)
                     && l.PasswordUser.Equals(loginModel.Password));
 
-                    if(user != null)
+                    if (user != null)
                     {
                         Authenticate(user.Id, user.Role.TitleRole);
                     }
@@ -69,10 +68,10 @@ namespace MasterOk.Controllers
                 await _context.Clients.AddAsync(new Client
                 {
                     EmailClient = registerModel.EmailClient,
-                    LoginClient = registerModel.LoginClient,
                     PasswordClient = registerModel.PasswordClient,
-                    FirstNameClient = registerModel.FirstNameClient,
-                    LastNameClient = registerModel.LastNameClient
+                    FirstLastNameClient = registerModel.FirstLastNameClient,
+                    NumberPhone = registerModel.NumberPhone,
+                    Address = registerModel.Address
                 });
 
                 await _context.SaveChangesAsync();

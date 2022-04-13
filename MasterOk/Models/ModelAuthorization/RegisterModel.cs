@@ -4,10 +4,6 @@ namespace MasterOk.Models.ModelAuthorization
 {
     public class RegisterModel
     {
-        [Display(Name = "Логин")]
-        [Required]
-        public string LoginClient { get; set; }
-
         [Display(Name = "Электронная почта")]
         public string EmailClient { get; set; }
 
@@ -20,10 +16,13 @@ namespace MasterOk.Models.ModelAuthorization
         [DataType(DataType.Password)]
         public string ConfirmPassword { get; set; }
 
-        [Display(Name = "Фамилия")]
-        public string FirstNameClient { get; set; }
+        [Display(Name = "Фамилия Имя Отчество")]
+        public string FirstLastNameClient { get; set; }
 
-        [Display(Name = "Имя")]
-        public string LastNameClient { get; set; }
+        [Display(Name = "Номер телефона")]
+        public string NumberPhone { get; set; }
+
+        [Display(Name = "Адрес доставки")]
+        public string Address { get; set; }
     }
 }

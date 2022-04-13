@@ -1,7 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MasterOk.Data;
 using MasterOk.Models.ModelDataBase;
+using MasterOk.Models.ModelAuthorization;
 using MasterOk.Models.Serealize;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MasterOk.Controllers
 {
@@ -14,7 +20,8 @@ namespace MasterOk.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
+        //  [Authorize(Roles = "client")]
+        public async Task<IActionResult> Index()
         {
             List<CartClient> carts = new List<CartClient>();
 
@@ -23,7 +30,10 @@ namespace MasterOk.Controllers
                 carts = HttpContext.Session.Get<List<CartClient>>("cart");
             }
 
-            return View(carts);
+            ViewBag.PayMethod = await _context.PayMethods.ToListAsync();
+            ViewBag.DeliveryMethod = await _context.DeliveryMethods.ToListAsync();
+
+            return View(new CartRegisterModel { CartClients = carts });
         }
 
         public async Task<PartialViewResult> IndexPartital()
@@ -49,7 +59,12 @@ namespace MasterOk.Controllers
 
                         if (cartClients.Where(p => p.Product.Id == product.Id).Count() > 0)
                         {
-                            cartClients.Where(p => p.Product.Id == product.Id).ToList().ForEach(f => { f.CountCartProduct += countCart; f.PriceCartProduct = product.Price; f.TotalCartProduct = f.CountCartProduct * product.Price; });
+                            cartClients.Where(p => p.Product.Id == product.Id).ToList().ForEach(f =>
+                            {
+                                f.CountCartProduct += countCart;
+                                f.PriceCartProduct = product.Price;
+                                f.TotalCartProduct = f.CountCartProduct * product.Price;
+                            });
                         }
                         else
                         {
@@ -114,7 +129,11 @@ namespace MasterOk.Controllers
 
                     if (cartClients.Where(c => c.Product.Id == id).Count() > 0)
                     {
-                        cartClients.Where(c => c.Product.Id == id).ToList().ForEach(f => { f.CountCartProduct = valueId; f.TotalCartProduct = valueId * f.PriceCartProduct; });
+                        cartClients.Where(c => c.Product.Id == id).ToList().ForEach(f =>
+                        {
+                            f.CountCartProduct = valueId;
+                            f.TotalCartProduct = valueId * f.PriceCartProduct;
+                        });
                     }
 
                     HttpContext.Session.Set<List<CartClient>>("cart", cartClients);
@@ -126,7 +145,7 @@ namespace MasterOk.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateOrder(List<int> check)
+        public async Task<IActionResult> CreateOrder(List<int> check, RegisterModel registerModel, int payMethodId, int deliveryMethodId)
         {
             if (check.Count() > 0)
             {
@@ -136,15 +155,31 @@ namespace MasterOk.Controllers
 
                 if (list.Count() > 0)
                 {
+                    Client client = new Client
+                    {
+                        EmailClient = registerModel.EmailClient,
+                        PasswordClient = registerModel.EmailClient,
+                        NumberPhone = registerModel.NumberPhone,
+                        FirstLastNameClient = registerModel.FirstLastNameClient,
+                        Address = registerModel.Address
+                    };
+
+                    _context.Clients.Add(client);
+
                     ProductCheck productCheck = new ProductCheck
                     {
                         DateTimeSale = DateTime.Now,
-                        StateOrder = "В обработке"
+                        StateOrder = "В обработке",
+                        Client = client,
+                        DeliveryMethodId = deliveryMethodId,
+                        PayMethodId = payMethodId
                     };
 
                     _context.ProductChecks.Add(productCheck);
 
-                    foreach(var item in list)
+                    await _context.SaveChangesAsync();
+
+                    foreach (var item in list)
                     {
                         _context.Add(new ProductSold
                         {
@@ -154,11 +189,37 @@ namespace MasterOk.Controllers
                         });
                         await _context.SaveChangesAsync();
                     }
+
+                    await Authenticate(client.Id, "client");
                 }
                 //Нужно сделать авторизацию и регистрацию дабы не падало с ошибкой
             }
 
-            return null;
+            return Redirect(HttpContext.Request.Headers.Referer);
+        }
+
+        public async Task<IActionResult> Get()
+        {
+            var client = HttpContext.User.Identity;
+
+            var clientId = HttpContext.User.FindFirst(ClaimTypes.Name);
+
+            await Authenticate(1, "client");
+            return Redirect(nameof(Index));
+        }
+
+        private async Task Authenticate(int idClientUser, string titleRole)
+        {
+            // создаем один claim
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, idClientUser.ToString()),
+                new Claim(ClaimsIdentity.DefaultRoleClaimType, titleRole)
+            };
+            // создаем объект ClaimsIdentity
+            ClaimsIdentity id = new ClaimsIdentity(claims, "ApplicationCookie");
+            // установка аутентификационных куки
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(id));
         }
     }
 }

@@ -10,17 +10,11 @@ namespace MasterOk.Models.ModelDataBase
         [Display(Name ="Электронная почта")]
         public string EmailClient { get; set; }
 
-        [Display(Name = "Логин")]
-        public string LoginClient { get; set; }
-
         [Display(Name = "Пароль")]
         public string PasswordClient { get; set; }
 
-        [Display(Name = "Фамилия")]
-        public string FirstNameClient { get; set; }
-
-        [Display(Name = "Имя")]
-        public string LastNameClient { get; set; }
+        [Display(Name = "Фамилия Имя Отчество")]
+        public string FirstLastNameClient { get; set; }
 
         [Display(Name = "Номер телефона")]
         public string NumberPhone { get; set; }

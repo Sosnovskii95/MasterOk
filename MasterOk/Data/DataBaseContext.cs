@@ -39,5 +39,15 @@ namespace MasterOk.Data
         public DbSet<CartClient> CartClients { get; set; }
 
         public DbSet<PathImage> PathImages { get; set; }
+
+        public DbSet<PayMethod> PayMethods { get; set; }
+
+        public DbSet<DeliveryMethod> DeliveryMethods { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<PayMethod>().HasData(new List<PayMethod> { new PayMethod { Id = 1, TitlePayMethod = "Наличные" }, new PayMethod { Id = 2, TitlePayMethod = "Карта" } });
+            modelBuilder.Entity<DeliveryMethod>().HasData(new List<DeliveryMethod> { new DeliveryMethod { Id = 1, TitleDeliveryMethod = "Самовывоз" }, new DeliveryMethod { Id = 2, TitleDeliveryMethod = "Доставка" } });
+        }
     }
 }
