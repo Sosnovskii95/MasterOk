@@ -78,18 +78,62 @@ namespace MasterOk.Controllers
 
         public async Task<IActionResult> AddProductCart(int id, int countCart)
         {
+            Client client = await GetClient(HttpContext);
+            List<CartClient> cartClient;
+
+            //Если id не null
             if (id != null)
             {
-                var product = await _context.Products.FindAsync(id);
+                //Запрос в базу товар
+                Product product = await _context.Products.FindAsync(id);
+
+                //Если товар существует
                 if (product != null)
                 {
-                    if (HttpContext.Session.Keys.Contains("cart"))
+                    //Проверяем авторизацию клиента
+                    if (client != null)
                     {
-                        List<CartClient> cartClients = HttpContext.Session.Get<List<CartClient>>("cart");
+                        //Получаем корзину клиента из бд с заданным товаром
+                        cartClient = await _context.CartClients.Where(c => c.ClientId == client.Id).Where(p => p.ProductId == product.Id).ToListAsync();
 
-                        if (cartClients.Where(p => p.Product.Id == product.Id).Count() > 0)
+                        //Если товар есть в корзине
+                        if (cartClient.Count() > 0)
                         {
-                            cartClients.Where(p => p.Product.Id == product.Id).ToList().ForEach(f =>
+                            //Добавляем его количество, изменяем стоимость на актуальную и общую стоимость
+                            cartClient.Where(p => p.ProductId == product.Id).ToList().ForEach(f =>
+                            {
+                                f.CountCartProduct += countCart;
+                                f.PriceCartProduct = product.Price;
+                                f.TotalCartProduct = f.CountCartProduct * product.Price;
+                            });
+                            //сохраняем изменения в бд
+                            _context.UpdateRange(cartClient);
+                        }
+                        else
+                        {
+                            //Если не существует, добавляем в корзину и в бл
+                            _context.CartClients.Add(new CartClient
+                            {
+                                Product = product,
+                                CountCartProduct = countCart,
+                                PriceCartProduct = product.Price,
+                                TotalCartProduct = product.Price * countCart,
+                                Client = client
+                            });
+                        }
+                        await _context.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        //Если клиент не авторизирован работаем с сессией
+                        //Получаем текущее состояние сессии
+                        cartClient = HttpContext.Session.Get<List<CartClient>>("cart");
+
+                        //Если корзина существует в сессии, и существует товар в ней заданный
+                        if (cartClient != null && cartClient.Where(p => p.ProductId == product.Id).ToList().Count() > 0)
+                        {
+                            //изменяем его состояние
+                            cartClient.Where(p => p.ProductId == product.Id).ToList().ForEach(f =>
                             {
                                 f.CountCartProduct += countCart;
                                 f.PriceCartProduct = product.Price;
@@ -98,7 +142,59 @@ namespace MasterOk.Controllers
                         }
                         else
                         {
-                            cartClients.Add(new CartClient
+                            //Если корзина пуста, то создаем ее
+                            if (cartClient == null)
+                                cartClient = new List<CartClient>();
+
+                            //Добавлем товар либо в существующую корзину, либо созданную выше
+                            cartClient.Add(new CartClient
+                            {
+                                Product = product,
+                                CountCartProduct = countCart,
+                                PriceCartProduct = product.Price,
+                                TotalCartProduct = countCart * product.Price
+                            });
+                        }
+                        //Сетим значение корзины в сессию
+                        HttpContext.Session.Set<List<CartClient>>("cart", cartClient);
+                    }
+                }
+                else
+                {
+                    //Выброс ошибки
+                    return NotFound();
+                }
+
+                //Переадрессовываем на место вызова
+                return Redirect(HttpContext.Request.Headers.Referer);
+            }
+            else
+            {
+                //Выброс ошибки
+                return NotFound();
+            }
+
+            /*if (id != null)
+            {
+                var product = await _context.Products.FindAsync(id);
+                if (product != null)
+                {
+                    if (HttpContext.Session.Keys.Contains("cart"))
+                    {
+                        List<CartClient> cartClient = HttpContext.Session.Get<List<CartClient>>("cart");
+
+                        if (cartClient.Where(p => p.Product.Id == product.Id).Count() > 0)
+                        {
+                            cartClient.Where(p => p.Product.Id == product.Id).ToList().ForEach(f =>
+                            {
+                                f.CountCartProduct += countCart;
+                                f.PriceCartProduct = product.Price;
+                                f.TotalCartProduct = f.CountCartProduct * product.Price;
+                            });
+                        }
+                        else
+                        {
+                            cartClient.Add(new CartClient
                             {
                                 Product = product,
                                 CountCartProduct = countCart,
@@ -107,7 +203,7 @@ namespace MasterOk.Controllers
                             });
                         }
 
-                        HttpContext.Session.Set<List<CartClient>>("cart", cartClients);
+                        HttpContext.Session.Set<List<CartClient>>("cart", cartClient);
                     }
                     else
                     {
@@ -122,8 +218,8 @@ namespace MasterOk.Controllers
                     }
                 }
                 return Redirect(HttpContext.Request.Headers.Referer);
-            }
-            return null;
+            }*/
+            //return null;
         }
 
         public async Task<ActionResult> Delete(int id)
@@ -202,21 +298,21 @@ namespace MasterOk.Controllers
                     await Authenticate(client.Id, "client");
                 }
 
-                List<CartClient> cartClients;
+                List<CartClient> cartClient;
 
                 //получаем корзину клиента, если авторизирован то из бд
                 if (aut)
                 {
                     //получаем сразу выбранные товары из бд
-                    cartClients = await _context.CartClients.Where(c => c.ClientId == client.Id).Where(p => check.Contains(p.Product.Id)).Include(p => p.Product).ToListAsync();
+                    cartClient = await _context.CartClients.Where(c => c.ClientId == client.Id).Where(p => check.Contains(p.Product.Id)).Include(p => p.Product).ToListAsync();
                 }
                 else
                 {
                     //если нет, то из текущей сессии
-                    cartClients = HttpContext.Session.Get<List<CartClient>>("cart");
+                    cartClient = HttpContext.Session.Get<List<CartClient>>("cart");
 
                     //загружаем корзину в бд
-                    foreach (var item in cartClients)
+                    foreach (var item in cartClient)
                     {
                         _context.Add(new CartClient
                         {
@@ -229,11 +325,11 @@ namespace MasterOk.Controllers
                         await _context.SaveChangesAsync();
                     }
                     //получаем объекты выбранных товаров
-                    cartClients = cartClients.Where(p => check.Contains(p.Product.Id)).ToList();
+                    cartClient = cartClient.Where(p => check.Contains(p.Product.Id)).ToList();
                 }
 
                 //если выбранный товар 1<
-                if (cartClients.Count() > 0)
+                if (cartClient.Count() > 0)
                 {
                     //создаем чек
                     ProductCheck productCheck = new ProductCheck
@@ -249,7 +345,7 @@ namespace MasterOk.Controllers
                     await _context.SaveChangesAsync();
 
                     //создаем список проданных товаров
-                    foreach (var item in cartClients)
+                    foreach (var item in cartClient)
                     {
                         _context.Add(new ProductSold
                         {
@@ -271,7 +367,7 @@ namespace MasterOk.Controllers
             /*Client clientAut = await GetClient(HttpContext);
             if (clientAut != null)
             {
-                var cartClients = await _context.CartClients.Where(c => c.ClientId == clientAut.Id).Where(p => check.Contains(p.Product.Id)).ToListAsync();
+                var cartClient = await _context.CartClients.Where(c => c.ClientId == clientAut.Id).Where(p => check.Contains(p.Product.Id)).ToListAsync();
 
                 ProductCheck productCheck = new ProductCheck
                 {
@@ -286,7 +382,7 @@ namespace MasterOk.Controllers
 
                 await _context.SaveChangesAsync();
 
-                foreach (var item in cartClients)
+                foreach (var item in cartClient)
                 {
                     _context.Add(new ProductSold
                     {
@@ -303,9 +399,9 @@ namespace MasterOk.Controllers
             {
                 if (check.Count() > 0)
                 {
-                    List<CartClient> cartClients = HttpContext.Session.Get<List<CartClient>>("cart");
+                    List<CartClient> cartClient = HttpContext.Session.Get<List<CartClient>>("cart");
 
-                    var list = cartClients.Where(p => check.Contains(p.Product.Id)).ToList();
+                    var list = cartClient.Where(p => check.Contains(p.Product.Id)).ToList();
 
                     if (list.Count() > 0)
                     {
@@ -344,7 +440,7 @@ namespace MasterOk.Controllers
                             await _context.SaveChangesAsync();
                         }
 
-                        foreach (var item in cartClients)
+                        foreach (var item in cartClient)
                         {
                             _context.Add(new CartClient
                             {
