@@ -68,12 +68,33 @@ namespace MasterOk.Controllers
 
         public async Task<PartialViewResult> IndexPartital()
         {
+            List<CartClient> cartClient;
+            Client client = await GetClient(HttpContext);
+
+            if(client != null)
+            {
+                cartClient = await _context.CartClients.Include(p => p.Product).Where(c => c.ClientId == client.Id).ToListAsync();
+            }
+            else
+            {
+                if (HttpContext.Session.Keys.Contains("cart"))
+                {
+                    cartClient = HttpContext.Session.Get<List<CartClient>>("cart");
+                }
+                else
+                {
+                    cartClient = new List<CartClient>();
+                }
+            }
+
+            return PartialView(cartClient);
+            /*
             List<CartClient> carts = new List<CartClient>();
             if (HttpContext.Session.Keys.Contains("cart"))
             {
                 carts = HttpContext.Session.Get<List<CartClient>>("cart");
             }
-            return PartialView(carts);
+            return PartialView(carts);*/
         }
 
         public async Task<IActionResult> AddProductCart(int id, int countCart)
