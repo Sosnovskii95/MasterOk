@@ -71,7 +71,7 @@ namespace MasterOk.Controllers
             List<CartClient> cartClient;
             Client client = await GetClient(HttpContext);
 
-            if(client != null)
+            if (client != null)
             {
                 cartClient = await _context.CartClients.Include(p => p.Product).Where(c => c.ClientId == client.Id).ToListAsync();
             }
@@ -266,9 +266,48 @@ namespace MasterOk.Controllers
         }
 
         [HttpPost]
-        public IActionResult Change(int id, int valueId)
+        public async Task<IActionResult> Change(int id, int valueId)
         {
+            Client client = await GetClient(HttpContext);
+            List<CartClient> cartClient;
+
             if (id != null)
+            {
+                if (client != null)
+                {
+                    cartClient = await _context.CartClients.Where(c => c.ClientId == client.Id).Where(p => p.ProductId == id).ToListAsync();
+                    cartClient.ForEach(f =>
+                    {
+                        f.CountCartProduct = valueId;
+                        //f.PriceCartProduct = надо изменять стоимость согласно обновлению товара
+                        f.TotalCartProduct = valueId * f.PriceCartProduct;
+                    });
+
+                    _context.UpdateRange(cartClient);
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    cartClient = HttpContext.Session.Get<List<CartClient>>("cart").Where(p => p.Product.Id == id).ToList();
+
+                    cartClient.ForEach(f =>
+                    {
+                        f.CountCartProduct = valueId;
+                        //f.PriceCartProduct
+                        f.TotalCartProduct = valueId * f.PriceCartProduct;
+                    });
+
+                    HttpContext.Session.Set<List<CartClient>>("cart", cartClient);
+                }
+
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                return NotFound();
+            }
+
+            /*if (id != null)
             {
                 if (HttpContext.Session.Keys.Contains("cart"))
                 {
@@ -288,7 +327,7 @@ namespace MasterOk.Controllers
                     return RedirectToAction(nameof(Index));
                 }
             }
-            return Redirect(HttpContext.Request.Headers.Referer);
+            return Redirect(HttpContext.Request.Headers.Referer);*/
         }
 
         [HttpPost]
