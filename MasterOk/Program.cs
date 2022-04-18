@@ -14,14 +14,14 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 {
     options.LoginPath = "/Account/Login";
     options.AccessDeniedPath = "/Account/Login";
-    options.ExpireTimeSpan = TimeSpan.FromSeconds(60);
+    options.ExpireTimeSpan = TimeSpan.FromSeconds(600);
 });
 
 builder.Services.AddDistributedMemoryCache();
 
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromSeconds(60);
+    options.IdleTimeout = TimeSpan.FromSeconds(600);
     options.Cookie.Name = "MasterOk.Session";
     options.Cookie.IsEssential = true;
     options.Cookie.HttpOnly = true;
