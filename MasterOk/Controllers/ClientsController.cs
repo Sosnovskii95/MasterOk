@@ -22,10 +22,10 @@ namespace MasterOk.Controllers
             return View();
         }
 
-        //[Authorize(Roles = "client")]
+        [Authorize(Roles = "client")]
         public async Task<IActionResult> Edit()
         {
-            int clientId = Convert.ToInt32(User.FindFirst(x => x.Type == ClaimsIdentity.DefaultNameClaimType).Value);
+            int clientId = Convert.ToInt32(User.FindFirst(ClaimsIdentity.DefaultNameClaimType).Value);
 
             Client client = await _context.Clients.FindAsync(clientId);
             if (client != null)
@@ -33,7 +33,7 @@ namespace MasterOk.Controllers
                 return View(client);
             }
 
-            return null;
+            return Redirect(HttpContext.Request.Headers.Referer);
         }
 
         [HttpPost]
@@ -53,16 +53,16 @@ namespace MasterOk.Controllers
             }
         }
 
-        //[Authorize(Roles = "client")]
+        [Authorize(Roles = "client")]
         public async Task<IActionResult> History()
         {
-            int clientId = Convert.ToInt32(User.FindFirst(x => x.Type == ClaimsIdentity.DefaultNameClaimType).Value);
+            int clientId = Convert.ToInt32(User.FindFirst(ClaimsIdentity.DefaultNameClaimType).Value);
 
-            Client client = await _context.Clients.Include(x => x.ProductChecks).ThenInclude(p => p.ProductSolds).ThenInclude(o => o.Product).FirstOrDefaultAsync(i => i.Id == clientId);
+            IQueryable<ProductCheck> productChecks = _context.ProductChecks.Where(i => i.ClientId == clientId);
 
-            if (client != null)
+            if (productChecks != null)
             {
-                return View(client);
+                return View(productChecks.ToList());
             }
             else
             {

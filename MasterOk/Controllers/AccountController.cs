@@ -25,7 +25,7 @@ namespace MasterOk.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginModel loginModel)
+        public async Task<IActionResult> Login(LoginModel loginModel, string ? returnUrl)
         {
             if (ModelState.IsValid)
             {
@@ -35,22 +35,24 @@ namespace MasterOk.Controllers
 
                 if (client != null)
                 {
-                    Authenticate(client.Id, "client");
+                    await Authenticate(client.Id, "client");
+
+                    return RedirectToAction(nameof(Index), nameof(ClientsController));
                 }
-                else
-                {
-                    User user = await _context.Users.Include(r => r.Role).FirstOrDefaultAsync(
+
+                User user = await _context.Users.Include(r => r.Role).FirstOrDefaultAsync(
                     l => l.LoginUser.Equals(loginModel.LoginEmail)
                     && l.PasswordUser.Equals(loginModel.Password));
 
-                    if (user != null)
-                    {
-                        Authenticate(user.Id, user.Role.TitleRole);
-                    }
+                if(user != null)
+                {
+                    await Authenticate(user.Id, user.Role.TitleRole);
+
+                    return RedirectToAction(nameof(Index), nameof(UsersController));
                 }
             }
 
-            return null;
+            return View(loginModel);
         }
 
         public IActionResult Register()
@@ -75,12 +77,13 @@ namespace MasterOk.Controllers
                 });
 
                 await _context.SaveChangesAsync();
+
+                return Redirect(HttpContext.Request.Headers.Referer);
             }
             else
             {
                 return View(registerModel);
             }
-            return null;
         }
 
         private async Task Authenticate(int idClientUser, string titleRole)

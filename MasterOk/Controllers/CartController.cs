@@ -23,13 +23,32 @@ namespace MasterOk.Controllers
         //  [Authorize(Roles = "client")]
         public async Task<IActionResult> Index()
         {
-            List<CartClient> carts = new List<CartClient>();
+            List<CartClient> cartClient;
             RegisterModel registerModel = new RegisterModel();
 
             ViewBag.PayMethod = await _context.PayMethods.ToListAsync();
             ViewBag.DeliveryMethod = await _context.DeliveryMethods.ToListAsync();
 
-            var clientAunt = HttpContext.User.Identity;
+            Client client = await GetAuthenticateClient(HttpContext);
+
+            if (client != null)
+            {
+                registerModel.Address = client.Address;
+                registerModel.FirstLastNameClient = client.FirstLastNameClient;
+                registerModel.EmailClient = client.EmailClient;
+                registerModel.NumberPhone = client.NumberPhone;
+
+                cartClient = await _context.CartClients.Include(p => p.Product).Where(i => i.ClientId == client.Id).ToListAsync();
+            }
+            else
+            {
+                if (HttpContext.Session.Keys.Contains("cart"))
+                    cartClient = HttpContext.Session.Get<List<CartClient>>("cart");
+                else
+                    cartClient = new List<CartClient>();
+            }
+
+            /*var clientAunt = HttpContext.User.Identity;
 
             if (clientAunt is not null && clientAunt.IsAuthenticated)
             {
@@ -61,15 +80,15 @@ namespace MasterOk.Controllers
                 {
                     carts = HttpContext.Session.Get<List<CartClient>>("cart");
                 }
-            }
+            }*/
 
-            return View(new CartRegisterModel { CartClients = carts, RegisterModel = registerModel });
+            return View(new CartRegisterModel { CartClients = cartClient, RegisterModel = registerModel });
         }
 
         public async Task<PartialViewResult> IndexPartital()
         {
             List<CartClient> cartClient;
-            Client client = await GetClient(HttpContext);
+            Client client = await GetAuthenticateClient(HttpContext);
 
             if (client != null)
             {
@@ -78,13 +97,10 @@ namespace MasterOk.Controllers
             else
             {
                 if (HttpContext.Session.Keys.Contains("cart"))
-                {
                     cartClient = HttpContext.Session.Get<List<CartClient>>("cart");
-                }
                 else
-                {
                     cartClient = new List<CartClient>();
-                }
+
             }
 
             return PartialView(cartClient);
@@ -99,7 +115,7 @@ namespace MasterOk.Controllers
 
         public async Task<IActionResult> AddProductCart(int id, int countCart)
         {
-            Client client = await GetClient(HttpContext);
+            Client client = await GetAuthenticateClient(HttpContext);
             List<CartClient> cartClient;
 
             //Если id не null
@@ -118,7 +134,7 @@ namespace MasterOk.Controllers
                         cartClient = await _context.CartClients.Where(c => c.ClientId == client.Id).Where(p => p.ProductId == product.Id).ToListAsync();
 
                         //Если товар есть в корзине
-                        if (cartClient.Count() > 0)
+                        if (cartClient.Count > 0)
                         {
                             //Добавляем его количество, изменяем стоимость на актуальную и общую стоимость
                             cartClient.Where(p => p.ProductId == product.Id).ToList().ForEach(f =>
@@ -245,16 +261,16 @@ namespace MasterOk.Controllers
 
         public async Task<ActionResult> Delete(int id)
         {
-            Client client = await GetClient(HttpContext);
+            Client client = await GetAuthenticateClient(HttpContext);
             List<CartClient> cartClient;
 
-            if(id != null)
+            if (id != null)
             {
                 if (client != null)
                 {
-                    cartClient = await _context.CartClients.Where(c => c.ClientId == client.Id).Where(p=>p.Product.Id == id).ToListAsync();
+                    cartClient = await _context.CartClients.Where(c => c.ClientId == client.Id).Where(p => p.Product.Id == id).ToListAsync();
 
-                    if(cartClient.Count > 0)
+                    if (cartClient.Count > 0)
                     {
                         _context.RemoveRange(cartClient);
                         await _context.SaveChangesAsync();
@@ -264,7 +280,7 @@ namespace MasterOk.Controllers
                 {
                     cartClient = HttpContext.Session.Get<List<CartClient>>("cart");
 
-                    if(cartClient.Count > 0)
+                    if (cartClient.Count > 0)
                     {
                         cartClient.RemoveAll(p => p.Product.Id == id);
                     }
@@ -302,7 +318,7 @@ namespace MasterOk.Controllers
         [HttpPost]
         public async Task<IActionResult> Change(int id, int valueId)
         {
-            Client client = await GetClient(HttpContext);
+            Client client = await GetAuthenticateClient(HttpContext);
             List<CartClient> cartClient;
 
             if (id != null)
@@ -368,10 +384,10 @@ namespace MasterOk.Controllers
         public async Task<IActionResult> CreateOrder(List<int> check, RegisterModel registerModel, int payMethodId, int deliveryMethodId)
         {
             //Если товар выбран хоть 1
-            if (check.Count() > 0)
+            if (check.Count > 0)
             {
                 //проверям аунтетифицирован и авторизирован ли клиент
-                Client client = await GetClient(HttpContext);
+                Client client = await GetAuthenticateClient(HttpContext);
                 bool aut = true;
 
                 //если нет, то создаем его в бд и авторизируем
@@ -423,7 +439,7 @@ namespace MasterOk.Controllers
                 }
 
                 //если выбранный товар 1<
-                if (cartClient.Count() > 0)
+                if (cartClient.Count > 0)
                 {
                     //создаем чек
                     ProductCheck productCheck = new ProductCheck
@@ -458,7 +474,7 @@ namespace MasterOk.Controllers
                 return Redirect(HttpContext.Request.Headers.Referer);
             }
 
-            /*Client clientAut = await GetClient(HttpContext);
+            /*Client clientAut = await GetAuthenticateClient(HttpContext);
             if (clientAut != null)
             {
                 var cartClient = await _context.CartClients.Where(c => c.ClientId == clientAut.Id).Where(p => check.Contains(p.Product.Id)).ToListAsync();
@@ -572,7 +588,7 @@ namespace MasterOk.Controllers
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(id));
         }
 
-        private async Task<Client> GetClient(HttpContext httpContext)
+        private async Task<Client> GetAuthenticateClient(HttpContext httpContext)
         {
             var clientAut = httpContext.User.Identity;
 
