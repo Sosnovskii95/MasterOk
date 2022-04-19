@@ -245,7 +245,41 @@ namespace MasterOk.Controllers
 
         public async Task<ActionResult> Delete(int id)
         {
-            if (id != null)
+            Client client = await GetClient(HttpContext);
+            List<CartClient> cartClient;
+
+            if(id != null)
+            {
+                if (client != null)
+                {
+                    cartClient = await _context.CartClients.Where(c => c.ClientId == client.Id).Where(p=>p.Product.Id == id).ToListAsync();
+
+                    if(cartClient.Count > 0)
+                    {
+                        _context.RemoveRange(cartClient);
+                        await _context.SaveChangesAsync();
+                    }
+                }
+                else
+                {
+                    cartClient = HttpContext.Session.Get<List<CartClient>>("cart");
+
+                    if(cartClient.Count > 0)
+                    {
+                        cartClient.RemoveAll(p => p.Product.Id == id);
+                    }
+
+                    HttpContext.Session.Set<List<CartClient>>("cart", cartClient);
+                }
+
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                return Redirect(HttpContext.Request.Headers.Referer);
+            }
+
+            /*if (id != null)
             {
                 if (HttpContext.Session.Keys.Contains("cart"))
                 {
@@ -262,7 +296,7 @@ namespace MasterOk.Controllers
                 }
             }
 
-            return Redirect(HttpContext.Request.Headers.Referer);
+            return Redirect(HttpContext.Request.Headers.Referer);*/
         }
 
         [HttpPost]
@@ -522,16 +556,6 @@ namespace MasterOk.Controllers
             }*/
 
             //return Redirect(HttpContext.Request.Headers.Referer);
-        }
-
-        public async Task<IActionResult> Get()
-        {
-            var client = HttpContext.User.Identity;
-
-            var clientId = HttpContext.User.FindFirst(ClaimTypes.Name);
-
-            await Authenticate(1, "client");
-            return Redirect(nameof(Index));
         }
 
         private async Task Authenticate(int idClientUser, string titleRole)
