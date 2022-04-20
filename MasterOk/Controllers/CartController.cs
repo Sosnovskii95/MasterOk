@@ -39,6 +39,11 @@ namespace MasterOk.Controllers
                 registerModel.NumberPhone = client.NumberPhone;
 
                 cartClient = await _context.CartClients.Include(p => p.Product).Where(i => i.ClientId == client.Id).ToListAsync();
+                cartClient.ForEach(f =>
+                {
+                    f.PriceCartProduct = f.Product.Price;
+                    f.TotalCartProduct = f.Product.Price * f.CountCartProduct;
+                });
             }
             else
             {
@@ -47,40 +52,6 @@ namespace MasterOk.Controllers
                 else
                     cartClient = new List<CartClient>();
             }
-
-            /*var clientAunt = HttpContext.User.Identity;
-
-            if (clientAunt is not null && clientAunt.IsAuthenticated)
-            {
-                var roleClient = HttpContext.User.FindFirst(ClaimsIdentity.DefaultRoleClaimType);
-                var idClient = HttpContext.User.FindFirst(ClaimsIdentity.DefaultNameClaimType);
-
-                if (roleClient.Value.Equals("client"))
-                {
-                    var client = await _context.Clients.FindAsync(Convert.ToInt32(idClient.Value));
-
-                    if (client != null)
-                    {
-                        registerModel.Address = client.Address;
-                        registerModel.FirstLastNameClient = client.FirstLastNameClient;
-                        registerModel.EmailClient = client.EmailClient;
-                        registerModel.NumberPhone = client.NumberPhone;
-
-                        carts = await _context.CartClients.Include(p => p.Product).Where(i => i.ClientId == client.Id).ToListAsync();
-                    }
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            else
-            {
-                if (HttpContext.Session.Keys.Contains("cart"))
-                {
-                    carts = HttpContext.Session.Get<List<CartClient>>("cart");
-                }
-            }*/
 
             return View(new CartRegisterModel { CartClients = cartClient, RegisterModel = registerModel });
         }
@@ -104,13 +75,6 @@ namespace MasterOk.Controllers
             }
 
             return PartialView(cartClient);
-            /*
-            List<CartClient> carts = new List<CartClient>();
-            if (HttpContext.Session.Keys.Contains("cart"))
-            {
-                carts = HttpContext.Session.Get<List<CartClient>>("cart");
-            }
-            return PartialView(carts);*/
         }
 
         public async Task<IActionResult> AddProductCart(int id, int countCart)
@@ -210,53 +174,6 @@ namespace MasterOk.Controllers
                 //Выброс ошибки
                 return NotFound();
             }
-
-            /*if (id != null)
-            {
-                var product = await _context.Products.FindAsync(id);
-                if (product != null)
-                {
-                    if (HttpContext.Session.Keys.Contains("cart"))
-                    {
-                        List<CartClient> cartClient = HttpContext.Session.Get<List<CartClient>>("cart");
-
-                        if (cartClient.Where(p => p.Product.Id == product.Id).Count() > 0)
-                        {
-                            cartClient.Where(p => p.Product.Id == product.Id).ToList().ForEach(f =>
-                            {
-                                f.CountCartProduct += countCart;
-                                f.PriceCartProduct = product.Price;
-                                f.TotalCartProduct = f.CountCartProduct * product.Price;
-                            });
-                        }
-                        else
-                        {
-                            cartClient.Add(new CartClient
-                            {
-                                Product = product,
-                                CountCartProduct = countCart,
-                                PriceCartProduct = product.Price,
-                                TotalCartProduct = countCart * product.Price
-                            });
-                        }
-
-                        HttpContext.Session.Set<List<CartClient>>("cart", cartClient);
-                    }
-                    else
-                    {
-                        HttpContext.Session.Set<List<CartClient>>("cart", new List<CartClient> {
-                            new CartClient {
-                                Product = product,
-                                CountCartProduct = countCart,
-                                PriceCartProduct = product.Price,
-                                TotalCartProduct = countCart * product.Price
-                            }
-                        });
-                    }
-                }
-                return Redirect(HttpContext.Request.Headers.Referer);
-            }*/
-            //return null;
         }
 
         public async Task<ActionResult> Delete(int id)
@@ -294,25 +211,6 @@ namespace MasterOk.Controllers
             {
                 return Redirect(HttpContext.Request.Headers.Referer);
             }
-
-            /*if (id != null)
-            {
-                if (HttpContext.Session.Keys.Contains("cart"))
-                {
-                    List<CartClient> cartClients = HttpContext.Session.Get<List<CartClient>>("cart");
-
-                    if (cartClients.Count() > 0)
-                    {
-                        cartClients.RemoveAll(p => p.Product.Id == id);
-                    }
-
-                    HttpContext.Session.Set<List<CartClient>>("cart", cartClients);
-
-                    return RedirectToAction(nameof(Index));
-                }
-            }
-
-            return Redirect(HttpContext.Request.Headers.Referer);*/
         }
 
         [HttpPost]
@@ -325,11 +223,11 @@ namespace MasterOk.Controllers
             {
                 if (client != null)
                 {
-                    cartClient = await _context.CartClients.Where(c => c.ClientId == client.Id).Where(p => p.ProductId == id).ToListAsync();
+                    cartClient = await _context.CartClients.Where(c => c.ClientId == client.Id).Where(p => p.ProductId == id).Include(p=>p.Product).ToListAsync();
                     cartClient.ForEach(f =>
                     {
                         f.CountCartProduct = valueId;
-                        //f.PriceCartProduct = надо изменять стоимость согласно обновлению товара
+                        f.PriceCartProduct = f.Product.Price;
                         f.TotalCartProduct = valueId * f.PriceCartProduct;
                     });
 
@@ -343,7 +241,7 @@ namespace MasterOk.Controllers
                     cartClient.ForEach(f =>
                     {
                         f.CountCartProduct = valueId;
-                        //f.PriceCartProduct
+                        f.PriceCartProduct = f.Product.Price;
                         f.TotalCartProduct = valueId * f.PriceCartProduct;
                     });
 
@@ -356,28 +254,6 @@ namespace MasterOk.Controllers
             {
                 return NotFound();
             }
-
-            /*if (id != null)
-            {
-                if (HttpContext.Session.Keys.Contains("cart"))
-                {
-                    List<CartClient> cartClients = HttpContext.Session.Get<List<CartClient>>("cart");
-
-                    if (cartClients.Where(c => c.Product.Id == id).Count() > 0)
-                    {
-                        cartClients.Where(c => c.Product.Id == id).ToList().ForEach(f =>
-                        {
-                            f.CountCartProduct = valueId;
-                            f.TotalCartProduct = valueId * f.PriceCartProduct;
-                        });
-                    }
-
-                    HttpContext.Session.Set<List<CartClient>>("cart", cartClients);
-
-                    return RedirectToAction(nameof(Index));
-                }
-            }
-            return Redirect(HttpContext.Request.Headers.Referer);*/
         }
 
         [HttpPost]
@@ -461,7 +337,9 @@ namespace MasterOk.Controllers
                         {
                             ProductId = item.Product.Id,
                             ProductCheckId = productCheck.Id,
-                            CountSold = item.CountCartProduct
+                            CountSold = item.CountCartProduct,
+                            PriceSold = item.PriceCartProduct,
+                            TotalSold = item.CountCartProduct * item.PriceCartProduct
                         });
                         await _context.SaveChangesAsync();
                     }
@@ -473,105 +351,6 @@ namespace MasterOk.Controllers
             {
                 return Redirect(HttpContext.Request.Headers.Referer);
             }
-
-            /*Client clientAut = await GetAuthenticateClient(HttpContext);
-            if (clientAut != null)
-            {
-                var cartClient = await _context.CartClients.Where(c => c.ClientId == clientAut.Id).Where(p => check.Contains(p.Product.Id)).ToListAsync();
-
-                ProductCheck productCheck = new ProductCheck
-                {
-                    DateTimeSale = DateTime.Now,
-                    StateOrder = "В обработке",
-                    Client = clientAut,
-                    DeliveryMethodId = deliveryMethodId,
-                    PayMethodId = payMethodId
-                };
-
-                _context.ProductChecks.Add(productCheck);
-
-                await _context.SaveChangesAsync();
-
-                foreach (var item in cartClient)
-                {
-                    _context.Add(new ProductSold
-                    {
-                        ProductId = item.Product.Id,
-                        ProductCheckId = productCheck.Id,
-                        CountSold = item.CountCartProduct
-                    });
-                    await _context.SaveChangesAsync();
-                }
-
-                return RedirectToAction(nameof(Index));
-            }
-            else
-            {
-                if (check.Count() > 0)
-                {
-                    List<CartClient> cartClient = HttpContext.Session.Get<List<CartClient>>("cart");
-
-                    var list = cartClient.Where(p => check.Contains(p.Product.Id)).ToList();
-
-                    if (list.Count() > 0)
-                    {
-                        Client client = new Client
-                        {
-                            EmailClient = registerModel.EmailClient,
-                            PasswordClient = registerModel.EmailClient,
-                            NumberPhone = registerModel.NumberPhone,
-                            FirstLastNameClient = registerModel.FirstLastNameClient,
-                            Address = registerModel.Address
-                        };
-
-                        _context.Clients.Add(client);
-
-                        ProductCheck productCheck = new ProductCheck
-                        {
-                            DateTimeSale = DateTime.Now,
-                            StateOrder = "В обработке",
-                            Client = client,
-                            DeliveryMethodId = deliveryMethodId,
-                            PayMethodId = payMethodId
-                        };
-
-                        _context.ProductChecks.Add(productCheck);
-
-                        await _context.SaveChangesAsync();
-
-                        foreach (var item in list)
-                        {
-                            _context.Add(new ProductSold
-                            {
-                                ProductId = item.Product.Id,
-                                ProductCheckId = productCheck.Id,
-                                CountSold = item.CountCartProduct
-                            });
-                            await _context.SaveChangesAsync();
-                        }
-
-                        foreach (var item in cartClient)
-                        {
-                            _context.Add(new CartClient
-                            {
-                                ClientId = client.Id,
-                                PriceCartProduct = item.Product.Price,
-                                CountCartProduct = item.CountCartProduct,
-                                ProductId = item.Product.Id,
-                                TotalCartProduct = item.TotalCartProduct
-                            });
-                            await _context.SaveChangesAsync();
-                        }
-
-                        await Authenticate(client.Id, "client");
-
-                        return RedirectToAction(nameof(Index));
-                    }
-                    //Нужно сделать авторизацию и регистрацию дабы не падало с ошибкой
-                }
-            }*/
-
-            //return Redirect(HttpContext.Request.Headers.Referer);
         }
 
         private async Task Authenticate(int idClientUser, string titleRole)

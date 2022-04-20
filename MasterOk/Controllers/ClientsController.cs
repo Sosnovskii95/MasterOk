@@ -38,7 +38,7 @@ namespace MasterOk.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        //[Authorize(Roles = "client")]
+        [Authorize(Roles = "client")]
         public async Task<IActionResult> Edit(Client client)
         {
             if (ModelState.IsValid)
@@ -58,7 +58,7 @@ namespace MasterOk.Controllers
         {
             int clientId = Convert.ToInt32(User.FindFirst(ClaimsIdentity.DefaultNameClaimType).Value);
 
-            IQueryable<ProductCheck> productChecks = _context.ProductChecks.Where(i => i.ClientId == clientId);
+            IQueryable<ProductCheck> productChecks = _context.ProductChecks.Where(i => i.ClientId == clientId).Include(p => p.ProductSolds).Include(m => m.PayMethod).Include(d => d.DeliveryMethod);
 
             if (productChecks != null)
             {
@@ -70,8 +70,20 @@ namespace MasterOk.Controllers
             }
         }
 
+        public async Task<IActionResult> Details(int id)
+        {
+            if(id != null)
+            {
+                return View(await _context.ProductSolds.Where(p => p.ProductCheckId == id).Include(o => o.Product).ToListAsync());
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
         //[Authorize(Roles = "client")]
-        public async Task<IActionResult> Cart()
+        /*public async Task<IActionResult> Cart()
         {
             int clientId = Convert.ToInt32(User.FindFirst(x => x.Type == ClaimsIdentity.DefaultNameClaimType).Value);
 
@@ -85,6 +97,6 @@ namespace MasterOk.Controllers
             {
                 return null;
             }
-        }
+        }*/
     }
 }

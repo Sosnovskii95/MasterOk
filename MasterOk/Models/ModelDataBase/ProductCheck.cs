@@ -5,6 +5,7 @@ namespace MasterOk.Models.ModelDataBase
     public class ProductCheck
     {
         [Key]
+        [Display(Name = "Номер заказа")]
         public int Id { get; set; }
 
         [Display(Name = "Дата заказа")]
@@ -27,10 +28,12 @@ namespace MasterOk.Models.ModelDataBase
 
         public int? PayMethodId { get; set; }
 
+        [Display(Name = "Способ оплаты")]
         public PayMethod? PayMethod { get; set; }
 
         public int? DeliveryMethodId { get; set; }
 
+        [Display(Name = "Способ доставки")]
         public DeliveryMethod? DeliveryMethod { get; set; }
     }
 }

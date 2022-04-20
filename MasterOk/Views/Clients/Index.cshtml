@@ -1,15 +1,9 @@
 ﻿
 @{
-    Layout = null;
+    ViewData["Title"] = "Index";
 }
 
-<!DOCTYPE html>
+<h1>Index</h1>
 
-<html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Index</title>
-</head>
-<body>
-</body>
-</html>
+@Html.ActionLink("Редактировать профиль", "Edit", "Clients")
+@Html.ActionLink("История покупок", "History", "Clients")

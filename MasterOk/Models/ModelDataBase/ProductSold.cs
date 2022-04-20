@@ -18,5 +18,9 @@ namespace MasterOk.Models.ModelDataBase
         public Product Product { get; set; }
 
         public int CountSold { get; set; }
+
+        public double PriceSold { get; set; }
+
+        public double TotalSold { get; set; }
     }
 }

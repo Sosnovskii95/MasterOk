@@ -37,7 +37,7 @@ namespace MasterOk.Controllers
                 {
                     await Authenticate(client.Id, "client");
 
-                    return RedirectToAction(nameof(Index), nameof(ClientsController));
+                    return RedirectToAction(nameof(Index), "Clients");
                 }
 
                 User user = await _context.Users.Include(r => r.Role).FirstOrDefaultAsync(
@@ -48,7 +48,7 @@ namespace MasterOk.Controllers
                 {
                     await Authenticate(user.Id, user.Role.TitleRole);
 
-                    return RedirectToAction(nameof(Index), nameof(UsersController));
+                    return RedirectToAction(nameof(Index), "Users");
                 }
             }
 
