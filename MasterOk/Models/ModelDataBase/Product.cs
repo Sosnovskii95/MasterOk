@@ -10,7 +10,7 @@ namespace MasterOk.Models.ModelDataBase
         [Display(Name = "Название товара")]
         public string TitleProduct { get; set; }
 
-        [Display(Name ="Описание товара")]
+        [Display(Name = "Описание товара")]
         public string DescriptionProduct { get; set; }
 
         [Display(Name = "Гарантия")]
@@ -22,8 +22,12 @@ namespace MasterOk.Models.ModelDataBase
         [Display(Name = "Подкатегория")]
         public int? SubCategoryId { get; set; }
 
+        [Display(Name = "Подкатегория")]
         public SubCategory? SubCategory { get; set; }
 
         public ICollection<PathImage>? NameImages { get; set; }
+
+        [Display(Name = "Количество на складе")]
+        public int CountStoreProduct { get; set; }
     }
 }

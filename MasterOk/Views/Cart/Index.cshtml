@@ -83,7 +83,7 @@
             <div class="row">
                 <div asp-validation-summary="All" class="text-danger"></div>
                 <div class="form-floating pb-3">
-                    <input type="text" asp-for="RegisterModel.FirstLastNameClient" class="form-control" placeholder="test"/>
+                    <input type="text" asp-for="RegisterModel.FirstLastNameClient" class="form-control" placeholder="test" />
                     <label asp-for="RegisterModel.FirstLastNameClient" class="control-Label"></label>
                     <span asp-validation-for="RegisterModel.FirstLastNameClient" class="text-danger"></span>
                 </div>
@@ -103,7 +103,7 @@
                     <span asp-validation-for="RegisterModel.Address" class="text-danger"></span>
                 </div>
                 <div class="row">
-                    <input type="submit" value="Отправить"/>
+                    <input type="submit" value="Отправить" />
                 </div>
             </div>
         </div>
@@ -127,7 +127,7 @@
         xhr.send(formData);
 
         if(xhr.status ==200){
-            document.location.reload();
+            document.location.reload(true);
         }
     }
 </script>

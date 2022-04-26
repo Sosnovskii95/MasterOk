@@ -16,7 +16,7 @@ namespace MasterOk.Controllers
             _context = context;
         }
 
-        //[Authorize(Roles = "client")]
+        [Authorize(Roles = "client")]
         public IActionResult Index()
         {
             return View();

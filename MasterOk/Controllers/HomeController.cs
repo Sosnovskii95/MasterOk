@@ -4,7 +4,7 @@ using System.Diagnostics;
 using MasterOk.Data;
 using Microsoft.EntityFrameworkCore;
 using MasterOk.Models.ModelDataBase;
-using MasterOk.Models.Serealize;
+using MasterOk.Models.Search;
 
 namespace MasterOk.Controllers
 {
@@ -120,6 +120,18 @@ namespace MasterOk.Controllers
             {
                 return RedirectToAction(nameof(Index));
             }
+        }
+
+        public async Task<IActionResult> Search(string? query)
+        {
+            SearchViewModel searchViewModel = new SearchViewModel
+            {
+                Categories = await _context.Categories.Where(s => s.TitleCategory.Contains(query)).Include(n => n.NameImages).ToListAsync(),
+                SubCategories = await _context.SubCategories.Where(s => s.TitleSubCategory.Contains(query)).Include(n => n.NameImages).ToListAsync(),
+                Products = await _context.Products.Where(s => s.TitleProduct.Contains(query)).Include(n => n.NameImages).ToListAsync()
+            };
+
+            return View(searchViewModel);
         }
 
         public IActionResult Privacy()

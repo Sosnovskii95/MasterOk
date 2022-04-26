@@ -26,8 +26,7 @@ namespace MasterOk.Controllers
         // GET: Products
         public async Task<IActionResult> Index()
         {
-            var dataBaseContext = _context.Products.Include(p => p.SubCategory);
-            return View(await dataBaseContext.ToListAsync());
+            return View(await _context.Products.Include(p => p.SubCategory).ToListAsync());
         }
 
         // GET: Products/Details/5
@@ -61,7 +60,7 @@ namespace MasterOk.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,TitleProduct,DescriptionProduct,Warranty,Price,SubCategoryId")] Product product, IFormFileCollection nameImages)
+        public async Task<IActionResult> Create([Bind("Id,TitleProduct,DescriptionProduct,Warranty,Price,SubCategoryId, CountStoreProduct")] Product product, IFormFileCollection nameImages)
         {
             if (ModelState.IsValid)
             {
@@ -129,7 +128,7 @@ namespace MasterOk.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,TitleProduct,DescriptionProduct,Warranty,Price,SubCategoryId")] Product product, IFormFileCollection nameImages)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,TitleProduct,DescriptionProduct,Warranty,Price,SubCategoryId, CountStoreProduct")] Product product, IFormFileCollection nameImages)
         {
             if (id != product.Id)
             {

@@ -1,0 +1,54 @@
+﻿@model IEnumerable<MasterOk.Models.ModelDataBase.ShipToStore>
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Product.TitleProduct)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model=>model.CountShipProduct)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Product.TitleProduct)
+                </td>
+                <td>
+                    <input type="number" id="@item.Id" name="@item.DocShipToStoreId" value="@item.CountShipProduct" onchange="changeCountProduct(this.id);">
+                </td>
+                <td>
+                    <a asp-action="Delete" asp-route-docShipToStoreId="@item.DocShipToStoreId"
+                    asp-route-productId="@item.ProductId">Удалить</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<script type="text/javascript">
+    function changeCountProduct(id){
+        var valueId = document.getElementById(id).value;
+        var nameId = document.getElementById(id).name;
+
+        const formData = "id="+id+"&valueId="+valueId+"&docId="+nameId;
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/ShipToStores/Change", false);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.send(formData);
+
+        if(xhr.status ==200){
+            document.location.reload();
+        }
+    }
+</script>

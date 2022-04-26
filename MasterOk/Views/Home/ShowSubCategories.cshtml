@@ -3,25 +3,19 @@
     ViewData["Title"] = "ShowSubCategories";
 }
 
-<div class="container-fluid">
-    <div class="row">
-        <div class="col">
-            <div class="row">
-                @foreach (var item in Model)
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-3 pb-4">
+            <div class="card">
+                @foreach (var items in item.NameImages)
                 {
-                    <div class="col-md-3 pb-4">
-                        <div class="card">
-                            @foreach(var items in item.NameImages)
-                            {
-                                <img class="card-img-top" src="@Url.Action("GetImage", "Home", new {id = items.Id, typeObject = "subCategory"})" />
-                            }
-                            <div class="card-body">
-                                <h5 class="card-title">@Html.ActionLink(item.TitleSubCategory,"ShowProducts", new{subCategoriesId= item.Id})</h5>
-                            </div>
-                        </div>
-                    </div>
+                    <img class="card-img-top" src="@Url.Action("GetImage", "Home", new {id = items.Id, typeObject = "subCategory"})" />
                 }
+                <div class="card-body">
+                    <h5 class="card-title">@Html.ActionLink(item.TitleSubCategory,"ShowProducts", new{subCategoriesId= item.Id})</h5>
+                </div>
             </div>
         </div>
-    </div>
+    }
 </div>

@@ -30,7 +30,7 @@ namespace MasterOk.Controllers
             if (ModelState.IsValid)
             {
                 Client client = await _context.Clients.FirstOrDefaultAsync(
-                    l => l.EmailClient.Equals(loginModel.LoginEmail)
+                    l => l.EmailClient.Equals(loginModel.Email)
                     && l.PasswordClient.Equals(loginModel.Password));
 
                 if (client != null)
@@ -41,7 +41,7 @@ namespace MasterOk.Controllers
                 }
 
                 User user = await _context.Users.Include(r => r.Role).FirstOrDefaultAsync(
-                    l => l.LoginUser.Equals(loginModel.LoginEmail)
+                    l => l.LoginUser.Equals(loginModel.Email)
                     && l.PasswordUser.Equals(loginModel.Password));
 
                 if(user != null)
@@ -51,6 +51,7 @@ namespace MasterOk.Controllers
                     return RedirectToAction(nameof(Index), "Users");
                 }
             }
+            ModelState.AddModelError("", "Такого пользователя не существует! Проверьте данные для входа");
 
             return View(loginModel);
         }
@@ -67,23 +68,72 @@ namespace MasterOk.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _context.Clients.AddAsync(new Client
+                var email = await _context.Clients.Where(e => e.EmailClient.Equals(registerModel.EmailClient)).FirstOrDefaultAsync();
+
+                if (email != null)
+                {
+                    ModelState.AddModelError("EmailClient", "Email занят");
+
+                    return View(registerModel);
+                }
+
+                var numberPhone = await _context.Clients.Where(e => e.NumberPhone.Equals(registerModel.NumberPhone)).FirstOrDefaultAsync();
+
+                if (numberPhone != null)
+                {
+                    ModelState.AddModelError("NumberPhone", "Номер телефона уже используется");
+
+                    return View(registerModel);
+                }
+
+                Client client = new Client
                 {
                     EmailClient = registerModel.EmailClient,
                     PasswordClient = registerModel.PasswordClient,
                     FirstLastNameClient = registerModel.FirstLastNameClient,
                     NumberPhone = registerModel.NumberPhone,
                     Address = registerModel.Address
-                });
+                };
 
+                _context.Add(client);
                 await _context.SaveChangesAsync();
 
-                return Redirect(HttpContext.Request.Headers.Referer);
+                await Authenticate(client.Id, "client");
+
+                return RedirectToAction(nameof(Index), "Clients");
             }
             else
             {
                 return View(registerModel);
             }
+        }
+
+        public IActionResult ResetPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(RegisterModel registerModel)
+        {
+            if(registerModel != null)
+            {
+                Client client = await _context.Clients.Where(n => n.EmailClient.Equals(registerModel.EmailClient) && n.NumberPhone.Equals(registerModel.NumberPhone)).FirstOrDefaultAsync();
+
+                if(client != null)
+                {
+                    client.PasswordClient = client.EmailClient;
+
+                    _context.Update(client);
+                    await _context.SaveChangesAsync();
+                }
+
+                return RedirectToAction(nameof(Login));
+            }
+
+            ModelState.AddModelError("", "Некорректные данные");
+
+            return View(registerModel);
         }
 
         private async Task Authenticate(int idClientUser, string titleRole)

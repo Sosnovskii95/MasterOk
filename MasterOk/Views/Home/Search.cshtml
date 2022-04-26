@@ -1,0 +1,74 @@
+﻿@model MasterOk.Models.Search.SearchViewModel
+@{
+    ViewData["Title"] = "Search";
+}
+
+<h1>Результаты поиска</h1>
+
+<h1>Товары</h1>
+
+
+<div class="row">
+    @foreach (var item in Model.Products)
+    {
+        <div class="col-md-3 pb-4">
+            <div class="card">
+                @foreach (var items in item.NameImages)
+                {
+                    <img class="card-img-top" src="@Url.Action("GetImage", "Home", new {id = items.Id, typeObject = "product"})" />
+                }
+                <div class="card-body">
+                    <h5 class="card-title">@Html.ActionLink(item.TitleProduct, "Product", new{productId = item.Id})</h5>
+                </div>
+                <div class="card-footer">
+                    <form asp-action="AddProductCart" asp-controller="Cart">
+                        @Html.Hidden("id", item.Id)
+                        <input type="text" name="countCart" />
+                        <input type="submit" value="Добавить" />
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+<h1>Подкатегории</h1>
+
+<div class="row">
+    @foreach (var item in Model.SubCategories)
+    {
+        <div class="col-md-3 pb-4">
+            <div class="card">
+                @foreach (var items in item.NameImages)
+                {
+                    <img class="card-img-top" src="@Url.Action("GetImage", "Home", new {id = items.Id, typeObject = "subCategory"})" />
+                }
+                <div class="card-body">
+                    <h5 class="card-title">@Html.ActionLink(item.TitleSubCategory,"ShowProducts", new{subCategoriesId= item.Id})</h5>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+<h1>Категории</h1>
+
+
+<div class="row">
+    @foreach (var item in Model.Categories)
+    {
+        <div class="col-md-3 pb-4">
+            <div class="card">
+                @foreach (var items in item.NameImages)
+                {
+                    <img class="card-img-top" src="@Url.Action("GetImage", "Home", new {id = items.Id, typeObject="category"})" />
+                }
+                <div class="card-body">
+                    <h5 class="card-title">@Html.ActionLink(item.TitleCategory, "ShowSubCategories", new{categoriesId = item.Id})</h5>
+                </div>
+            </div>
+        </div>
+    }
+</div>

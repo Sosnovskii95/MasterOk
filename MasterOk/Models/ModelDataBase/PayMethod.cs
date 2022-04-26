@@ -7,6 +7,7 @@ namespace MasterOk.Models.ModelDataBase
         [Key]
         public int Id { get; set; }
 
+        [Display(Name ="Способ оплаты")]
         public string TitlePayMethod { get; set; }
     }
 }

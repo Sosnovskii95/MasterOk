@@ -1,29 +1,36 @@
 ﻿@model MasterOk.Models.ModelAuthorization.LoginModel;
 @{
-    ViewData["Title"] = "Login";
+    ViewData["Title"] = "Вход в личный кабинет";
 }
 
-<h1>Login</h1>
-
-<div class="row">
+<div class="row justify-content-center">
     <div class="col-md-4">
+        <h2>Вход в личный кабинет</h2>
         <form asp-action="Login" asp-controller="Account" method="post">
-            <div asp-validation-summary="ModelOnly" class="validation"></div>
+            <div asp-validation-summary="All" class="validation"></div>
             <div>
-                <div class="form-group">
-                    <label asp-for="LoginEmail" class="control-label"></label>
-                    <input type="text" asp-for="LoginEmail" class="form-control" />
-                    <span asp-validation-for="LoginEmail" class="text-danger" />
+                <div class="form-group mb-3">
+                    <label asp-for="Email" class="control-label"></label>
+                    <input type="text" asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger" />
                 </div>
-                <div class="form-group">
+                <div class="form-group mb-3">
                     <label asp-for="Password" class="control-label"></label>
                     <input asp-for="Password" class="form-control" />
                     <span asp-validation-for="Password" class="text-danger" />
                 </div>
-                <div class="form-group">
-                    <input type="submit" value="Войти" class="btn btn-outline-dark" />
+                <div class="form-group mb-3">
+                    <input type="submit" value="Войти" class="btn btn-primary" />
+                    <a asp-action="Register" asp-controller="Account" role="button" class="btn btn-secondary">Регистрация</a>
+                    <a asp-action="ResetPassword" asp-controller="Account" role="button" class="btn btn-outline-danger">Забыли пароль?</a>
                 </div>
             </div>
         </form>
     </div>
 </div>
+
+@section Scripts {
+    @{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+}
+}

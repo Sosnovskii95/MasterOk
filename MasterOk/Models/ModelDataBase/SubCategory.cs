@@ -17,6 +17,7 @@ namespace MasterOk.Models.ModelDataBase
         [Display(Name = "Категория")]
         public int CategoryId { get; set; }
 
+        [Display(Name = "Категория")]
         public Category? Category { get; set; }
 
         public ICollection<Product>? Products { get; set; }

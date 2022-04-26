@@ -1,9 +1,15 @@
-﻿namespace MasterOk.Models.ModelAuthorization
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace MasterOk.Models.ModelAuthorization
 {
     public class LoginModel
     {
-        public string LoginEmail { get; set; }
+        [Display(Name = "Электронная почта")]
+        [Required(ErrorMessage = "Заполните данное поле")]
+        public string Email { get; set; }
 
+        [Display(Name = "Пароль")]
+        [Required(ErrorMessage = "Заполните данное поле")]
         public string Password { get; set; }
     }
 }

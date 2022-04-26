@@ -77,7 +77,7 @@ namespace MasterOk.Controllers
             return PartialView(cartClient);
         }
 
-        public async Task<IActionResult> AddProductCart(int id, int countCart)
+        public async Task<IActionResult> AddProductCart(int id)
         {
             Client client = await GetAuthenticateClient(HttpContext);
             List<CartClient> cartClient;
@@ -103,7 +103,7 @@ namespace MasterOk.Controllers
                             //Добавляем его количество, изменяем стоимость на актуальную и общую стоимость
                             cartClient.Where(p => p.ProductId == product.Id).ToList().ForEach(f =>
                             {
-                                f.CountCartProduct += countCart;
+                                f.CountCartProduct += 1;
                                 f.PriceCartProduct = product.Price;
                                 f.TotalCartProduct = f.CountCartProduct * product.Price;
                             });
@@ -116,9 +116,9 @@ namespace MasterOk.Controllers
                             _context.CartClients.Add(new CartClient
                             {
                                 Product = product,
-                                CountCartProduct = countCart,
+                                CountCartProduct = 1,
                                 PriceCartProduct = product.Price,
-                                TotalCartProduct = product.Price * countCart,
+                                TotalCartProduct = product.Price * 1,
                                 Client = client
                             });
                         }
@@ -136,7 +136,7 @@ namespace MasterOk.Controllers
                             //изменяем его состояние
                             cartClient.Where(p => p.ProductId == product.Id).ToList().ForEach(f =>
                             {
-                                f.CountCartProduct += countCart;
+                                f.CountCartProduct += 1;
                                 f.PriceCartProduct = product.Price;
                                 f.TotalCartProduct = f.CountCartProduct * product.Price;
                             });
@@ -151,9 +151,9 @@ namespace MasterOk.Controllers
                             cartClient.Add(new CartClient
                             {
                                 Product = product,
-                                CountCartProduct = countCart,
+                                CountCartProduct = 1,
                                 PriceCartProduct = product.Price,
-                                TotalCartProduct = countCart * product.Price
+                                TotalCartProduct = 1 * product.Price
                             });
                         }
                         //Сетим значение корзины в сессию
@@ -221,34 +221,45 @@ namespace MasterOk.Controllers
 
             if (id != null)
             {
-                if (client != null)
-                {
-                    cartClient = await _context.CartClients.Where(c => c.ClientId == client.Id).Where(p => p.ProductId == id).Include(p=>p.Product).ToListAsync();
-                    cartClient.ForEach(f =>
-                    {
-                        f.CountCartProduct = valueId;
-                        f.PriceCartProduct = f.Product.Price;
-                        f.TotalCartProduct = valueId * f.PriceCartProduct;
-                    });
+                Product product = await _context.Products.FindAsync(id);
 
-                    _context.UpdateRange(cartClient);
-                    await _context.SaveChangesAsync();
+                if(product != null)
+                {
+                    valueId = valueId <= product.CountStoreProduct ? valueId : product.CountStoreProduct;
+
+                    if (client != null)
+                    {
+                        cartClient = await _context.CartClients.Where(c => c.ClientId == client.Id).Where(p => p.ProductId == id).Include(p => p.Product).ToListAsync();
+                        cartClient.ForEach(f =>
+                        {
+                            f.CountCartProduct = valueId;
+                            f.PriceCartProduct = f.Product.Price;
+                            f.TotalCartProduct = valueId * f.PriceCartProduct;
+                        });
+
+                        _context.UpdateRange(cartClient);
+                        await _context.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        cartClient = HttpContext.Session.Get<List<CartClient>>("cart");
+
+                        cartClient.Where(p => p.Product.Id == id).ToList().ForEach(f =>
+                        {
+                            f.CountCartProduct = valueId;
+                            f.PriceCartProduct = f.Product.Price;
+                            f.TotalCartProduct = valueId * f.PriceCartProduct;
+                        });
+
+                        HttpContext.Session.Set<List<CartClient>>("cart", cartClient);
+                    }
+
+                    return RedirectToAction(nameof(Index));
                 }
                 else
                 {
-                    cartClient = HttpContext.Session.Get<List<CartClient>>("cart").Where(p => p.Product.Id == id).ToList();
-
-                    cartClient.ForEach(f =>
-                    {
-                        f.CountCartProduct = valueId;
-                        f.PriceCartProduct = f.Product.Price;
-                        f.TotalCartProduct = valueId * f.PriceCartProduct;
-                    });
-
-                    HttpContext.Session.Set<List<CartClient>>("cart", cartClient);
+                    return NotFound();
                 }
-
-                return RedirectToAction(nameof(Index));
             }
             else
             {
