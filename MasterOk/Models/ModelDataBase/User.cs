@@ -7,7 +7,7 @@ namespace MasterOk.Models.ModelDataBase
         [Key]
         public int Id { get; set; }
 
-        [Display(Name = "Электронная почта пользователья")]
+        [Display(Name = "Электронная почта пользователя")]
         public string EmailUser { get; set; }
 
         [Display(Name = "Логин пользователя")]
@@ -19,11 +19,13 @@ namespace MasterOk.Models.ModelDataBase
         [Display(Name = "Сотрудник")]
         public int StaffId { get; set; }
 
+        [Display(Name = "Сотрудник")]
         public Staff? Staff { get; set; }
 
         [Display(Name = "Роль пользователя")]
         public int RoleId { get; set; }
 
+        [Display(Name = "Роль пользователя")]
         public Role? Role { get; set; }
     }
 }

@@ -2,9 +2,14 @@
     ViewData["Title"] = "Index";
 }
 
-<nav class="nav flex-column">
-  <a class="nav-link active" aria-current="page" href="#">Active</a>
-  <a class="nav-link" href="#">Link</a>
-  <a class="nav-link" href="@Url.Action("Index", "Users")">Link</a>
-  <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
-</nav>
+@Html.ActionLink("Пользователи","Index","Users")
+@Html.ActionLink("Сотрудники","Index","Staffs")
+@Html.ActionLink("Должности", "Index","Positions")
+@Html.ActionLink("Права доступа","Index","Roles")
+@Html.ActionLink("Категории","Index","Categories")
+@Html.ActionLink("Подкатегории", "Index","SubCategories")
+@Html.ActionLink("Товары", "Index","Products")
+@Html.ActionLink("Отгрузка на склад", "Index", "ShipToStores")
+@Html.ActionLink("Способы оплаты", "Index", "PayMethods")
+@Html.ActionLink("Способы доставки", "Index", "DeliveryMethods")
+@Html.ActionLink("Статусы заказов", "Index", "StateOrders")

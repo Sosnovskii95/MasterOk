@@ -19,6 +19,7 @@ namespace MasterOk.Models.ModelDataBase
         [Display(Name ="Должность")]
         public int PositionId { get; set; }
 
+        [Display(Name = "Должность")]
         public Position? Position { get; set; }
     }
 }

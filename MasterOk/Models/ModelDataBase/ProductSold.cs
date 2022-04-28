@@ -15,12 +15,16 @@ namespace MasterOk.Models.ModelDataBase
         [Display(Name = "Товар")]
         public int ProductId { get; set; }
 
+        [Display(Name = "Товар")]
         public Product Product { get; set; }
 
+        [Display(Name = "Количество")]
         public int CountSold { get; set; }
 
+        [Display(Name = "Стоимость")]
         public double PriceSold { get; set; }
 
+        [Display(Name = "Общая стоимость")]
         public double TotalSold { get; set; }
     }
 }

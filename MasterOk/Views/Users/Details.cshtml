@@ -1,14 +1,10 @@
 ﻿@model MasterOk.Models.ModelDataBase.User
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Информация о пользователе";
 }
 
-<h1>Details</h1>
-
 <div>
-    <h4>User</h4>
-    <hr />
     <dl class="row">
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.EmailUser)
@@ -43,6 +39,6 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Edit" asp-route-id="@Model?.Id">Редактировать</a> |
+    <a asp-action="Index">Вернуться к списку</a>
 </div>

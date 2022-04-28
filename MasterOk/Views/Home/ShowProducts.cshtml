@@ -13,7 +13,14 @@
                 }
                 <div class="card-body">
                     <h5 class="card-title">@Html.ActionLink(item.TitleProduct, "Product", new{productId = item.Id})</h5>
-                    <a asp-action="AddProductCart" asp-controller="Cart" asp-route-id="@item.Id" class="btn btn-primary">В корзину</a>
+                    @if (item.CountStoreProduct > 0)
+                    {
+                        <a asp-action="AddProductCart" asp-controller="Cart" asp-route-id="@item.Id" class="btn btn-primary">В корзину</a>
+                    }
+                    else
+                    {
+                        <label>Временно нет в наличии</label>
+                    }
                 </div>   
             </div>
         </div>

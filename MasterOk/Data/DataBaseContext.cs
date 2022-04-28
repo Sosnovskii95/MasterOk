@@ -3,7 +3,7 @@ using MasterOk.Models.ModelDataBase;
 
 namespace MasterOk.Data
 {
-    public class DataBaseContext: DbContext
+    public class DataBaseContext : DbContext
     {
         public DataBaseContext(DbContextOptions<DataBaseContext> options) : base(options)
         {
@@ -42,10 +42,13 @@ namespace MasterOk.Data
 
         public DbSet<DeliveryMethod> DeliveryMethods { get; set; }
 
+        public DbSet<StateOrder> StateOrders { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<PayMethod>().HasData(new List<PayMethod> { new PayMethod { Id = 1, TitlePayMethod = "Наличные" }, new PayMethod { Id = 2, TitlePayMethod = "Карта" } });
             modelBuilder.Entity<DeliveryMethod>().HasData(new List<DeliveryMethod> { new DeliveryMethod { Id = 1, TitleDeliveryMethod = "Самовывоз" }, new DeliveryMethod { Id = 2, TitleDeliveryMethod = "Доставка" } });
+            modelBuilder.Entity<StateOrder>().HasData(new List<StateOrder> { new StateOrder { Id = 1, TitleState = "В обработке" }, new StateOrder { Id = 2, TitleState = "Одобрен" }, new StateOrder { Id = 3, TitleState = "Завершен" } });
         }
     }
 }

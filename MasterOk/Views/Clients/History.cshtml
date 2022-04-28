@@ -4,52 +4,58 @@
     ViewData["Title"] = "History";
 }
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Id)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DateTimeSale)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StateOrder)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PayMethod)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DeliveryMethod)
-            </th>
-            <th>
-                @Html.Display("Сумма")
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
+@if (Model.Count() > 0)
+{
+    <table class="table">
+        <thead>
             <tr>
-                <td>
-                    <a asp-action="Details" asp-route-id="@item.Id">@Html.DisplayFor(modelItem => item.Id)</a>
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.DateTimeSale)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.StateOrder)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PayMethod.TitlePayMethod)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.DeliveryMethod. TitleDeliveryMethod)
-                </td>
-                <td>
-                    @item.ProductSolds.Sum(p=>p.TotalSold)
-                </td>
+                <th>
+                    @Html.DisplayNameFor(model => model.Id)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DateTimeSale)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.StateOrder)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.PayMethod)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DeliveryMethod)
+                </th>
+                <th>
+                    <label>Сумма</label>
+                </th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@item.Id">@Html.DisplayFor(modelItem => item.Id)</a>
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DateTimeSale)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.StateOrder.TitleState)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PayMethod.TitlePayMethod)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DeliveryMethod. TitleDeliveryMethod)
+                    </td>
+                    <td>
+                        @item.ProductSolds.Sum(p=>p.TotalSold)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else{
+    <h1>Вы еще не совершали заказов!</h1>
+}

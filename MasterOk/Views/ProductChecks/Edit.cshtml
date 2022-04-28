@@ -1,0 +1,56 @@
+﻿@model MasterOk.Models.ModelDataBase.ProductCheck
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>ProductCheck</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="DateTimeSale" class="control-label"></label>
+                <input asp-for="DateTimeSale" class="form-control" disabled/>
+                <span asp-validation-for="DateTimeSale" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StateOrderId" class="control-label"></label>
+                <select asp-for="StateOrderId" class="form-control" asp-items="ViewBag.StateOrderId"></select>
+                <span asp-validation-for="StateOrderId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ClientId" class="control-label"></label>
+                <select asp-for="ClientId" class="form-control" asp-items="ViewBag.ClientId"></select>
+                <span asp-validation-for="ClientId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UserId" class="control-label"></label>
+                <select asp-for="UserId" class="form-control" asp-items="ViewBag.UserId"></select>
+                <span asp-validation-for="UserId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PayMethodId" class="control-label"></label>
+                <select asp-for="PayMethodId" class="form-control" asp-items="ViewBag.PayMethodId"></select>
+                <span asp-validation-for="PayMethodId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DeliveryMethodId" class="control-label"></label>
+                <select asp-for="DeliveryMethodId" class="form-control" asp-items="ViewBag.DeliveryMethodId"></select>
+                <span asp-validation-for="DeliveryMethodId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

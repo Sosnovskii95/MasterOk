@@ -1,5 +1,7 @@
 ﻿using MasterOk.Data;
 using MasterOk.Models.ModelDataBase;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -25,15 +27,16 @@ namespace MasterOk.Controllers
         [Authorize(Roles = "client")]
         public async Task<IActionResult> Edit()
         {
-            int clientId = Convert.ToInt32(User.FindFirst(ClaimsIdentity.DefaultNameClaimType).Value);
+            Client client = await GetAuthenticateClient(HttpContext);
 
-            Client client = await _context.Clients.FindAsync(clientId);
             if (client != null)
             {
                 return View(client);
             }
-
-            return Redirect(HttpContext.Request.Headers.Referer);
+            else
+            {
+                return Redirect(HttpContext.Request.Headers.Referer);
+            }
         }
 
         [HttpPost]
@@ -56,23 +59,27 @@ namespace MasterOk.Controllers
         [Authorize(Roles = "client")]
         public async Task<IActionResult> History()
         {
-            int clientId = Convert.ToInt32(User.FindFirst(ClaimsIdentity.DefaultNameClaimType).Value);
+            Client client = await GetAuthenticateClient(HttpContext);
+            List<ProductCheck> productChecks = new List<ProductCheck>();
 
-            IQueryable<ProductCheck> productChecks = _context.ProductChecks.Where(i => i.ClientId == clientId).Include(p => p.ProductSolds).Include(m => m.PayMethod).Include(d => d.DeliveryMethod);
-
-            if (productChecks != null)
+            if (client != null)
             {
-                return View(productChecks.ToList());
+                productChecks = await _context.ProductChecks.Where(i => i.ClientId == client.Id).
+                                                             Include(p => p.ProductSolds).
+                                                             Include(p => p.PayMethod).
+                                                             Include(d => d.DeliveryMethod).
+                                                             Include(s => s.StateOrder).ToListAsync();
+                return View(productChecks);
             }
             else
             {
-                return null;
+                return View(productChecks);
             }
         }
 
         public async Task<IActionResult> Details(int id)
         {
-            if(id != null)
+            if (id != null)
             {
                 return View(await _context.ProductSolds.Where(p => p.ProductCheckId == id).Include(o => o.Product).ToListAsync());
             }
@@ -82,21 +89,31 @@ namespace MasterOk.Controllers
             }
         }
 
-        //[Authorize(Roles = "client")]
-        /*public async Task<IActionResult> Cart()
+        private async Task<Client> GetAuthenticateClient(HttpContext httpContext)
         {
-            int clientId = Convert.ToInt32(User.FindFirst(x => x.Type == ClaimsIdentity.DefaultNameClaimType).Value);
+            var clientAut = httpContext.User.Identity;
 
-            Client client = await _context.Clients.Include(c => c.CartClients).ThenInclude(p => p.Product).FirstOrDefaultAsync(i => i.Id == clientId);
+            if (clientAut is not null && clientAut.IsAuthenticated)
+            {
+                var roleClient = httpContext.User.FindFirstValue(ClaimsIdentity.DefaultRoleClaimType);
+                var idClient = httpContext.User.FindFirstValue(ClaimsIdentity.DefaultNameClaimType);
 
-            if (client != null)
-            {
-                return View(client);
+                if (roleClient.Equals("client"))
+                {
+                    Client client = await _context.Clients.FindAsync(Convert.ToInt32(idClient));
+
+                    if (client == null)
+                    {
+                        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                    }
+                    else
+                    {
+                        return client;
+                    }
+                }
             }
-            else
-            {
-                return null;
-            }
-        }*/
+
+            return null;
+        }
     }
 }

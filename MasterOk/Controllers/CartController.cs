@@ -113,7 +113,7 @@ namespace MasterOk.Controllers
                         else
                         {
                             //Если не существует, добавляем в корзину и в бл
-                            _context.CartClients.Add(new CartClient
+                            _context.Add(new CartClient
                             {
                                 Product = product,
                                 CountCartProduct = 1,
@@ -223,7 +223,7 @@ namespace MasterOk.Controllers
             {
                 Product product = await _context.Products.FindAsync(id);
 
-                if(product != null)
+                if (product != null)
                 {
                     valueId = valueId <= product.CountStoreProduct ? valueId : product.CountStoreProduct;
 
@@ -280,12 +280,14 @@ namespace MasterOk.Controllers
                 //если нет, то создаем его в бд и авторизируем
                 if (client == null)
                 {
-                    client = new Client();
-                    client.EmailClient = registerModel.EmailClient;
-                    client.PasswordClient = registerModel.EmailClient;
-                    client.NumberPhone = registerModel.NumberPhone;
-                    client.FirstLastNameClient = registerModel.FirstLastNameClient;
-                    client.Address = registerModel.Address;
+                    client = new Client
+                    {
+                        EmailClient = registerModel.EmailClient,
+                        PasswordClient = registerModel.EmailClient,
+                        NumberPhone = registerModel.NumberPhone,
+                        FirstLastNameClient = registerModel.FirstLastNameClient,
+                        Address = registerModel.Address
+                    };
 
                     aut = false;
 
@@ -308,19 +310,39 @@ namespace MasterOk.Controllers
                     //если нет, то из текущей сессии
                     cartClient = HttpContext.Session.Get<List<CartClient>>("cart");
 
+                    List<CartClient> removeProductnotFound = new List<CartClient>();
                     //загружаем корзину в бд
                     foreach (var item in cartClient)
                     {
-                        _context.Add(new CartClient
+                        //проверяем актуальность товаров из сессии с базой
+                        Product product = await _context.Products.FindAsync(item.Product.Id);
+
+                        //если товар существует в бд
+                        if (product != null)
                         {
-                            ClientId = client.Id,
-                            PriceCartProduct = item.Product.Price,
-                            CountCartProduct = item.CountCartProduct,
-                            ProductId = item.Product.Id,
-                            TotalCartProduct = item.TotalCartProduct
-                        });
-                        await _context.SaveChangesAsync();
+                            //добавлем его в корзину
+                            _context.Add(new CartClient
+                            {
+                                ClientId = client.Id,
+                                PriceCartProduct = item.Product.Price,
+                                CountCartProduct = item.CountCartProduct,
+                                ProductId = item.Product.Id,
+                                TotalCartProduct = item.TotalCartProduct
+                            });
+                            await _context.SaveChangesAsync();
+                        }
+                        else
+                        {
+                            //если нет создаем список с неактулальными позициями
+                            removeProductnotFound.Add(item);
+                        }
                     }
+                    //удаляем неактуальные товары из корзины сессии
+                    foreach (var item in removeProductnotFound)
+                    {
+                        cartClient.Remove(item);
+                    }
+
                     //получаем объекты выбранных товаров
                     cartClient = cartClient.Where(p => check.Contains(p.Product.Id)).ToList();
                 }
@@ -332,7 +354,7 @@ namespace MasterOk.Controllers
                     ProductCheck productCheck = new ProductCheck
                     {
                         DateTimeSale = DateTime.Now,
-                        StateOrder = "В обработке",
+                        StateOrderId = 1,
                         Client = client,
                         DeliveryMethodId = deliveryMethodId,
                         PayMethodId = payMethodId
@@ -352,6 +374,13 @@ namespace MasterOk.Controllers
                             PriceSold = item.PriceCartProduct,
                             TotalSold = item.CountCartProduct * item.PriceCartProduct
                         });
+
+                        Product product = await _context.Products.FirstOrDefaultAsync(i => i.Id == item.Product.Id);
+
+                        product.CountStoreProduct -= item.CountCartProduct;
+
+                        _context.Update(product);
+
                         await _context.SaveChangesAsync();
                     }
                 }
@@ -389,17 +418,20 @@ namespace MasterOk.Controllers
 
                 if (roleClient.Equals("client"))
                 {
-                    return await _context.Clients.FindAsync(Convert.ToInt32(idClient));
-                }
-                else
-                {
-                    return null;
+                    Client client = await _context.Clients.FindAsync(Convert.ToInt32(idClient));
+
+                    if (client == null)
+                    {
+                        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                    }
+                    else
+                    {
+                        return client;
+                    }
                 }
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
     }
 }
