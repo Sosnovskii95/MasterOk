@@ -8,6 +8,7 @@ namespace MasterOk.Models.ModelDataBase
         public int Id { get; set; }
 
         [Display(Name = "Электронная почта пользователя")]
+        [DataType(DataType.EmailAddress)]
         public string EmailUser { get; set; }
 
         [Display(Name = "Логин пользователя")]

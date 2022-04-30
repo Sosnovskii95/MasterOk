@@ -13,11 +13,13 @@ namespace MasterOk.Models.ModelDataBase
         [Display(Name = "Товар")]
         public int ProductId { get; set; }
 
+        [Display(Name = "Товар")]
         public Product Product { get; set; }
 
         [Display(Name = "Номер отгрузки")]
         public int DocShipToStoreId { get; set; }
 
+        [Display(Name = "Номер отгрузки")]
         public DocShipToStore DocShipToStore { get; set; }
     }
 }

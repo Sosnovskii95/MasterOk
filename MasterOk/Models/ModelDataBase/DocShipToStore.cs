@@ -10,8 +10,10 @@ namespace MasterOk.Models.ModelDataBase
         [Display(Name = "Дата отгрузки")]
         public DateTime DateShip { get; set; }
 
+        [Display(Name = "Менеджер")]
         public int? UserId { get; set; }
 
+        [Display(Name = "Менеджер")]
         public User? User { get; set; }
 
         public ICollection<ShipToStore>? ShipToStores { get; set; }

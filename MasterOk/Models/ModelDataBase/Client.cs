@@ -8,6 +8,7 @@ namespace MasterOk.Models.ModelDataBase
         public int Id { get; set; }
 
         [Display(Name ="Электронная почта")]
+        [DataType(DataType.EmailAddress)]
         public string EmailClient { get; set; }
 
         [Display(Name = "Пароль")]
@@ -17,6 +18,7 @@ namespace MasterOk.Models.ModelDataBase
         public string FirstLastNameClient { get; set; }
 
         [Display(Name = "Номер телефона")]
+        [DataType(DataType.PhoneNumber)]
         public string NumberPhone { get; set; }
 
         [Display(Name ="Адрес доставки")]
