@@ -17,13 +17,13 @@ namespace MasterOk.Models.ModelDataBase
         [Display(Name = "Статус заказа")]
         public StateOrder? StateOrder { get; set; }
 
-        [Display(Name = "Клиент")]
+        [Display(Name = "Id Клиента")]
         public int? ClientId { get; set; }
 
         [Display(Name = "Клиент")]
         public Client? Client { get; set; }
 
-        [Display(Name = "Менеджер")]
+        [Display(Name = "Id Менеджер")]
         public int? UserId { get; set; }
 
         [Display(Name = "Менеджер")]

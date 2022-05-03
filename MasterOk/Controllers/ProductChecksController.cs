@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MasterOk.Data;
 using MasterOk.Models.ModelDataBase;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MasterOk.Controllers
 {
@@ -54,9 +56,9 @@ namespace MasterOk.Controllers
         public IActionResult Create()
         {
             ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "Id");
-            ViewData["DeliveryMethodId"] = new SelectList(_context.DeliveryMethods, "Id", "Id");
-            ViewData["PayMethodId"] = new SelectList(_context.PayMethods, "Id", "Id");
-            ViewData["StateOrderId"] = new SelectList(_context.StateOrders, "Id", "Id");
+            ViewData["DeliveryMethodId"] = new SelectList(_context.DeliveryMethods, "Id", "TitleDeliveryMethod");
+            ViewData["PayMethodId"] = new SelectList(_context.PayMethods, "Id", "TitlePayMethod");
+            ViewData["StateOrderId"] = new SelectList(_context.StateOrders, "Id", "TitleState");
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id");
             return View();
         }
@@ -83,6 +85,7 @@ namespace MasterOk.Controllers
         }
 
         // GET: ProductChecks/Edit/5
+        [Authorize(Roles = "user")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -90,16 +93,16 @@ namespace MasterOk.Controllers
                 return NotFound();
             }
 
-            var productCheck = await _context.ProductChecks.FindAsync(id);
+            var productCheck = await _context.ProductChecks.Include(p => p.ProductSolds).ThenInclude(p => p.Product).Include(c => c.Client).Include(u => u.User).FirstOrDefaultAsync(i => i.Id == id);
             if (productCheck == null)
             {
                 return NotFound();
             }
-            ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "FirstLastNameClient", productCheck.ClientId);
+
+
             ViewData["DeliveryMethodId"] = new SelectList(_context.DeliveryMethods, "Id", "TitleDeliveryMethod", productCheck.DeliveryMethodId);
             ViewData["PayMethodId"] = new SelectList(_context.PayMethods, "Id", "TitlePayMethod", productCheck.PayMethodId);
             ViewData["StateOrderId"] = new SelectList(_context.StateOrders, "Id", "TitleState", productCheck.StateOrderId);
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "LoginUser", productCheck.UserId);
             return View(productCheck);
         }
 
@@ -108,38 +111,43 @@ namespace MasterOk.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,DateTimeSale,StateOrderId,ClientId,UserId,PayMethodId,DeliveryMethodId")] ProductCheck productCheck)
+        [Authorize(Roles = "user")]
+        public async Task<IActionResult> Edit(int id, ProductCheck productCheck)
         {
             if (id != productCheck.Id)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            var userId = Convert.ToInt32(User.FindFirstValue(ClaimsIdentity.DefaultNameClaimType));
+
+            var user = await _context.Users.FindAsync(userId);
+
+            if (user == null)
             {
-                try
-                {
-                    _context.Update(productCheck);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ProductCheckExists(productCheck.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                return NotFound();
+            }
+
+            ProductCheck productCheckUpdate = await _context.ProductChecks.FindAsync(id);
+
+            if (productCheckUpdate != null)
+            {
+                productCheckUpdate.StateOrderId = productCheck.StateOrderId;
+                productCheckUpdate.PayMethodId = productCheck.PayMethodId;
+                productCheckUpdate.DeliveryMethodId = productCheck.DeliveryMethodId;
+                productCheckUpdate.UserId = userId;
+
+                _context.Update(productCheckUpdate);
+                await _context.SaveChangesAsync();
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "Id", productCheck.ClientId);
+
+            productCheck = await _context.ProductChecks.Include(p => p.ProductSolds).ThenInclude(p => p.Product).Include(c => c.Client).Include(u => u.User).FirstOrDefaultAsync(i => i.Id == id);
+
             ViewData["DeliveryMethodId"] = new SelectList(_context.DeliveryMethods, "Id", "Id", productCheck.DeliveryMethodId);
             ViewData["PayMethodId"] = new SelectList(_context.PayMethods, "Id", "Id", productCheck.PayMethodId);
             ViewData["StateOrderId"] = new SelectList(_context.StateOrders, "Id", "Id", productCheck.StateOrderId);
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Id", productCheck.UserId);
             return View(productCheck);
         }
 

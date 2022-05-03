@@ -41,7 +41,7 @@ namespace MasterOk.Controllers
                 }
 
                 User user = await _context.Users.Include(r => r.Role).FirstOrDefaultAsync(
-                    l => l.LoginUser.Equals(loginModel.Email)
+                    l => l.EmailUser.Equals(loginModel.Email)
                     && l.PasswordUser.Equals(loginModel.Password));
 
                 if(user != null)

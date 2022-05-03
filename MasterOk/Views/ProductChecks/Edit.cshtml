@@ -1,7 +1,10 @@
 ﻿@model MasterOk.Models.ModelDataBase.ProductCheck
-
+@using MasterOk.Models.ModelDataBase;
 @{
     ViewData["Title"] = "Edit";
+}
+@{
+    ProductSold modelSold = new ProductSold();
 }
 
 <h1>Edit</h1>
@@ -9,13 +12,17 @@
 <h4>ProductCheck</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Id" class="control-label"></label>
+                <input asp-for="Id" class="form-control" readonly />
+                <span asp-validation-for="Id" class="text-danger"></span>
+            </div>
             <div class="form-group">
                 <label asp-for="DateTimeSale" class="control-label"></label>
-                <input asp-for="DateTimeSale" class="form-control" disabled/>
+                <input asp-for="DateTimeSale" class="form-control" readonly />
                 <span asp-validation-for="DateTimeSale" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -25,12 +32,12 @@
             </div>
             <div class="form-group">
                 <label asp-for="ClientId" class="control-label"></label>
-                <select asp-for="ClientId" class="form-control" asp-items="ViewBag.ClientId"></select>
+                <input asp-for="ClientId" class="form-control" readonly/>
                 <span asp-validation-for="ClientId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="UserId" class="control-label"></label>
-                <select asp-for="UserId" class="form-control" asp-items="ViewBag.UserId"></select>
+                <input asp-for="UserId" class="form-control" readonly/>
                 <span asp-validation-for="UserId" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -48,9 +55,66 @@
             </div>
         </form>
     </div>
+    <div class="col-4">
+        <div class="form-group">
+            <h3>Данные клиента</h3>
+        </div>
+        <div class="form-group">
+            <label asp-for="Client.FirstLastNameClient" class="control-label"></label>
+            <input asp-for="Client.FirstLastNameClient" class="form-control" readonly />
+        </div>
+        <div class="form-group">
+            <label asp-for="Client.NumberPhone" class="control-label"></label>
+            <input asp-for="Client.NumberPhone" class="form-control" readonly />
+        </div>
+    </div>
 </div>
 
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model=>modelSold.ProductId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model=>modelSold.Product.TitleProduct)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model=>modelSold.PriceSold)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model=>modelSold.CountSold)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => modelSold.TotalSold)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.ProductSolds)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProductId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Product.TitleProduct)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PriceSold)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CountSold)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TotalSold)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
 
