@@ -17,11 +17,14 @@ namespace MasterOk.Models.ModelDataBase
         [Display(Name = "Пароль пользователя")]
         public string PasswordUser { get; set; }
 
-        [Display(Name = "Сотрудник")]
-        public int StaffId { get; set; }
+        [Display(Name = "ФИО сотрудника")]
+        public string FirstLastNameStaff { get; set; }
 
-        [Display(Name = "Сотрудник")]
-        public Staff? Staff { get; set; }
+        [Display(Name = "Возраст")]
+        public int Age { get; set; }
+
+        [Display(Name = "Номер телефона")]
+        public int NumberPhoneStaff { get; set; }
 
         [Display(Name = "Роль пользователя")]
         public int RoleId { get; set; }

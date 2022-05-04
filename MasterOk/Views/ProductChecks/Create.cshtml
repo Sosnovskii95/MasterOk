@@ -1,4 +1,4 @@
-﻿@model MasterOk.Models.ModelDataBase.ProductCheck
+﻿@model MasterOk.Models.ModelDataBase.ProductSold
 
 @{
     ViewData["Title"] = "Create";
@@ -9,42 +9,82 @@
 <h4>ProductCheck</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="DateTimeSale" class="control-label"></label>
-                <input asp-for="DateTimeSale" class="form-control" />
-                <span asp-validation-for="DateTimeSale" class="text-danger"></span>
+                <label asp-for="ProductCheck.StateOrderId" class="control-label"></label>
+                <select asp-for="ProductCheck.StateOrderId" class="form-control" asp-items="ViewBag.StateOrderId"></select>
             </div>
             <div class="form-group">
-                <label asp-for="StateOrderId" class="control-label"></label>
-                <select asp-for="StateOrderId" class ="form-control" asp-items="ViewBag.StateOrderId"></select>
+                <label asp-for="ProductCheck.ClientId" class="control-label"></label>
+                <select asp-for="ProductCheck.ClientId" class="form-control" asp-items="ViewBag.ClientId" onchange="getClient(this.value)"></select>
             </div>
             <div class="form-group">
-                <label asp-for="ClientId" class="control-label"></label>
-                <select asp-for="ClientId" class ="form-control" asp-items="ViewBag.ClientId"></select>
+                <label asp-for="ProductCheck.UserId" class="control-label"></label>
+                <select asp-for="ProductCheck.UserId" class="form-control" asp-items="ViewBag.UserId"></select>
             </div>
             <div class="form-group">
-                <label asp-for="UserId" class="control-label"></label>
-                <select asp-for="UserId" class ="form-control" asp-items="ViewBag.UserId"></select>
+                <label asp-for="ProductCheck.PayMethodId" class="control-label"></label>
+                <select asp-for="ProductCheck.PayMethodId" class="form-control" asp-items="ViewBag.PayMethodId"></select>
             </div>
             <div class="form-group">
-                <label asp-for="PayMethodId" class="control-label"></label>
-                <select asp-for="PayMethodId" class ="form-control" asp-items="ViewBag.PayMethodId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="DeliveryMethodId" class="control-label"></label>
-                <select asp-for="DeliveryMethodId" class ="form-control" asp-items="ViewBag.DeliveryMethodId"></select>
+                <label asp-for="ProductCheck.DeliveryMethodId" class="control-label"></label>
+                <select asp-for="ProductCheck.DeliveryMethodId" class="form-control" asp-items="ViewBag.DeliveryMethodId"></select>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
+            <div id="block">
+                <ul class="list-group list-group-horizontal">
+                    <li class="list-group-item">
+                        <div class="form-group">
+                            <label asp-for="ProductId" class="control-label"></label>
+                            <select asp-for="ProductId" class="form-control" asp-items="ViewBag.ProductId"></select>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="form-group">
+                            <label asp-for="CountSold" class="control-label"></label>
+                            <input asp-for="CountSold" class="form-control" />
+                            <span asp-validation-for="CountSold" class="text-danger"></span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="form-group">
+                <input type="button" class="btn btn-secondary" value="add" onclick="addBlock()" />
+            </div>
         </form>
     </div>
+    <div class="col-4" id="clientInfo">
+    </div>
 </div>
+
+
 
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
+<script type="text/javascript">
+    function addBlock(){
+        let parent = document.getElementById("block");
+        let child = parent.querySelector(".list-group");
 
+        let clone = child.cloneNode(true);
+        parent.appendChild(clone);
+    }
+
+    function getClient(value){
+        const data = "idClient="+value;
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/ProductChecks/GetClient", false);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.send(data);
+
+        if(xhr.status==200){
+            document.getElementById("clientInfo").innerHTML= xhr.response;
+        }
+    }
+</script>

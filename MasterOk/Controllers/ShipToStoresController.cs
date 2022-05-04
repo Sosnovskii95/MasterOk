@@ -4,9 +4,11 @@ using MasterOk.Models.ModelDataBase;
 using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MasterOk.Controllers
 {
+    [Authorize(Roles = "user" )]
     public class ShipToStoresController : Controller
     {
         private readonly DataBaseContext _context;
@@ -23,7 +25,7 @@ namespace MasterOk.Controllers
 
         public async Task<IActionResult> Create()
         {
-            ViewBag.ProductId = new SelectList(await _context.Products.ToListAsync(), "Id", "TitleProduct");
+            ViewData["ProductId"] = new SelectList(_context.Products, "Id", "TitleProduct");
 
             return View();
         }
@@ -31,11 +33,19 @@ namespace MasterOk.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(List<int> productId, List<int> countShipProduct)
         {
+            User user = await _context.Users.FindAsync(Convert.ToInt32(User.FindFirstValue(ClaimsIdentity.DefaultNameClaimType)));
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
             if (productId != null)
             {
                 DocShipToStore docShipToStore = new DocShipToStore
                 {
-                    DateShip = DateTime.Now
+                    DateShip = DateTime.Now,
+                    UserId = user.Id
                 };
                 _context.Add(docShipToStore);
 
@@ -76,6 +86,39 @@ namespace MasterOk.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Edit(List<int> id, List<int> countShip)
+        {
+            if (id.Count > 0)
+            {
+                for (int i = 0; i < id.Count; i++)
+                {
+                    ShipToStore shipToStore = await _context.ShipToStores.FindAsync(id[i]);
+
+                    if (shipToStore != null)
+                    {
+                        Product product = await _context.Products.FindAsync(shipToStore.ProductId);
+
+                        if (product != null)
+                        {
+                            product.CountStoreProduct -= shipToStore.CountShipProduct;
+                            product.CountStoreProduct += countShip[i];
+
+                            _context.Update(product);
+                        }
+
+                        shipToStore.CountShipProduct = countShip[i];
+                        _context.Update(shipToStore);
+
+                        await _context.SaveChangesAsync();
+
+                        return RedirectToAction(nameof(Index));
+                    }
+                }
+            }
+            return NotFound();
+        }
+
         public async Task<IActionResult> Delete(int docShipToStoreId, int productId)
         {
             ShipToStore shipToStore = await _context.ShipToStores.Where(d => d.DocShipToStoreId == docShipToStoreId).Where(p => p.ProductId == productId).FirstOrDefaultAsync();
@@ -101,37 +144,6 @@ namespace MasterOk.Controllers
             {
                 return NotFound();
             }
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Change(int id, int valueId, int docId)
-        {
-            if (id != null)
-            {
-                ShipToStore shipToStore = await _context.ShipToStores.FindAsync(id);
-
-                if (shipToStore != null)
-                {
-                    Product product = await _context.Products.FindAsync(shipToStore.ProductId);
-
-                    if (product != null)
-                    {
-                        product.CountStoreProduct -= shipToStore.CountShipProduct;
-                        product.CountStoreProduct += valueId;
-
-                        _context.Update(product);
-                    }
-
-                    shipToStore.CountShipProduct = valueId;
-                    _context.Update(shipToStore);
-
-                    await _context.SaveChangesAsync();
-
-                    return RedirectToAction(nameof(Edit), new { id = docId });
-                }
-            }
-
-            return null;
         }
     }
 }

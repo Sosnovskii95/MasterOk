@@ -8,107 +8,117 @@
 @{
     ViewData["Title"] = "Index";
 }
-<form asp-action="CreateOrder">
-    <div class="row">
-        <div class="col-md-9">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>
-                            <label>В заказ</label>
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => cartClient.Product)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => cartClient.PriceCartProduct)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => cartClient.CountCartProduct)
-                        </th>
-                        <th>
-                            @Html.DisplayNameFor(model => cartClient.TotalCartProduct)
-                        </th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.CartClients)
-                    {
+
+@if (Model.CartClients.Count() > 0)
+{
+    <form asp-action="CreateOrder" onsubmit="return checkCheckBoxProduct()">
+        <div class="row justify-content-center">
+            <div class="col-9">
+                <table class="table">
+                    <thead>
                         <tr>
-                            <td>
-                                <input type="checkbox" name="check" value="@item.Product.Id">
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.Product.TitleProduct)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.PriceCartProduct)
-                            </td>
-                            <td>
-                                <input type="number" id="@item.Product.Id" name="@item.Product.Id" value="@item.CountCartProduct" onchange="changeCountProduct(this.id);">
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelItem => item.TotalCartProduct)
-                            </td>
-                            <td>
-                                <a asp-action="Delete" asp-route-id="@item.Product.Id">Удалить</a>
+                            <th>
+                                <label>В заказ</label>
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => cartClient.Product)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => cartClient.PriceCartProduct)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => cartClient.CountCartProduct)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => cartClient.TotalCartProduct)
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.CartClients)
+                        {
+                            <tr>
+                                <td>
+                                    <input type="checkbox" name="check" value="@item.Product.Id">
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Product.TitleProduct)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.PriceCartProduct)
+                                </td>
+                                <td>
+                                    <input type="number" id="@item.Product.Id" name="@item.Product.Id" value="@item.CountCartProduct" onchange="changeCountProduct(this.id);">
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.TotalCartProduct)
+                                </td>
+                                <td>
+                                    <a asp-action="Delete" asp-route-id="@item.Product.Id">Удалить</a>
+                                </td>
+                            </tr>
+                        }
+                        <tr>
+                            <td colspan="4">
+                                <label>Итого: @Model.CartClients.Sum(p=>p.TotalCartProduct)</label>
                             </td>
                         </tr>
-                    }
-                    <tr>
-                        <td colspan="4">
-                            <label>Итого: @Model.CartClients.Sum(p=>p.TotalCartProduct)</label>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="col-md-3">
-            <div class="row">
-                <label>Способ оплаты</label>
+                    </tbody>
+                </table>
             </div>
-            <div class="row">
-                @Html.DropDownList("PayMethodId", new SelectList(ViewBag.PayMethod, "Id", "TitlePayMethod"))
-            </div>
-            <div class="row">
-                <label>Способ доставки</label>
-            </div>
-            <div class="row">
-                @Html.DropDownList("DeliveryMethodId", new SelectList(ViewBag.DeliveryMethod, "Id", "TitleDeliveryMethod"))
-            </div>
-            <div class="row">
-                <label>Контактные данные</label>
-            </div>
-            <div class="row">
-                <div asp-validation-summary="All" class="text-danger"></div>
-                <div class="form-floating pb-3">
-                    <input type="text" asp-for="RegisterModel.FirstLastNameClient" class="form-control" placeholder="test" />
-                    <label asp-for="RegisterModel.FirstLastNameClient" class="control-Label"></label>
-                    <span asp-validation-for="RegisterModel.FirstLastNameClient" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="RegisterModel.EmailClient" class="control-label"></label>
-                    <input type="text" asp-for="RegisterModel.EmailClient" class="form-control" />
-                    <span asp-validation-for="RegisterModel.EmailClient" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="RegisterModel.NumberPhone" class="control-label"></label>
-                    <input type="text" asp-for="RegisterModel.NumberPhone" class="form-control" />
-                    <span asp-validation-for="RegisterModel.NumberPhone" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="RegisterModel.Address" class="control-label"></label>
-                    <input type="text" asp-for="RegisterModel.Address" class="form-control" />
-                    <span asp-validation-for="RegisterModel.Address" class="text-danger"></span>
+            <div class="col-3">
+                <div class="row">
+                    <label>Способ оплаты</label>
                 </div>
                 <div class="row">
-                    <input type="submit" value="Отправить" />
+                    @Html.DropDownList("PayMethodId", new SelectList(ViewBag.PayMethod, "Id", "TitlePayMethod"))
+                </div>
+                <div class="row">
+                    <label>Способ доставки</label>
+                </div>
+                <div class="row">
+                    @Html.DropDownList("DeliveryMethodId", new SelectList(ViewBag.DeliveryMethod, "Id", "TitleDeliveryMethod"))
+                </div>
+                <div class="row">
+                    <label>Контактные данные</label>
+                </div>
+                <div class="row">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                    <div class="mb-3">
+                        <label asp-for="RegisterModel.FirstLastNameClient" class="control-Label"></label>
+                        <input type="text" asp-for="RegisterModel.FirstLastNameClient" class="form-control" placeholder="test" />
+                        <span asp-validation-for="RegisterModel.FirstLastNameClient" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="RegisterModel.EmailClient" class="control-label"></label>
+                        <input type="text" asp-for="RegisterModel.EmailClient" class="form-control" />
+                        <span asp-validation-for="RegisterModel.EmailClient" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="RegisterModel.NumberPhone" class="control-label"></label>
+                        <input type="text" asp-for="RegisterModel.NumberPhone" class="form-control" />
+                        <span asp-validation-for="RegisterModel.NumberPhone" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="RegisterModel.Address" class="control-label"></label>
+                        <input type="text" asp-for="RegisterModel.Address" class="form-control" />
+                        <span asp-validation-for="RegisterModel.Address" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" value="Отправить" />
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</form>
+    </form>
+}
+else
+{
+    <h1>Ваша корзина пуста!</h1>
+    @Html.ActionLink("Перейти к выбору товара","Index", "Home")
+}
+
 @section scripts{
 
 <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
@@ -128,6 +138,18 @@
 
         if(xhr.status ==200){
             document.location.reload(true);
+        }
+    }
+
+    function checkCheckBoxProduct(){
+        var checkBoxs = document.querySelectorAll("input[type=checkbox]:checked").length;
+
+        if(checkBoxs > 0){
+            return true;
+        }
+        else{
+            alert("Выберите товар для оформления заказа!")
+            return false;
         }
     }
 </script>

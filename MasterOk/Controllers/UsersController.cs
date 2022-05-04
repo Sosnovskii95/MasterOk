@@ -23,7 +23,7 @@ namespace MasterOk.Controllers
         // GET: Users
         public async Task<IActionResult> Index()
         {
-            var dataBaseContext = _context.Users.Include(u => u.Role).Include(u => u.Staff);
+            var dataBaseContext = _context.Users.Include(u => u.Role);
             return View(await dataBaseContext.ToListAsync());
         }
 
@@ -37,7 +37,6 @@ namespace MasterOk.Controllers
 
             var user = await _context.Users
                 .Include(u => u.Role)
-                .Include(u => u.Staff)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (user == null)
             {
@@ -50,8 +49,7 @@ namespace MasterOk.Controllers
         // GET: Users/Create
         public IActionResult Create()
         {
-            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "TitleRole");
-            ViewData["StaffId"] = new SelectList(_context.Staffs, "Id", "FirstNameStaff");
+            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Id");
             return View();
         }
 
@@ -60,7 +58,7 @@ namespace MasterOk.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,EmailUser,LoginUser,PasswordUser,StaffId,RoleId")] User user)
+        public async Task<IActionResult> Create([Bind("Id,EmailUser,LoginUser,PasswordUser,FirstLastNameStaff,Age,NumberPhoneStaff,RoleId")] User user)
         {
             if (ModelState.IsValid)
             {
@@ -68,8 +66,7 @@ namespace MasterOk.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "TitleRole", user.RoleId);
-            ViewData["StaffId"] = new SelectList(_context.Staffs, "Id", "FirstNameStaff", user.StaffId);
+            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Id", user.RoleId);
             return View(user);
         }
 
@@ -86,8 +83,7 @@ namespace MasterOk.Controllers
             {
                 return NotFound();
             }
-            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "TitleRole", user.RoleId);
-            ViewData["StaffId"] = new SelectList(_context.Staffs, "Id", "FirstNameStaff", user.StaffId);
+            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Id", user.RoleId);
             return View(user);
         }
 
@@ -96,7 +92,7 @@ namespace MasterOk.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,EmailUser,LoginUser,PasswordUser,StaffId,RoleId")] User user)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,EmailUser,LoginUser,PasswordUser,FirstLastNameStaff,Age,NumberPhoneStaff,RoleId")] User user)
         {
             if (id != user.Id)
             {
@@ -123,8 +119,7 @@ namespace MasterOk.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "TitleRole", user.RoleId);
-            ViewData["StaffId"] = new SelectList(_context.Staffs, "Id", "FirstNameStaff", user.StaffId);
+            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Id", user.RoleId);
             return View(user);
         }
 
@@ -138,7 +133,6 @@ namespace MasterOk.Controllers
 
             var user = await _context.Users
                 .Include(u => u.Role)
-                .Include(u => u.Staff)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (user == null)
             {

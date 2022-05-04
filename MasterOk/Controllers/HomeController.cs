@@ -102,6 +102,7 @@ namespace MasterOk.Controllers
         {
             if (subCategoriesId > 0)
             {
+                ViewBag.SubCategory = await _context.SubCategories.Include(s => s.Category).FirstOrDefaultAsync(i => i.Id == subCategoriesId);
                 return View(await _context.Products.Where(i => i.SubCategoryId == subCategoriesId).Include(p => p.NameImages).ToListAsync());
             }
             else
@@ -114,7 +115,7 @@ namespace MasterOk.Controllers
         {
             if (productId > 0)
             {
-                return View(await _context.Products.FindAsync(productId));
+                return View(await _context.Products.Include(s => s.SubCategory).ThenInclude(c => c.Category).FirstOrDefaultAsync(i => i.Id == productId));
             }
             else
             {

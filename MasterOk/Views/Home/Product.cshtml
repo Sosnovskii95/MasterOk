@@ -3,7 +3,19 @@
     ViewData["Title"] = "Product";
 }
 
-<h1>Product</h1>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a asp-action="Index">Товары</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a asp-action="ShowSubCategories" asp-route-categoriesId="@Model.SubCategory.CategoryId">@Model.SubCategory.Category.TitleCategory</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+            <a asp-action="ShowProducts" asp-route-subCategoriesId="@Model.SubCategory.Id">@Model.SubCategory.TitleSubCategory</a>
+        </li>
+    </ol>
+</nav>
 
 <form asp-action="AddCart">
     @Html.HiddenFor(m=>Model.Id)

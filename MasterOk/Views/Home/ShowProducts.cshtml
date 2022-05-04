@@ -1,7 +1,21 @@
 ﻿@model IEnumerable<MasterOk.Models.ModelDataBase.Product>
+@using MasterOk.Models.ModelDataBase;
 @{
     ViewData["Title"] = "ShowProducts";
+    SubCategory subCategory = ViewBag.SubCategory;
 }
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a asp-action="Index">Товары</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+            <a asp-action="ShowSubCategories" asp-route-categoriesId="@subCategory.CategoryId">@subCategory.Category.TitleCategory</a>
+        </li>
+    </ol>
+</nav>
+
 <div class="row">
     @foreach (var item in Model)
     {
@@ -21,7 +35,7 @@
                     {
                         <label>Временно нет в наличии</label>
                     }
-                </div>   
+                </div>
             </div>
         </div>
     }

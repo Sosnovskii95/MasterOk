@@ -5,6 +5,7 @@ namespace MasterOk.Models.ModelDataBase
     public class DocShipToStore
     {
         [Key]
+        [Display(Name = "Номер отгрузки")]
         public int Id { get; set; }
 
         [Display(Name = "Дата отгрузки")]
