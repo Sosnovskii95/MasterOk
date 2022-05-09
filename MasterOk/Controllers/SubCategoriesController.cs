@@ -41,6 +41,9 @@ namespace MasterOk.Controllers
             var subCategory = await _context.SubCategories
                 .Include(s => s.Category)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
+            var nameImages = await _context.PathImages.Where(i => i.SubCategory == subCategory).Where(p => p.PathNameImage != "imagenot.jpg").ToListAsync();
+            subCategory.NameImages = nameImages;
             if (subCategory == null)
             {
                 return NotFound();
@@ -72,7 +75,7 @@ namespace MasterOk.Controllers
 
                 if (nameImages.Count > 0)
                 {
-                    Dictionary<string, string> listNameFiles = await ChangeFiles.SaveCreateUploadFiles(subCategory.Id, 
+                    Dictionary<string, string> listNameFiles = await ChangeFiles.SaveCreateUploadFiles(subCategory.Id,
                         _webHost.WebRootPath + PathImageExtensions.GetDirectorySaveFile(subCategory), nameImages);
 
                     foreach (var file in listNameFiles)
@@ -109,7 +112,7 @@ namespace MasterOk.Controllers
 
             var subCategory = await _context.SubCategories.Include(n => n.NameImages).FirstOrDefaultAsync(i => i.Id == id);
 
-            foreach(var item in subCategory.NameImages)
+            foreach (var item in subCategory.NameImages)
             {
                 if (item.PathNameImage.Equals(PathImageExtensions.GetPathNameImage()))
                 {
@@ -208,6 +211,9 @@ namespace MasterOk.Controllers
             var subCategory = await _context.SubCategories
                 .Include(s => s.Category)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
+            var nameImage = await _context.PathImages.Where(i => i.SubCategory == subCategory).Where(p => p.PathNameImage != "imagenot.jpg").ToListAsync();
+            subCategory.NameImages = nameImage;
             if (subCategory == null)
             {
                 return NotFound();
@@ -223,7 +229,7 @@ namespace MasterOk.Controllers
         {
             var subCategory = await _context.SubCategories.Include(n => n.NameImages).FirstOrDefaultAsync(i => i.Id == id);
 
-            foreach(var item in subCategory.NameImages)
+            foreach (var item in subCategory.NameImages)
             {
                 if (!item.PathNameImage.Equals(PathImageExtensions.GetPathNameImage()))
                 {
@@ -243,10 +249,10 @@ namespace MasterOk.Controllers
 
         public async Task<VirtualFileResult> GetImage(int id)
         {
-            if(id != null)
+            if (id != null)
             {
                 PathImage image = await _context.PathImages.FindAsync(id);
-                if(image != null)
+                if (image != null)
                 {
                     string current = PathImageExtensions.GetDirectorySaveFile(image.SubCategory) + image.SubCategoryId;
                     return File(Path.Combine("~" + current, image.PathNameImage), image.TypeImage, image.PathNameImage);

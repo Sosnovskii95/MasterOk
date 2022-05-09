@@ -17,9 +17,11 @@ namespace MasterOk.Models.ModelDataBase
         public double PriceCartProduct { get; set; }
 
         [Display(Name = "Количество")]
+        [Range(0, int.MaxValue, ErrorMessage = "Количество отрицательное")]
         public int CountCartProduct { get; set; }
 
         [Display(Name = "Сумма")]
+        [Range(0, double.MaxValue, ErrorMessage = "Сумма отрицательная")]
         public double TotalCartProduct { get; set; }
 
         [Display(Name = "Клиент")]

@@ -1,14 +1,13 @@
 ﻿@model MasterOk.Models.ModelDataBase.PayMethod
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Информация о способе";
+    Layout = "~/Views/Shared/Admin_Layout.cshtml";
 }
 
-<h1>Details</h1>
-
+<h1>Информация о способе оплаты</h1>
+<hr />
 <div>
-    <h4>PayMethod</h4>
-    <hr />
     <dl class="row">
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.TitlePayMethod)
@@ -18,7 +17,7 @@
         </dd>
     </dl>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+<div class="form-group mb-3">
+    <a asp-action="Edit" asp-route-id="@Model?.Id" role="button" class="btn btn-primary">Редактировать</a>
+    <a asp-action="Index" role="button" class="btn btn-secondary">Вернуться к списку</a>
 </div>

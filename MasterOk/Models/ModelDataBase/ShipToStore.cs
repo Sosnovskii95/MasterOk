@@ -8,6 +8,7 @@ namespace MasterOk.Models.ModelDataBase
         public int Id { get; set; }
 
         [Display(Name = "Количество товара")]
+        [Range(0, int.MaxValue, ErrorMessage = "Количество отрицательное")]
         public int CountShipProduct { get; set; }
 
         [Display(Name = "Товар")]

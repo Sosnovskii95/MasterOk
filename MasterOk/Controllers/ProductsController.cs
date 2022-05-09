@@ -40,6 +40,9 @@ namespace MasterOk.Controllers
             var product = await _context.Products
                 .Include(p => p.SubCategory)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
+            var nameImage = await _context.PathImages.Where(i => i.Product == product).Where(p => p.PathNameImage != "imagenot.jpg").ToListAsync();
+            product.NameImages = nameImage;
             if (product == null)
             {
                 return NotFound();
@@ -206,6 +209,9 @@ namespace MasterOk.Controllers
             var product = await _context.Products
                 .Include(p => p.SubCategory)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
+            var nameImage = await _context.PathImages.Where(p => p.Product == product).Where(o => o.PathNameImage != "imagenot.jpg").ToListAsync();
+            product.NameImages = nameImage;
             if (product == null)
             {
                 return NotFound();

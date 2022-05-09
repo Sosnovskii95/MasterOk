@@ -1,48 +1,64 @@
 ﻿@model MasterOk.Models.ModelDataBase.Product
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Информации о товаре";
+    Layout = "~/Views/Shared/Admin_Layout.cshtml";
 }
 
-<h1>Details</h1>
-
+<h1>Информации о товаре</h1>
+<hr />
 <div>
-    <h4>Product</h4>
-    <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.TitleProduct)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.TitleProduct)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.DescriptionProduct)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.DescriptionProduct)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Warranty)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Warranty)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Price)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Price)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.SubCategory)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SubCategory.Id)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.SubCategory.TitleSubCategory)
         </dd>
     </dl>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+<div class="form-group mb-3">
+    <div id="outFile" class="row">
+        @if (Model.NameImages.Count() > 0)
+        {
+            foreach (var item in Model.NameImages)
+            {
+                <div class="col-md-2 d-grid gap-2" id="@item.Id">
+                    <img class="img-thumbnail" src="@Url.Action("GetImage","Products", new{id = item.Id})" />
+                </div>
+            }
+        }
+        else
+        {
+            <label>Нет прикрипленных изображений</label>
+        }
+    </div>
+</div>
+<div class="form-group mb-3">
+    <a asp-action="Edit" asp-route-id="@Model?.Id" role="button" class="btn btn-primary">Редактировать</a>
+    <a asp-action="Index" role="button" class="btn btn-secondary">Вернуться к списку</a>
 </div>

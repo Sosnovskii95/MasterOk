@@ -1,24 +1,40 @@
 ﻿@model MasterOk.Models.ModelDataBase.Category
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Информация о категории";
+    Layout = "~/Views/Shared/Admin_Layout.cshtml";
 }
 
-<h1>Details</h1>
-
+<h1>Информация о категории</h1>
+<hr />
 <div>
-    <h4>Category</h4>
-    <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.TitleCategory)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.TitleCategory)
         </dd>
     </dl>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+<div class="form-group mb-3">
+    <div id="outFile" class="row">
+        @if (Model.NameImages.Count() > 0)
+        {
+            foreach (var item in Model.NameImages)
+            {
+                <div class="col-md-2 d-grid gap-2" id="@item.Id">
+                    <img class="img-thumbnail" src="@Url.Action("GetImage","Categories", new{id = item.Id})" />
+                </div>
+            }
+        }
+        else
+        {
+            <label>Нет прикрипленных изображений</label>
+        }
+    </div>
+</div>
+<div class="form-group mb-3">
+    <a asp-action="Edit" asp-route-id="@Model?.Id" role="button" class="btn btn-primary">Редактировать</a>
+    <a asp-action="Index" role="button" class="btn btn-secondary">Вернуться к списку</a>
 </div>

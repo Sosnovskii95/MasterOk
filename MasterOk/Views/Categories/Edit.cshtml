@@ -1,33 +1,29 @@
 ﻿@model MasterOk.Models.ModelDataBase.Category
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Редактирование категории";
+    Layout = "~/Views/Shared/Admin_Layout.cshtml";
 }
 
-<h1>Edit</h1>
-
-<h4>Category</h4>
+<h1>Редактирование категории</h1>
 <hr />
 <div class="row">
     <form asp-action="Edit" enctype="multipart/form-data">
         <div class="col-md-4">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <label asp-for="TitleCategory" class="control-label"></label>
                 <input asp-for="TitleCategory" class="form-control" />
                 <span asp-validation-for="TitleCategory" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <div id="blockFile">
                     <input type="file" id="NameImages" name="NameImages" multiple onchange="previewImg()" />
                 </div>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" onclick="setFileUpload()" />
-            </div>
         </div>
-        <div class="form-group">
+        <div class="form-group mb-3">
             <div id="outFile" class="row">
                 @foreach (var item in Model.NameImages)
                 {
@@ -38,11 +34,11 @@
                 }
             </div>
         </div>
+        <div class="form-group mb-3">
+            <input type="submit" value="Сохранить изменения" class="btn btn-primary" onclick="setFileUpload()" />
+            <a asp-action="Index" role="button" class="btn btn-secondary">Вернуться к списку</a>
+        </div>
     </form>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {

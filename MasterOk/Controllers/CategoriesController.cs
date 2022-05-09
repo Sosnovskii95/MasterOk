@@ -39,6 +39,9 @@ namespace MasterOk.Controllers
 
             var category = await _context.Categories
                 .FirstOrDefaultAsync(m => m.Id == id);
+
+            var nameImage = await _context.PathImages.Where(i => i.Category == category).Where(m => m.PathNameImage != "imagenot.jpg").ToListAsync();
+            category.NameImages = nameImage;
             if (category == null)
             {
                 return NotFound();
@@ -200,6 +203,9 @@ namespace MasterOk.Controllers
 
             var category = await _context.Categories
                 .FirstOrDefaultAsync(m => m.Id == id);
+
+            var nameImage = await _context.PathImages.Where(i => i.Category == category).Where(m => m.PathNameImage != "imagenot.jpg").ToListAsync();
+            category.NameImages = nameImage;
             if (category == null)
             {
                 return NotFound();

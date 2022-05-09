@@ -1,24 +1,23 @@
 ﻿@model MasterOk.Models.ModelDataBase.DeliveryMethod
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Иформация о способе";
+    Layout = "~/Views/Shared/Admin_Layout.cshtml";
 }
 
-<h1>Details</h1>
-
+<h1>Иформация о способе</h1>
+<hr />
 <div>
-    <h4>DeliveryMethod</h4>
-    <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.TitleDeliveryMethod)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.TitleDeliveryMethod)
         </dd>
     </dl>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+<div class="form-group mb-3">
+    <a asp-action="Edit" asp-route-id="@Model?.Id" role="button" class="btn btn-primary">Редактировать</a>
+    <a asp-action="Index" role="button" class="btn btn-secondary">Вернуться к списку</a>
 </div>

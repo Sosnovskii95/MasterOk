@@ -14,9 +14,11 @@ namespace MasterOk.Models.ModelDataBase
         public string DescriptionProduct { get; set; }
 
         [Display(Name = "Гарантия")]
+        [Range(0, int.MaxValue, ErrorMessage = "Гарантия отрицательная")]
         public int Warranty { get; set; }
 
         [Display(Name = "Стоимость")]
+        [Range(0, double.MaxValue, ErrorMessage = "Стоимость отрицательная")]
         public double Price { get; set; }
 
         [Display(Name = "Подкатегория")]
@@ -28,6 +30,7 @@ namespace MasterOk.Models.ModelDataBase
         public ICollection<PathImage>? NameImages { get; set; }
 
         [Display(Name = "Количество на складе")]
+        [Range(0, int.MaxValue, ErrorMessage = "Количество отрицательное")]
         public int CountStoreProduct { get; set; }
     }
 }

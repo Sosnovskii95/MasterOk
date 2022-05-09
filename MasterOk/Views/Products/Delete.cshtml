@@ -1,51 +1,67 @@
 ﻿@model MasterOk.Models.ModelDataBase.Product
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Удаление товара";
+    Layout = "~/Views/Shared/Admin_Layout.cshtml";
 }
 
-<h1>Delete</h1>
-
-<h3>Are you sure you want to delete this?</h3>
+<h1>Вы действительно хотите удалить товар? Удаление приведет к удалению всех связанных накладных, заказов и т.д.</h1>
+<hr />
 <div>
-    <h4>Product</h4>
-    <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.TitleProduct)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.TitleProduct)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.DescriptionProduct)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.DescriptionProduct)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Warranty)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Warranty)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Price)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Price)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.SubCategory)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SubCategory.Id)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.SubCategory.TitleSubCategory)
         </dd>
     </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
+    <div class="form-group mb-3">
+        <div id="outFile" class="row">
+            @if (Model.NameImages.Count() > 0)
+            {
+                foreach (var item in Model.NameImages)
+                {
+                    <div class="col-md-2 d-grid gap-2" id="@item.Id">
+                        <img class="img-thumbnail" src="@Url.Action("GetImage","Products", new{id = item.Id})" />
+                    </div>
+                }
+            }
+            else
+            {
+                <label>Нет прикрипленных изображений</label>
+            }
+        </div>
+    </div>
+    <div class="form-group mb-3">
+        <form asp-action="Delete">
+            <input type="hidden" asp-for="Id" />
+            <input type="submit" value="Удалить" class="btn btn-danger" />
+            <a asp-action="Index" role="button" class="btn btn-secondary">Вернуться к списку</a>
+        </form>
+    </div>
 </div>

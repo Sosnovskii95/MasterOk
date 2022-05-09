@@ -1,10 +1,9 @@
 ﻿@{
     ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/Admin_Layout.cshtml";
 }
 
 @Html.ActionLink("Пользователи","Index","Users")
-@Html.ActionLink("Сотрудники","Index","Staffs")
-@Html.ActionLink("Должности", "Index","Positions")
 @Html.ActionLink("Права доступа","Index","Roles")
 @Html.ActionLink("Категории","Index","Categories")
 @Html.ActionLink("Подкатегории", "Index","SubCategories")
