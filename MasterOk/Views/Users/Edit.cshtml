@@ -1,62 +1,62 @@
 ﻿@model MasterOk.Models.ModelDataBase.User
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Редактирование пользователя";
     Layout = "~/Views/Shared/Admin_Layout.cshtml";
 }
 
-<h1>Edit</h1>
-
-<h4>User</h4>
+<h1>Редактирование пользователя</h1>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
-            <div class="form-group">
+           <div class="form-group mb-3">
                 <label asp-for="EmailUser" class="control-label"></label>
                 <input asp-for="EmailUser" class="form-control" />
                 <span asp-validation-for="EmailUser" class="text-danger"></span>
             </div>
-            <div class="form-group">
+           <div class="form-group mb-3">
                 <label asp-for="LoginUser" class="control-label"></label>
                 <input asp-for="LoginUser" class="form-control" />
                 <span asp-validation-for="LoginUser" class="text-danger"></span>
             </div>
-            <div class="form-group">
+           <div class="form-group mb-3">
                 <label asp-for="PasswordUser" class="control-label"></label>
                 <input asp-for="PasswordUser" class="form-control" />
                 <span asp-validation-for="PasswordUser" class="text-danger"></span>
             </div>
-            <div class="form-group">
+           <div class="form-group mb-3">
                 <label asp-for="FirstLastNameStaff" class="control-label"></label>
                 <input asp-for="FirstLastNameStaff" class="form-control" />
                 <span asp-validation-for="FirstLastNameStaff" class="text-danger"></span>
             </div>
-            <div class="form-group">
+           <div class="form-group mb-3">
                 <label asp-for="Age" class="control-label"></label>
                 <input asp-for="Age" class="form-control" />
                 <span asp-validation-for="Age" class="text-danger"></span>
             </div>
-            <div class="form-group">
+           <div class="form-group mb-3">
                 <label asp-for="NumberPhoneStaff" class="control-label"></label>
                 <input asp-for="NumberPhoneStaff" class="form-control" />
                 <span asp-validation-for="NumberPhoneStaff" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="ActiveUser" /> @Html.DisplayNameFor(model => model.ActiveUser)
+                </label>
+            </div>
+           <div class="form-group mb-3">
                 <label asp-for="RoleId" class="control-label"></label>
                 <select asp-for="RoleId" class="form-control" asp-items="ViewBag.RoleId"></select>
                 <span asp-validation-for="RoleId" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+           <div class="form-group mb-3">
+                <input type="submit" value="Сохранить изменения" class="btn btn-primary" />
+                <a asp-action="Index" role="button" class="btn btn-secondary">Вернуться к списку</a>
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 

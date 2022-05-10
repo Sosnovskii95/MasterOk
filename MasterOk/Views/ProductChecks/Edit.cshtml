@@ -1,76 +1,71 @@
 ﻿@model MasterOk.Models.ModelDataBase.ProductCheck
 @using MasterOk.Models.ModelDataBase;
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Редактирование заказа";
     Layout = "~/Views/Shared/Admin_Layout.cshtml";
     ProductSold modelSold = new ProductSold();
 }
 
-<h1>Edit</h1>
-
-<h4>ProductCheck</h4>
+<h1>Редактирование заказа</h1>
 <hr />
 <div class="row">
     <div class="col-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <label asp-for="Id" class="control-label"></label>
                 <input asp-for="Id" class="form-control" readonly />
                 <span asp-validation-for="Id" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <label asp-for="DateTimeSale" class="control-label"></label>
                 <input asp-for="DateTimeSale" class="form-control" readonly />
                 <span asp-validation-for="DateTimeSale" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <label asp-for="StateOrderId" class="control-label"></label>
                 <select asp-for="StateOrderId" class="form-control" asp-items="ViewBag.StateOrderId"></select>
                 <span asp-validation-for="StateOrderId" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <label asp-for="ClientId" class="control-label"></label>
-                <input asp-for="ClientId" class="form-control" readonly/>
+                <input asp-for="ClientId" class="form-control" readonly />
                 <span asp-validation-for="ClientId" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <label asp-for="UserId" class="control-label"></label>
-                <input asp-for="UserId" class="form-control" readonly/>
+                <input asp-for="UserId" class="form-control" readonly />
                 <span asp-validation-for="UserId" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <label asp-for="PayMethodId" class="control-label"></label>
                 <select asp-for="PayMethodId" class="form-control" asp-items="ViewBag.PayMethodId"></select>
                 <span asp-validation-for="PayMethodId" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <label asp-for="DeliveryMethodId" class="control-label"></label>
                 <select asp-for="DeliveryMethodId" class="form-control" asp-items="ViewBag.DeliveryMethodId"></select>
                 <span asp-validation-for="DeliveryMethodId" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+            <div class="form-group mb-3">
+                <input type="submit" value="Сохранить изменения" class="btn btn-primary" />
+                <a asp-action="Index" role="button" class="btn btn-secondary">Вернуться к списку</a>
             </div>
         </form>
     </div>
     <div class="col-4">
-        <div class="form-group">
+        <div class="form-group mb-3">
             <h3>Данные клиента</h3>
         </div>
-        <div class="form-group">
+        <div class="form-group mb-3">
             <label asp-for="Client.FirstLastNameClient" class="control-label"></label>
             <input asp-for="Client.FirstLastNameClient" class="form-control" readonly />
         </div>
-        <div class="form-group">
+        <div class="form-group mb-3">
             <label asp-for="Client.NumberPhone" class="control-label"></label>
             <input asp-for="Client.NumberPhone" class="form-control" readonly />
         </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 <table class="table">
@@ -112,8 +107,14 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.TotalSold)
                 </td>
+                <td>
+                    <a asp-action="DeleteItem" asp-route-id="@item.Id" role="button" class="btn btn-danger">Удалить</a>
+                </td>
             </tr>
         }
+        <tr>
+            <td>Итого: @Model.ProductSolds.Sum(p=>p.TotalSold)</td>
+        </tr>
     </tbody>
 </table>
 

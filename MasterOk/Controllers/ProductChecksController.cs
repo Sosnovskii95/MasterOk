@@ -26,7 +26,12 @@ namespace MasterOk.Controllers
         // GET: ProductChecks
         public async Task<IActionResult> Index()
         {
-            var dataBaseContext = _context.ProductChecks.Include(p => p.Client).Include(p => p.DeliveryMethod).Include(p => p.PayMethod).Include(p => p.StateOrder).Include(p => p.User);
+            var dataBaseContext = _context.ProductChecks.
+                Include(p => p.Client).
+                Include(p => p.DeliveryMethod).
+                Include(p => p.PayMethod).
+                Include(p => p.StateOrder).
+                Include(p => p.User);
             return View(await dataBaseContext.ToListAsync());
         }
 
@@ -211,7 +216,20 @@ namespace MasterOk.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var productCheck = await _context.ProductChecks.FindAsync(id);
+            var productCheck = await _context.ProductChecks.Include(p => p.ProductSolds).FirstOrDefaultAsync(i => i.Id == id);
+
+            foreach(var item in productCheck.ProductSolds)
+            {
+                var product = await _context.Products.FindAsync(item.ProductId);
+
+                if(product != null)
+                {
+                    product.CountStoreProduct += item.CountSold;
+
+                    _context.Update(product);
+                }
+            }
+
             _context.ProductChecks.Remove(productCheck);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -235,6 +253,35 @@ namespace MasterOk.Controllers
                 }
             }
             return null;
+        }
+
+        public async Task<IActionResult> DeleteItem(int id)
+        {
+            if (id != null)
+            {
+                var productSold = await _context.ProductSolds.FindAsync(id);
+
+                if (productSold != null)
+                {
+                    var product = await _context.Products.FindAsync(productSold.ProductId);
+
+                    if (product != null)
+                    {
+                        product.CountStoreProduct += product.CountStoreProduct;
+                    }
+
+                    _context.Update(product);
+                    _context.Remove(productSold);
+
+                    await _context.SaveChangesAsync();
+
+                    return RedirectToAction(nameof(Edit), new { id = productSold.ProductCheckId });
+                }
+
+                return Redirect(HttpContext.Request.Headers.Referer);
+            }
+
+            return NotFound();
         }
     }
 }

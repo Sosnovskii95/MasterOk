@@ -1,0 +1,50 @@
+﻿@model IEnumerable<MasterOk.Models.ModelDataBase.ProductSold>
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model=>model.ProductCheckId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model=>model.Product.TitleProduct)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model=>model.CountSold)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model=>model.PriceSold)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model=>model.TotalSold)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProductCheckId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Product.TitleProduct)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CountSold)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PriceSold)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem =>item.TotalSold)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

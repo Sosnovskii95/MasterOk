@@ -1,9 +1,67 @@
-﻿
+﻿@model IEnumerable<MasterOk.Models.ModelDataBase.Client>
+
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Список клиентов";
+    Layout = "~/Views/Shared/Admin_Layout.cshtml";
 }
 
-<h1>Index</h1>
-
-@Html.ActionLink("Редактировать профиль", "Edit", "Clients")
-@Html.ActionLink("История покупок", "History", "Clients")
+<h1>Список клиентов</h1>
+<hr />
+<p>
+    <a asp-action="Create" role="button" class="btn btn-primary">Добавить нового клиента</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.EmailClient)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PasswordClient)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstLastNameClient)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NumberPhone)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Address)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProcentSalary)
+            </th>
+            <th>Функции</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EmailClient)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PasswordClient)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FirstLastNameClient)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NumberPhone)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Address)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProcentSalary)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id" role="button" class="btn btn-secondary">Редактировать</a>
+                    <a asp-action="Details" asp-route-id="@item.Id" role="button" class="btn btn-info">Информация</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" role="button" class="btn btn-danger">Удалить</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

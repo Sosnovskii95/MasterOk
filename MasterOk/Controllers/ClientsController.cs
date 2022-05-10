@@ -1,11 +1,13 @@
-﻿using MasterOk.Data;
-using MasterOk.Models.ModelDataBase;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
+﻿#nullable disable
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
+using MasterOk.Data;
+using MasterOk.Models.ModelDataBase;
 
 namespace MasterOk.Controllers
 {
@@ -18,102 +20,135 @@ namespace MasterOk.Controllers
             _context = context;
         }
 
-        [Authorize(Roles = "client")]
-        public IActionResult Index()
+        // GET: Clients
+        public async Task<IActionResult> Index()
+        {
+            return View(await _context.Clients.ToListAsync());
+        }
+
+        // GET: Clients/Details/5
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var client = await _context.Clients
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (client == null)
+            {
+                return NotFound();
+            }
+
+            return View(client);
+        }
+
+        // GET: Clients/Create
+        public IActionResult Create()
         {
             return View();
         }
 
-        [Authorize(Roles = "client")]
-        public async Task<IActionResult> Edit()
-        {
-            Client client = await GetAuthenticateClient(HttpContext);
-
-            if (client != null)
-            {
-                return View(client);
-            }
-            else
-            {
-                return Redirect(HttpContext.Request.Headers.Referer);
-            }
-        }
-
+        // POST: Clients/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "client")]
-        public async Task<IActionResult> Edit(Client client)
+        public async Task<IActionResult> Create([Bind("Id,EmailClient,PasswordClient,FirstLastNameClient,NumberPhone,Address,ProcentSalary")] Client client)
         {
             if (ModelState.IsValid)
             {
-                _context.Clients.Update(client);
+                _context.Add(client);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            else
-            {
-                return View(client);
-            }
+            return View(client);
         }
 
-        [Authorize(Roles = "client")]
-        public async Task<IActionResult> History()
+        // GET: Clients/Edit/5
+        public async Task<IActionResult> Edit(int? id)
         {
-            Client client = await GetAuthenticateClient(HttpContext);
-            List<ProductCheck> productChecks = new List<ProductCheck>();
-
-            if (client != null)
-            {
-                productChecks = await _context.ProductChecks.Where(i => i.ClientId == client.Id).
-                                                             Include(p => p.ProductSolds).
-                                                             Include(p => p.PayMethod).
-                                                             Include(d => d.DeliveryMethod).
-                                                             Include(s => s.StateOrder).ToListAsync();
-                return View(productChecks);
-            }
-            else
-            {
-                return View(productChecks);
-            }
-        }
-
-        public async Task<IActionResult> Details(int id)
-        {
-            if (id != null)
-            {
-                return View(await _context.ProductSolds.Where(p => p.ProductCheckId == id).Include(o => o.Product).ToListAsync());
-            }
-            else
+            if (id == null)
             {
                 return NotFound();
             }
+
+            var client = await _context.Clients.FindAsync(id);
+            if (client == null)
+            {
+                return NotFound();
+            }
+            return View(client);
         }
 
-        private async Task<Client> GetAuthenticateClient(HttpContext httpContext)
+        // POST: Clients/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,EmailClient,PasswordClient,FirstLastNameClient,NumberPhone,Address,ProcentSalary")] Client client)
         {
-            var clientAut = httpContext.User.Identity;
-
-            if (clientAut is not null && clientAut.IsAuthenticated)
+            if (id != client.Id)
             {
-                var roleClient = httpContext.User.FindFirstValue(ClaimsIdentity.DefaultRoleClaimType);
-                var idClient = httpContext.User.FindFirstValue(ClaimsIdentity.DefaultNameClaimType);
+                return NotFound();
+            }
 
-                if (roleClient.Equals("client"))
+            if (ModelState.IsValid)
+            {
+                try
                 {
-                    Client client = await _context.Clients.FindAsync(Convert.ToInt32(idClient));
-
-                    if (client == null)
+                    _context.Update(client);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ClientExists(client.Id))
                     {
-                        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                        return NotFound();
                     }
                     else
                     {
-                        return client;
+                        throw;
                     }
                 }
+                return RedirectToAction(nameof(Index));
+            }
+            return View(client);
+        }
+
+        // GET: Clients/Delete/5
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
             }
 
-            return null;
+            var client = await _context.Clients
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (client == null)
+            {
+                return NotFound();
+            }
+
+            return View(client);
+        }
+
+        // POST: Clients/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var client = await _context.Clients.FindAsync(id);
+            _context.Clients.Remove(client);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        private bool ClientExists(int id)
+        {
+            return _context.Clients.Any(e => e.Id == id);
         }
     }
 }

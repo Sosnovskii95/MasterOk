@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace MasterOk.Controllers
 {
-    [Authorize(Roles = "user" )]
+    //[Authorize(Roles = "user" )]
     public class ShipToStoresController : Controller
     {
         private readonly DataBaseContext _context;
@@ -78,6 +78,7 @@ namespace MasterOk.Controllers
         {
             if (id != null)
             {
+                ViewData["docShip"] = await _context.DocShipToStores.FindAsync(id);
                 return View(await _context.ShipToStores.Include(p => p.Product).Where(d => d.DocShipToStoreId == id).ToListAsync());
             }
             else
@@ -119,9 +120,26 @@ namespace MasterOk.Controllers
             return NotFound();
         }
 
-        public async Task<IActionResult> Delete(int docShipToStoreId, int productId)
+        public async Task<IActionResult> Delete(int id)
         {
-            ShipToStore shipToStore = await _context.ShipToStores.Where(d => d.DocShipToStoreId == docShipToStoreId).Where(p => p.ProductId == productId).FirstOrDefaultAsync();
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var shipToStores = await _context.ShipToStores.Include(p => p.Product)
+                                                          .Where(d => d.DocShipToStoreId == id).ToListAsync();
+
+            if (shipToStores == null)
+            {
+                return NotFound();
+            }
+            ViewData["docShip"] = await _context.DocShipToStores.FindAsync(id);
+
+            return View(shipToStores);
+
+
+            /*ShipToStore shipToStore = await _context.ShipToStores.Where(d => d.DocShipToStoreId == docShipToStoreId).Where(p => p.ProductId == productId).FirstOrDefaultAsync();
 
             if (shipToStore != null)
             {
@@ -143,7 +161,70 @@ namespace MasterOk.Controllers
             else
             {
                 return NotFound();
+            }*/
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            if (id != null)
+            {
+                var docShipToStores = await _context.DocShipToStores.Include(s => s.ShipToStores)
+                                                                    .ThenInclude(p => p.Product)
+                                                                    .FirstOrDefaultAsync(i => i.Id == id);
+
+                if (docShipToStores != null)
+                {
+                    foreach (var item in docShipToStores.ShipToStores)
+                    {
+                        var product = await _context.Products.FindAsync(item.ProductId);
+
+                        if (product != null)
+                        {
+                            product.CountStoreProduct -= item.CountShipProduct;
+                            _context.Update(product);
+                        }
+                    }
+
+                    _context.Remove(docShipToStores);
+                    await _context.SaveChangesAsync();
+
+                    return RedirectToAction(nameof(Index));
+                }
+
+                return Redirect(HttpContext.Request.Headers.Referer);
             }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        public async Task<IActionResult> DeleteItem(int id)
+        {
+            if (id != null)
+            {
+                var shipProduct = await _context.ShipToStores.Include(p => p.Product).FirstOrDefaultAsync(i => i.Id == id);
+                if (shipProduct != null)
+                {
+                    var product = await _context.Products.FindAsync(shipProduct.ProductId);
+
+                    if (product != null)
+                    {
+                        product.CountStoreProduct -= shipProduct.CountShipProduct;
+
+                        _context.Update(product);
+                    }
+
+                    _context.Remove(shipProduct);
+                    await _context.SaveChangesAsync();
+
+                    return RedirectToAction(nameof(Edit), new { id = shipProduct.DocShipToStoreId });
+                }
+            }
+
+            return NotFound();
         }
     }
 }

@@ -1,50 +1,45 @@
 ﻿@model MasterOk.Models.ModelDataBase.Client
 
 @{
-    ViewData["Title"] = "Редактирование клиента";
-    Layout = "~/Views/Shared/Admin_Layout.cshtml";
+    ViewData["Title"] = "Edit";
 }
 
-<h1>Редактирование клиентаdit</h1>
+<h1>Edit</h1>
+
+<h4>Client</h4>
 <hr />
 <div class="row">
-    <div class="col-4">
-        <form asp-action="Edit">
+    <div class="col-md-4">
+        <form asp-action="Edit" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
-            <div class="form-group mb-3">
+            <div class="form-group">
                 <label asp-for="EmailClient" class="control-label"></label>
                 <input asp-for="EmailClient" class="form-control" />
                 <span asp-validation-for="EmailClient" class="text-danger"></span>
             </div>
-            <div class="form-group mb-3">
+            <div class="form-group">
                 <label asp-for="PasswordClient" class="control-label"></label>
                 <input asp-for="PasswordClient" class="form-control" />
                 <span asp-validation-for="PasswordClient" class="text-danger"></span>
             </div>
-            <div class="form-group mb-3">
+            <div class="form-group">
                 <label asp-for="FirstLastNameClient" class="control-label"></label>
                 <input asp-for="FirstLastNameClient" class="form-control" />
                 <span asp-validation-for="FirstLastNameClient" class="text-danger"></span>
             </div>
-            <div class="form-group mb-3">
+            <div class="form-group">
                 <label asp-for="NumberPhone" class="control-label"></label>
                 <input asp-for="NumberPhone" class="form-control" />
                 <span asp-validation-for="NumberPhone" class="text-danger"></span>
             </div>
-            <div class="form-group mb-3">
+            <div class="form-group">
                 <label asp-for="Address" class="control-label"></label>
                 <input asp-for="Address" class="form-control" />
                 <span asp-validation-for="Address" class="text-danger"></span>
             </div>
-            <div class="form-group mb-3">
-                <label asp-for="ProcentSalary" class="control-label"></label>
-                <input asp-for="ProcentSalary" class="form-control" />
-                <span asp-validation-for="ProcentSalary" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
-                <input type="submit" value="Сохранить изменения" class="btn btn-primary" />
-                <a asp-action="Index" role="button" class="btn btn-secondary">Вернуться к списку</a>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
     </div>

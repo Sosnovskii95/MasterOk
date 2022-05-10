@@ -28,6 +28,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.SubCategory)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CountStoreProduct)
+            </th>
             <th>Функции</th>
         </tr>
     </thead>
@@ -48,7 +51,10 @@
                     @Html.DisplayFor(modelItem => item.Price)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.SubCategory.TitleSubCategory)
+                    @Html.DisplayFor(modelItem => item.SubCategory.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CountStoreProduct)
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id" role="button" class="btn btn-secondary">Редактировать</a>

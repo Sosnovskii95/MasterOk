@@ -14,7 +14,8 @@ namespace MasterOk.Models.ModelDataBase
         [Display(Name = "Логин пользователя")]
         public string LoginUser { get; set; }
 
-        [Display(Name = "Пароль пользователя")]
+        [Display(Name = "Пароль")]
+        [DataType(DataType.Password)]
         public string PasswordUser { get; set; }
 
         [Display(Name = "ФИО сотрудника")]
@@ -25,6 +26,9 @@ namespace MasterOk.Models.ModelDataBase
 
         [Display(Name = "Номер телефона")]
         public int NumberPhoneStaff { get; set; }
+
+        [Display(Name ="Активность пользователя")]
+        public bool ActiveUser { get; set; }
 
         [Display(Name = "Роль пользователя")]
         public int RoleId { get; set; }

@@ -1,15 +1,15 @@
 ﻿@model IEnumerable<MasterOk.Models.ModelDataBase.ShipToStore>
 @using MasterOk.Models.ModelDataBase;
 @{
-    ViewData["Title"] = "Редактирование отгрузки";
+    ViewData["Title"] = "Delete";
     Layout = "~/Views/Shared/Admin_Layout.cshtml";
     DocShipToStore docShipToStore = ViewBag.docShip;
 }
 
-<h1>Редактирование отгрузки</h1>
+<h1>Вы действительно хотите удалить данную отгрузку? Удаление отгрузки приведдет к удалению связанных данных</h1>
 <h3>Номер отгрузки: @docShipToStore.Id  Дата отгрузки: @docShipToStore.DateShip</h3>
 <hr />
-<form asp-action="Edit">
+<div>
     <table class="table">
         <thead>
             <tr>
@@ -19,8 +19,6 @@
                 <th>
                     @Html.DisplayNameFor(model=>model.CountShipProduct)
                 </th>
-                <th>Функции</th>
-            </tr>
         </thead>
         <tbody>
             @foreach (var item in Model)
@@ -30,14 +28,17 @@
                         @Html.DisplayFor(modelItem => item.Product.TitleProduct)
                     </td>
                     <td>
-                        <input type="number" name="countShip" value="@item.CountShipProduct">
-                    </td>
-                    <td>
-                        <a asp-action="DeleteItem" asp-route-id="@item.Id">Удалить</a>
+                        @Html.DisplayFor(modelItem => item.CountShipProduct)
                     </td>
                 </tr>
             }
         </tbody>
     </table>
-    <input type="submit" value="Сохранить изменения" class="btn btn-primary"/>
-</form>
+</div>
+<div class="form-group mb-3">
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="@docShipToStore.Id" />
+        <input type="submit" value="Удалить" class="btn btn-danger" />
+        <a asp-action="Index" role="button" class="btn btn-secondary">Вернуться к списку</a>
+    </form>
+</div>

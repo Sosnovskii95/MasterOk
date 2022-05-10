@@ -1,51 +1,46 @@
 ﻿@model MasterOk.Models.ModelDataBase.ProductSold
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Добавление заказа";
     Layout = "~/Views/Shared/Admin_Layout.cshtml";
 }
 
-<h1>Create</h1>
-
-<h4>ProductCheck</h4>
+<h1>Добавление заказа</h1>
 <hr />
 <div class="row">
     <div class="col-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <label asp-for="ProductCheck.StateOrderId" class="control-label"></label>
                 <select asp-for="ProductCheck.StateOrderId" class="form-control" asp-items="ViewBag.StateOrderId"></select>
             </div>
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <label asp-for="ProductCheck.ClientId" class="control-label"></label>
-                <select asp-for="ProductCheck.ClientId" class="form-control" asp-items="ViewBag.ClientId" onchange="getClient(this.value)"></select>
+                <select asp-for="ProductCheck.ClientId" class="form-control" asp-items="ViewBag.ClientId" onclick="getClient(this.value)"></select>
             </div>
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <label asp-for="ProductCheck.UserId" class="control-label"></label>
                 <select asp-for="ProductCheck.UserId" class="form-control" asp-items="ViewBag.UserId"></select>
             </div>
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <label asp-for="ProductCheck.PayMethodId" class="control-label"></label>
                 <select asp-for="ProductCheck.PayMethodId" class="form-control" asp-items="ViewBag.PayMethodId"></select>
             </div>
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <label asp-for="ProductCheck.DeliveryMethodId" class="control-label"></label>
                 <select asp-for="ProductCheck.DeliveryMethodId" class="form-control" asp-items="ViewBag.DeliveryMethodId"></select>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-            <div id="block">
+            <div class="form-group mb-3" id="block">
                 <ul class="list-group list-group-horizontal">
                     <li class="list-group-item">
-                        <div class="form-group">
+                        <div class="form-group mb-3">
                             <label asp-for="ProductId" class="control-label"></label>
                             <select asp-for="ProductId" class="form-control" asp-items="ViewBag.ProductId"></select>
                         </div>
                     </li>
                     <li class="list-group-item">
-                        <div class="form-group">
+                        <div class="form-group mb-3">
                             <label asp-for="CountSold" class="control-label"></label>
                             <input asp-for="CountSold" class="form-control" />
                             <span asp-validation-for="CountSold" class="text-danger"></span>
@@ -53,8 +48,12 @@
                     </li>
                 </ul>
             </div>
-            <div class="form-group">
-                <input type="button" class="btn btn-secondary" value="add" onclick="addBlock()" />
+            <div class="form-group mb-3">
+                <input type="button" class="btn btn-secondary" value="Добавить позицию" onclick="addBlock()" />
+            </div>
+            <div class="form-group mb-3">
+                <input type="submit" value="Добавить заказ" class="btn btn-primary" />
+                <a asp-action="Index" role="button" class="btn btn-secondary">Вернуться к списку заказов</a>
             </div>
         </form>
     </div>
@@ -63,10 +62,6 @@
 </div>
 
 
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
 <script type="text/javascript">
     function addBlock(){
         let parent = document.getElementById("block");

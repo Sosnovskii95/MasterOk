@@ -1,14 +1,14 @@
 ﻿@model IEnumerable<MasterOk.Models.ModelDataBase.Role>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Список прав доступа";
     Layout = "~/Views/Shared/Admin_Layout.cshtml";
 }
 
-<h1>Index</h1>
-
+<h1>Список прав доступа</h1>
+<hr />
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" role="button" class="btn btn-primary">Добавить права доступ</a>
 </p>
 <table class="table">
     <thead>
@@ -20,17 +20,18 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.TitleRole)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TitleRole)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id" role="button" class="btn btn-secondary">Редактировать</a>
+                    <a asp-action="Details" asp-route-id="@item.Id" role="button" class="btn btn-info">Информация</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" role="button" class="btn btn-danger">Удалить</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

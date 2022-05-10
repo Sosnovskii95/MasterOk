@@ -12,13 +12,13 @@
 @if (Model.CartClients.Count() > 0)
 {
     <form asp-action="CreateOrder" onsubmit="return checkCheckBoxProduct()">
-        <div class="row justify-content-center">
-            <div class="col-9">
+        <div class="row">
+            <div class="col-md-9">
                 <table class="table">
                     <thead>
                         <tr>
                             <th>
-                                <label>В заказ</label>
+                                В заказ
                             </th>
                             <th>
                                 @Html.DisplayNameFor(model => cartClient.Product)
@@ -67,46 +67,22 @@
                     </tbody>
                 </table>
             </div>
-            <div class="col-3">
-                <div class="row">
-                    <label>Способ оплаты</label>
-                </div>
-                <div class="row">
-                    @Html.DropDownList("PayMethodId", new SelectList(ViewBag.PayMethod, "Id", "TitlePayMethod"))
-                </div>
-                <div class="row">
-                    <label>Способ доставки</label>
-                </div>
-                <div class="row">
-                    @Html.DropDownList("DeliveryMethodId", new SelectList(ViewBag.DeliveryMethod, "Id", "TitleDeliveryMethod"))
-                </div>
-                <div class="row">
-                    <label>Контактные данные</label>
-                </div>
-                <div class="row">
-                    <div asp-validation-summary="All" class="text-danger"></div>
-                    <div class="mb-3">
-                        <label asp-for="RegisterModel.FirstLastNameClient" class="control-Label"></label>
-                        <input type="text" asp-for="RegisterModel.FirstLastNameClient" class="form-control" placeholder="test" />
-                        <span asp-validation-for="RegisterModel.FirstLastNameClient" class="text-danger"></span>
+            <div class="col-md-3">
+                <div class="d-flex flex-column justify-content-center mb-3">
+                    <div class="p-2">
+                        <p class="text-center">Способ оплаты</p>
                     </div>
-                    <div class="form-group">
-                        <label asp-for="RegisterModel.EmailClient" class="control-label"></label>
-                        <input type="text" asp-for="RegisterModel.EmailClient" class="form-control" />
-                        <span asp-validation-for="RegisterModel.EmailClient" class="text-danger"></span>
+                    <div class="p-2">
+                        @Html.DropDownList("PayMethodId", new SelectList(ViewBag.PayMethod, "Id", "TitlePayMethod"))
                     </div>
-                    <div class="form-group">
-                        <label asp-for="RegisterModel.NumberPhone" class="control-label"></label>
-                        <input type="text" asp-for="RegisterModel.NumberPhone" class="form-control" />
-                        <span asp-validation-for="RegisterModel.NumberPhone" class="text-danger"></span>
+                    <div class="p-2">
+                        <p class="text-center">Способ доставки</p>
                     </div>
-                    <div class="form-group">
-                        <label asp-for="RegisterModel.Address" class="control-label"></label>
-                        <input type="text" asp-for="RegisterModel.Address" class="form-control" />
-                        <span asp-validation-for="RegisterModel.Address" class="text-danger"></span>
+                    <div class="p-2">
+                        @Html.DropDownList("DeliveryMethodId", new SelectList(ViewBag.DeliveryMethod, "Id", "TitleDeliveryMethod"))
                     </div>
-                    <div class="form-group">
-                        <input type="submit" value="Отправить" />
+                    <div class="p-2">
+                        <p class="text-center">Контактные данные</p>
                     </div>
                 </div>
             </div>

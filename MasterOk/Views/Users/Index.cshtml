@@ -1,14 +1,14 @@
 ﻿@model IEnumerable<MasterOk.Models.ModelDataBase.User>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Список пользователей";
     Layout = "~/Views/Shared/Admin_Layout.cshtml";
 }
 
-<h1>Index</h1>
-
+<h1>Список пользователей</h1>
+<hr />
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" role="button" class="btn btn-primary">Добавить нового пользователя</a>
 </p>
 <table class="table">
     <thead>
@@ -32,41 +32,48 @@
                 @Html.DisplayNameFor(model => model.NumberPhoneStaff)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.ActiveUser)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Role)
             </th>
-            <th></th>
+            <th>Функции</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.EmailUser)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LoginUser)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PasswordUser)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FirstLastNameStaff)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Age)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NumberPhoneStaff)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Role.Id)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EmailUser)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LoginUser)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PasswordUser)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FirstLastNameStaff)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Age)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.NumberPhoneStaff)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ActiveUser)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Role.TitleRole)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id" role="button" class="btn btn-secondary">Редактировать</a>
+                    <a asp-action="Details" asp-route-id="@item.Id" role="button" class="btn btn-info">Информация</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" role="button" class="btn btn-danger">Удалить</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

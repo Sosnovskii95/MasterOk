@@ -1,25 +1,23 @@
 ﻿@model MasterOk.Models.ModelDataBase.Role
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Информация о правах доступа";
     Layout = "~/Views/Shared/Admin_Layout.cshtml";
 }
 
-<h1>Details</h1>
-
+<h1>Информация о правах доступа</h1>
+<hr />
 <div>
-    <h4>Role</h4>
-    <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.TitleRole)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.TitleRole)
         </dd>
     </dl>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+<div class="form-group mb-3">
+    <a asp-action="Edit" asp-route-id="@Model?.Id" role="button" class="btn btn-primary">Редактировать</a>
+    <a asp-action="Index" role="button" class="btn btn-secondary">Вернуться к списку</a>
 </div>
