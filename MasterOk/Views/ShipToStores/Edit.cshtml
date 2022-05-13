@@ -10,34 +10,36 @@
 <h3>Номер отгрузки: @docShipToStore.Id  Дата отгрузки: @docShipToStore.DateShip</h3>
 <hr />
 <form asp-action="Edit">
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Product.TitleProduct)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model=>model.CountShipProduct)
-                </th>
-                <th>Функции</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Product.TitleProduct)
-                    </td>
-                    <td>
-                        <input type="number" name="countShip" value="@item.CountShipProduct">
-                    </td>
-                    <td>
-                        <a asp-action="DeleteItem" asp-route-id="@item.Id">Удалить</a>
-                    </td>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Product.TitleProduct)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model=>model.CountShipProduct)
+                    </th>
+                    <th>Функции</th>
                 </tr>
-            }
-        </tbody>
-    </table>
-    <input type="submit" value="Сохранить изменения" class="btn btn-primary"/>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Product.TitleProduct)
+                        </td>
+                        <td>
+                            <input type="number" name="countShip" value="@item.CountShipProduct">
+                        </td>
+                        <td>
+                            <a asp-action="DeleteItem" asp-route-id="@item.Id">Удалить</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <input type="submit" value="Сохранить изменения" class="btn btn-primary" />
 </form>

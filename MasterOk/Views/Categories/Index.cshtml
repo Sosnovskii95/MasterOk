@@ -10,28 +10,30 @@
 <p>
     <a asp-action="Create" role="button" class="btn btn-primary">Добавить новую категорию</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.TitleCategory)
-            </th>
-            <th>Функции</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
+<div class="table-responsive">
+    <table class="table">
+        <thead>
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.TitleCategory)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id" role="button" class="btn btn-secondary">Редактировать</a>
-                    <a asp-action="Details" asp-route-id="@item.Id" role="button" class="btn btn-info">Информация</a>
-                    <a asp-action="Delete" asp-route-id="@item.Id" role="button" class="btn btn-danger">Удалить</a>
-                </td>
+                <th>
+                    @Html.DisplayNameFor(model => model.TitleCategory)
+                </th>
+                <th>Функции</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TitleCategory)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id" role="button" class="btn btn-secondary">Редактировать</a>
+                        <a asp-action="Details" asp-route-id="@item.Id" role="button" class="btn btn-info">Информация</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" role="button" class="btn btn-danger">Удалить</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

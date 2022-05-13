@@ -8,9 +8,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MasterOk.Data;
 using MasterOk.Models.ModelDataBase;
+using MasterOk.Models.FilterSortViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MasterOk.Controllers
 {
+    [Authorize(Roles = "user")]
     public class ClientsController : Controller
     {
         private readonly DataBaseContext _context;
@@ -21,9 +24,32 @@ namespace MasterOk.Controllers
         }
 
         // GET: Clients
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(ESortModelClient sort)
         {
-            return View(await _context.Clients.ToListAsync());
+            IQueryable<Client> dataBaseContext = _context.Clients;
+
+            dataBaseContext = sort switch
+            {
+                ESortModelClient.IdAsc => dataBaseContext.OrderBy(s => s.Id),
+                ESortModelClient.IdDesc => dataBaseContext.OrderByDescending(s => s.Id),
+                ESortModelClient.EmailAsc => dataBaseContext.OrderBy(s => s.EmailClient),
+                ESortModelClient.EmailDesc => dataBaseContext.OrderByDescending(s => s.EmailClient),
+                ESortModelClient.NameAsc => dataBaseContext.OrderBy(s => s.FirstLastNameClient),
+                ESortModelClient.NameDesc => dataBaseContext.OrderByDescending(s => s.FirstLastNameClient),
+                ESortModelClient.NumberPhoneAsc => dataBaseContext.OrderBy(s => s.NumberPhone),
+                ESortModelClient.NumberPhoneDesc => dataBaseContext.OrderByDescending(s => s.NumberPhone),
+                ESortModelClient.AddressAsc => dataBaseContext.OrderBy(s => s.Address),
+                ESortModelClient.AddressDesc => dataBaseContext.OrderByDescending(s => s.Address),
+                ESortModelClient.SalaryAsc => dataBaseContext.OrderBy(s => s.ProcentSalary),
+                ESortModelClient.SalaryDesc => dataBaseContext.OrderByDescending(s => s.ProcentSalary),
+                _ => dataBaseContext
+            };
+
+            return View(new SortViewModelClient
+            {
+                Clients = await dataBaseContext.ToListAsync(),
+                SortModelClient = new SortModelClient(sort)
+            });
         }
 
         // GET: Clients/Details/5

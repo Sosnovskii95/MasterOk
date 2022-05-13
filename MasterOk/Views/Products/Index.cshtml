@@ -1,8 +1,9 @@
-﻿@model IEnumerable<MasterOk.Models.ModelDataBase.Product>
-
+﻿@model MasterOk.Models.FilterSortViewModels.SortViewModelProduct
+@using MasterOk.Models.ModelDataBase;
 @{
     ViewData["Title"] = "Товары";
     Layout = "~/Views/Shared/Admin_Layout.cshtml";
+    Product product = new Product();
 }
 
 <h1>Товары</h1>
@@ -10,58 +11,80 @@
 <p>
     <a asp-action="Create" role="button" class="btn btn-primary">Добавить новый товар</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.TitleProduct)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DescriptionProduct)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Warranty)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Price)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SubCategory)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CountStoreProduct)
-            </th>
-            <th>Функции</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
+<div class="table-responsive">
+    <table class="table">
+        <thead>
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.TitleProduct)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.DescriptionProduct)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Warranty)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Price)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.SubCategory.Id)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.CountStoreProduct)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id" role="button" class="btn btn-secondary">Редактировать</a>
-                    <a asp-action="Details" asp-route-id="@item.Id" role="button" class="btn btn-info">Информация</a>
-                    <a asp-action="Delete" asp-route-id="@item.Id" role="button" class="btn btn-danger">Удалить</a>
-                </td>
+                <th>
+                    <a asp-action="Index" asp-route-sort="@Model.SortModelProduct.IdSort">
+                        @Html.DisplayNameFor(model => product.Id)
+                    </a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sort="@Model.SortModelProduct.TitleSort">
+                        @Html.DisplayNameFor(model => product.TitleProduct)
+                    </a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sort="@Model.SortModelProduct.DescriptionSort">
+                        @Html.DisplayNameFor(model => product.DescriptionProduct)
+                    </a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sort="@Model.SortModelProduct.WarrantySort">
+                        @Html.DisplayNameFor(model => product.Warranty)
+                    </a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sort="@Model.SortModelProduct.PriceSort">
+                        @Html.DisplayNameFor(model => product.Price)
+                    </a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sort="@Model.SortModelProduct.SubCategorySort">
+                        @Html.DisplayNameFor(model => product.SubCategory)
+                    </a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sort="@Model.SortModelProduct.CountSort">
+                        @Html.DisplayNameFor(model => product.CountStoreProduct)
+                    </a>
+                </th>
+                <th>Функции</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Products)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TitleProduct)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DescriptionProduct)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Warranty)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Price)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SubCategory.TitleSubCategory)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CountStoreProduct)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id" role="button" class="btn btn-secondary">Редактировать</a>
+                        <a asp-action="Details" asp-route-id="@item.Id" role="button" class="btn btn-info">Информация</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" role="button" class="btn btn-danger">Удалить</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

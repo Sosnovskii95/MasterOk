@@ -8,9 +8,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MasterOk.Data;
 using MasterOk.Models.ModelDataBase;
+using MasterOk.Models.FilterSortViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MasterOk.Controllers
 {
+    [Authorize(Roles = "user")]
     public class UsersController : Controller
     {
         private readonly DataBaseContext _context;
@@ -21,10 +24,36 @@ namespace MasterOk.Controllers
         }
 
         // GET: Users
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(ESortModelUsers sort)
         {
-            var dataBaseContext = _context.Users.Include(u => u.Role);
-            return View(await dataBaseContext.ToListAsync());
+            IQueryable<User> dataBaseContext = _context.Users.Include(u => u.Role);
+
+            dataBaseContext = sort switch
+            {
+                ESortModelUsers.IdAsc => dataBaseContext.OrderBy(s => s.Id),
+                ESortModelUsers.IdDesc => dataBaseContext.OrderByDescending(s => s.Id),
+                ESortModelUsers.ActiveAsc => dataBaseContext.OrderBy(s => s.ActiveUser),
+                ESortModelUsers.ActiveDesc => dataBaseContext.OrderByDescending(s => s.ActiveUser),
+                ESortModelUsers.AgeAsc => dataBaseContext.OrderBy(s => s.Age),
+                ESortModelUsers.AgeDesc => dataBaseContext.OrderByDescending(s => s.Age),
+                ESortModelUsers.EmailAsc => dataBaseContext.OrderBy(s => s.EmailUser),
+                ESortModelUsers.EmailDesc => dataBaseContext.OrderByDescending(s => s.EmailUser),
+                ESortModelUsers.LoginAsc => dataBaseContext.OrderBy(s => s.LoginUser),
+                ESortModelUsers.LoginDesc => dataBaseContext.OrderByDescending(s => s.LoginUser),
+                ESortModelUsers.NameAsc => dataBaseContext.OrderBy(s => s.FirstLastNameStaff),
+                ESortModelUsers.NameDesc => dataBaseContext.OrderByDescending(s => s.FirstLastNameStaff),
+                ESortModelUsers.NumberPhoneAsc => dataBaseContext.OrderBy(s => s.NumberPhoneStaff),
+                ESortModelUsers.NumberPhoneDesc => dataBaseContext.OrderByDescending(s => s.NumberPhoneStaff),
+                ESortModelUsers.RoleAsc => dataBaseContext.OrderBy(s => s.Role.TitleRole),
+                ESortModelUsers.RoleDesc => dataBaseContext.OrderByDescending(s => s.Role.TitleRole),
+                _ => dataBaseContext
+            };
+
+            return View(new SortViewModelUsers
+            {
+                Users = await dataBaseContext.ToListAsync(),
+                SortModelUsers = new SortModelUsers(sort)
+            });
         }
 
         // GET: Users/Details/5
@@ -92,7 +121,7 @@ namespace MasterOk.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,EmailUser,LoginUser,PasswordUser,FirstLastNameStaff,Age,NumberPhoneStaff,RoleId")] User user)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,EmailUser,LoginUser,PasswordUser,FirstLastNameStaff,Age,NumberPhoneStaff,ActiveUser,RoleId")] User user)
         {
             if (id != user.Id)
             {

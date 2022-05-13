@@ -5,10 +5,11 @@ using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Authorization;
+using MasterOk.Models.FilterSortViewModels;
 
 namespace MasterOk.Controllers
 {
-    //[Authorize(Roles = "user" )]
+    [Authorize(Roles = "user" )]
     public class ShipToStoresController : Controller
     {
         private readonly DataBaseContext _context;
@@ -18,9 +19,26 @@ namespace MasterOk.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(ESortModelDocShip sort)
         {
-            return View(await _context.DocShipToStores.Include(u => u.User).ToListAsync());
+            IQueryable<DocShipToStore> dataBaseContext = _context.DocShipToStores.Include(u => u.User);
+
+            dataBaseContext = sort switch
+            {
+                ESortModelDocShip.IdAsc => dataBaseContext.OrderBy(s => s.Id),
+                ESortModelDocShip.IdDesc => dataBaseContext.OrderByDescending(s => s.Id),
+                ESortModelDocShip.DateAsc => dataBaseContext.OrderBy(s => s.DateShip),
+                ESortModelDocShip.DateDesc => dataBaseContext.OrderByDescending(s => s.DateShip),
+                ESortModelDocShip.UserAsc => dataBaseContext.OrderBy(s => s.User.FirstLastNameStaff),
+                ESortModelDocShip.UserDesc => dataBaseContext.OrderByDescending(s => s.User.FirstLastNameStaff),
+                _ => dataBaseContext
+            };
+
+            return View(new SortViewModelDocShip
+            {
+                DocShipToStores = await dataBaseContext.ToListAsync(),
+                SortModelDocShip = new SortModelDocShip(sort)
+            });
         }
 
         public async Task<IActionResult> Create()

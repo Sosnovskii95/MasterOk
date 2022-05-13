@@ -29,30 +29,39 @@ namespace MasterOk.Controllers
         {
             if (ModelState.IsValid)
             {
-                Client client = await _context.Clients.FirstOrDefaultAsync(
+                if (loginModel.InvateAdmin)
+                {
+                    User user = await _context.Users.Include(r => r.Role).FirstOrDefaultAsync(
+                                        l => l.EmailUser.Equals(loginModel.Email)
+                                        && l.PasswordUser.Equals(loginModel.Password));
+
+                    if (user != null)
+                    {
+                        await Authenticate(user.Id, user.Role.TitleRole);
+
+                        return RedirectToAction(nameof(Index), "Users");
+                    }
+                    ModelState.AddModelError("", "Такого пользователя не существует! Проверьте данные для входа");
+
+                    return View(loginModel);
+                }
+                else
+                {
+                    Client client = await _context.Clients.FirstOrDefaultAsync(
                     l => l.EmailClient.Equals(loginModel.Email)
                     && l.PasswordClient.Equals(loginModel.Password));
 
-                if (client != null)
-                {
-                    await Authenticate(client.Id, "client");
+                    if (client != null)
+                    {
+                        await Authenticate(client.Id, "client");
 
-                    return RedirectToAction(nameof(Index), "ClientPersonalArea");
-                }
+                        return RedirectToAction(nameof(Index), "ClientPersonalArea");
+                    }
+                    ModelState.AddModelError("", "Такого клиента не существует! Проверьте данные для входа");
 
-                User user = await _context.Users.Include(r => r.Role).FirstOrDefaultAsync(
-                    l => l.EmailUser.Equals(loginModel.Email)
-                    && l.PasswordUser.Equals(loginModel.Password));
-
-                if(user != null)
-                {
-                    await Authenticate(user.Id, user.Role.TitleRole);
-
-                    return RedirectToAction(nameof(Index), "Users");
+                    return View(loginModel);
                 }
             }
-            ModelState.AddModelError("", "Такого пользователя не существует! Проверьте данные для входа");
-
             return View(loginModel);
         }
 
@@ -100,7 +109,7 @@ namespace MasterOk.Controllers
 
                 await Authenticate(client.Id, "client");
 
-                return RedirectToAction(nameof(Index), "Clients");
+                return RedirectToAction(nameof(Index), "ClientPersonalArea");
             }
             else
             {
@@ -134,6 +143,14 @@ namespace MasterOk.Controllers
             ModelState.AddModelError("", "Некорректные данные");
 
             return View(registerModel);
+        }
+
+        public async Task<IActionResult> Logout()
+        {
+            var user = User.FindFirstValue(ClaimsIdentity.DefaultRoleClaimType);
+            await HttpContext.SignOutAsync();
+
+            return RedirectToAction(nameof(Login));
         }
 
         private async Task Authenticate(int idClientUser, string titleRole)

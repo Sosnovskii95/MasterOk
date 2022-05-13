@@ -1,8 +1,9 @@
-﻿@model IEnumerable<MasterOk.Models.ModelDataBase.ProductCheck>
-
+﻿@model MasterOk.Models.FilterSortViewModels.SortViewModelProductChecks;
+@using MasterOk.Models.ModelDataBase;
 @{
     ViewData["Title"] = "Список заказов";
     Layout = "~/Views/Shared/Admin_Layout.cshtml";
+    ProductCheck productCheck = new ProductCheck();
 }
 
 <h1>Список заказов</h1>
@@ -10,64 +11,80 @@
 <p>
     <a asp-action="Create" role="button" class="btn btn-primary">Добавить новый заказ</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model=> model.Id)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DateTimeSale)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StateOrder)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Client)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.User)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PayMethod)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DeliveryMethod)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
+<div class="table-responsive">
+    <table class="table">
+        <thead>
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem=>item.Id)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.DateTimeSale)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.StateOrder.TitleState)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Client.FirstLastNameClient)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.User.FirstLastNameStaff)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PayMethod.TitlePayMethod)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.DeliveryMethod.TitleDeliveryMethod)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id" role="button" class="btn btn-secondary">Редактировать</a>
-                    <a asp-action="Details" asp-route-id="@item.Id" role="button" class="btn btn-info">Информация</a>
-                    <a asp-action="Delete" asp-route-id="@item.Id" role="button" class="btn btn-danger">Удалить</a>
-                </td>
+                <th>
+                    <a asp-action="Index" asp-route-sort="@Model.SortModelProductChecks.IdSort">
+                        @Html.DisplayNameFor(model=> productCheck.Id)
+                    </a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sort="@Model.SortModelProductChecks.DateTimeSaleSort">
+                        @Html.DisplayNameFor(model => productCheck.DateTimeSale)
+                    </a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sort="@Model.SortModelProductChecks.StateOrderSort">
+                        @Html.DisplayNameFor(model => productCheck.StateOrder)
+                    </a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sort="@Model.SortModelProductChecks.ClientSort">
+                        @Html.DisplayNameFor(model => productCheck.Client)
+                    </a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sort="@Model.SortModelProductChecks.UserSort">
+                        @Html.DisplayNameFor(model => productCheck.User)
+                    </a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sort="@Model.SortModelProductChecks.PayMethodSort">
+                        @Html.DisplayNameFor(model => productCheck.PayMethod)
+                    </a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sort="@Model.SortModelProductChecks.DeliveryMethodSort">
+                        @Html.DisplayNameFor(model => productCheck.DeliveryMethod)
+                    </a>
+                </th>
+                <th>Функции</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ProductChecks)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem=>item.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DateTimeSale)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.StateOrder.TitleState)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Client.FirstLastNameClient)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.User.FirstLastNameStaff)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PayMethod.TitlePayMethod)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DeliveryMethod.TitleDeliveryMethod)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id" role="button" class="btn btn-secondary">Редактировать</a>
+                        <a asp-action="Details" asp-route-id="@item.Id" role="button" class="btn btn-info">Информация</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" role="button" class="btn btn-danger">Удалить</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

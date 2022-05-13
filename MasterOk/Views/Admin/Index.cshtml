@@ -1,14 +1,12 @@
-﻿@{
+﻿@model MasterOk.Models.ModelDataBase.User
+@{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/Admin_Layout.cshtml";
 }
+<div class="row">
+    <div class="col-md-4">
+        <label>Вы вошли в систему!</label>
+        <label>Пользователь: @Model.FirstLastNameStaff</label>
+    </div>
+</div>
 
-@Html.ActionLink("Пользователи","Index","Users")
-@Html.ActionLink("Права доступа","Index","Roles")
-@Html.ActionLink("Категории","Index","Categories")
-@Html.ActionLink("Подкатегории", "Index","SubCategories")
-@Html.ActionLink("Товары", "Index","Products")
-@Html.ActionLink("Отгрузка на склад", "Index", "ShipToStores")
-@Html.ActionLink("Способы оплаты", "Index", "PayMethods")
-@Html.ActionLink("Способы доставки", "Index", "DeliveryMethods")
-@Html.ActionLink("Статусы заказов", "Index", "StateOrders")

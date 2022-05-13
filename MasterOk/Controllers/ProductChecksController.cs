@@ -10,10 +10,11 @@ using MasterOk.Data;
 using MasterOk.Models.ModelDataBase;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using MasterOk.Models.FilterSortViewModels;
 
 namespace MasterOk.Controllers
 {
-    //[Authorize(Roles = "user")]
+    [Authorize(Roles = "user")]
     public class ProductChecksController : Controller
     {
         private readonly DataBaseContext _context;
@@ -24,15 +25,39 @@ namespace MasterOk.Controllers
         }
 
         // GET: ProductChecks
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(ESortModelProductCheck sort)
         {
-            var dataBaseContext = _context.ProductChecks.
+            IQueryable<ProductCheck> dataBaseContext = _context.ProductChecks.
                 Include(p => p.Client).
                 Include(p => p.DeliveryMethod).
                 Include(p => p.PayMethod).
                 Include(p => p.StateOrder).
                 Include(p => p.User);
-            return View(await dataBaseContext.ToListAsync());
+
+            dataBaseContext = sort switch
+            {
+                ESortModelProductCheck.IdAsc => dataBaseContext.OrderBy(s => s.Id),
+                ESortModelProductCheck.IdDesc => dataBaseContext.OrderByDescending(s => s.Id),
+                ESortModelProductCheck.ClientIdAsc => dataBaseContext.OrderBy(s => s.Client.FirstLastNameClient),
+                ESortModelProductCheck.ClientIdDesc => dataBaseContext.OrderByDescending(s => s.Client.FirstLastNameClient),
+                ESortModelProductCheck.DateTimeSaleAsc => dataBaseContext.OrderBy(s => s.DateTimeSale),
+                ESortModelProductCheck.DateTimeSaleDesc => dataBaseContext.OrderByDescending(s => s.DateTimeSale),
+                ESortModelProductCheck.DeliveryMethodIdAsc => dataBaseContext.OrderBy(s => s.DeliveryMethod.TitleDeliveryMethod),
+                ESortModelProductCheck.DeliveryMethodIdDesc => dataBaseContext.OrderByDescending(s => s.DeliveryMethod.TitleDeliveryMethod),
+                ESortModelProductCheck.PayMethodIdAsc => dataBaseContext.OrderBy(s => s.PayMethod.TitlePayMethod),
+                ESortModelProductCheck.PayMethodIdDesc => dataBaseContext.OrderByDescending(s => s.PayMethod.TitlePayMethod),
+                ESortModelProductCheck.StateOrderIdAsc => dataBaseContext.OrderBy(s => s.StateOrder.TitleState),
+                ESortModelProductCheck.StateOrderIdDesc => dataBaseContext.OrderByDescending(s => s.StateOrder.TitleState),
+                ESortModelProductCheck.UserIdAsc => dataBaseContext.OrderBy(s => s.User.FirstLastNameStaff),
+                ESortModelProductCheck.UserIdDesc => dataBaseContext.OrderByDescending(s => s.User.FirstLastNameStaff),
+                _ => dataBaseContext
+            };
+
+            return View(new SortViewModelProductChecks
+            {
+                ProductChecks = await dataBaseContext.ToListAsync(),
+                SortModelProductChecks = new SortModelProductChecks(sort)
+            });
         }
 
         // GET: ProductChecks/Details/5
@@ -218,11 +243,11 @@ namespace MasterOk.Controllers
         {
             var productCheck = await _context.ProductChecks.Include(p => p.ProductSolds).FirstOrDefaultAsync(i => i.Id == id);
 
-            foreach(var item in productCheck.ProductSolds)
+            foreach (var item in productCheck.ProductSolds)
             {
                 var product = await _context.Products.FindAsync(item.ProductId);
 
-                if(product != null)
+                if (product != null)
                 {
                     product.CountStoreProduct += item.CountSold;
 

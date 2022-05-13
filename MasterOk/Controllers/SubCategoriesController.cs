@@ -9,9 +9,11 @@ using Microsoft.EntityFrameworkCore;
 using MasterOk.Data;
 using MasterOk.Models.ModelDataBase;
 using MasterOk.Models.FilesModify;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MasterOk.Controllers
 {
+    [Authorize(Roles = "user")]
     public class SubCategoriesController : Controller
     {
         private readonly DataBaseContext _context;

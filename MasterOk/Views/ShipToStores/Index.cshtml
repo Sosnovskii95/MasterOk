@@ -1,8 +1,9 @@
-﻿@model IEnumerable<MasterOk.Models.ModelDataBase.DocShipToStore>
-
+﻿@model MasterOk.Models.FilterSortViewModels.SortViewModelDocShip
+@using MasterOk.Models.ModelDataBase;
 @{
     ViewData["Title"] = "Список отгрузок";
     Layout = "~/Views/Shared/Admin_Layout.cshtml";
+    DocShipToStore docShipToStore = new DocShipToStore();
 }
 
 <h1>Список отгрузок</h1>
@@ -10,40 +11,48 @@
 <p>
     <a asp-action="Create" role="button" class="btn btn-primary">Добавить новую отгрузку</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model=>model.Id)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DateShip)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.User)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
+<div class="table-responsive">
+    <table class="table">
+        <thead>
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Id)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.DateShip)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.User.FirstLastNameStaff)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id" role="button" class="btn btn-secondary">Редактировать</a>
-                    <a asp-action="Details" asp-route-id="@item.Id" role="button" class="btn btn-info">Информация</a>
-                    <a asp-action="Delete" asp-route-id="@item.Id" role="button" class="btn btn-danger">Удалить</a>
-                </td>
+                <th>
+                    <a asp-action="Index" asp-route-sort="@Model.SortModelDocShip.IdSort">
+                        @Html.DisplayNameFor(model => docShipToStore.Id)
+                    </a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sort="@Model.SortModelDocShip.DateSort">
+                        @Html.DisplayNameFor(model => docShipToStore.DateShip)
+                    </a>
+                </th>
+                <th>
+                    <a asp-action="Index" asp-route-sort="@Model.SortModelDocShip.DateSort">
+                        @Html.DisplayNameFor(model => docShipToStore.User)
+                    </a>
+                </th>
+                <th>Функции</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.DocShipToStores)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DateShip)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.User.FirstLastNameStaff)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id" role="button" class="btn btn-secondary">Редактировать</a>
+                        <a asp-action="Details" asp-route-id="@item.Id" role="button" class="btn btn-info">Информация</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" role="button" class="btn btn-danger">Удалить</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

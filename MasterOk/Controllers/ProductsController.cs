@@ -9,9 +9,12 @@ using Microsoft.EntityFrameworkCore;
 using MasterOk.Data;
 using MasterOk.Models.ModelDataBase;
 using MasterOk.Models.FilesModify;
+using MasterOk.Models.FilterSortViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MasterOk.Controllers
 {
+    [Authorize(Roles = "user")]
     public class ProductsController : Controller
     {
         private readonly DataBaseContext _context;
@@ -24,9 +27,34 @@ namespace MasterOk.Controllers
         }
 
         // GET: Products
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(ESortModelProduct sort)
         {
-            return View(await _context.Products.Include(p => p.SubCategory).ToListAsync());
+            IQueryable<Product> dataBaseContext = _context.Products.Include(s => s.SubCategory);
+
+            dataBaseContext = sort switch
+            {
+                ESortModelProduct.IdAsc => dataBaseContext.OrderBy(s => s.Id),
+                ESortModelProduct.IdDesc => dataBaseContext.OrderByDescending(s => s.Id),
+                ESortModelProduct.CountAsc => dataBaseContext.OrderBy(s => s.CountStoreProduct),
+                ESortModelProduct.CountDesc => dataBaseContext.OrderByDescending(s => s.CountStoreProduct),
+                ESortModelProduct.DescriptionAsc => dataBaseContext.OrderBy(s => s.DescriptionProduct),
+                ESortModelProduct.DescriptionDesc => dataBaseContext.OrderByDescending(s => s.DescriptionProduct),
+                ESortModelProduct.PriceAsc => dataBaseContext.OrderBy(s => s.Price),
+                ESortModelProduct.PriceDesc => dataBaseContext.OrderByDescending(s => s.Price),
+                ESortModelProduct.SubCategoryAsc => dataBaseContext.OrderBy(s => s.SubCategory.TitleSubCategory),
+                ESortModelProduct.SubCategoryDesc => dataBaseContext.OrderByDescending(s => s.SubCategory.TitleSubCategory),
+                ESortModelProduct.TitleAsc => dataBaseContext.OrderBy(s => s.TitleProduct),
+                ESortModelProduct.TitleDesc => dataBaseContext.OrderByDescending(s => s.TitleProduct),
+                ESortModelProduct.WarrantyAsc => dataBaseContext.OrderBy(s => s.Warranty),
+                ESortModelProduct.WarrantyDesc => dataBaseContext.OrderByDescending(s => s.Warranty),
+                _ => dataBaseContext
+            };
+
+            return View(new SortViewModelProduct
+            {
+                Products = await dataBaseContext.ToListAsync(),
+                SortModelProduct = new SortModelProduct(sort)
+            });
         }
 
         // GET: Products/Details/5
