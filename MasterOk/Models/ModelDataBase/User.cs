@@ -29,11 +29,5 @@ namespace MasterOk.Models.ModelDataBase
 
         [Display(Name ="Активность")]
         public bool ActiveUser { get; set; }
-
-        [Display(Name = "Роль")]
-        public int RoleId { get; set; }
-
-        [Display(Name = "Роль")]
-        public Role? Role { get; set; }
     }
 }

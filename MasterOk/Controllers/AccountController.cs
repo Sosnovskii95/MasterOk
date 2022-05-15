@@ -25,19 +25,19 @@ namespace MasterOk.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginModel loginModel, string ? returnUrl)
+        public async Task<IActionResult> Login(LoginModel loginModel, string? returnUrl)
         {
             if (ModelState.IsValid)
             {
                 if (loginModel.InvateAdmin)
                 {
-                    User user = await _context.Users.Include(r => r.Role).FirstOrDefaultAsync(
+                    User user = await _context.Users.FirstOrDefaultAsync(
                                         l => l.EmailUser.Equals(loginModel.Email)
                                         && l.PasswordUser.Equals(loginModel.Password));
 
                     if (user != null)
                     {
-                        await Authenticate(user.Id, user.Role.TitleRole);
+                        await Authenticate(user.Id, "user");
 
                         return RedirectToAction(nameof(Index), "Users");
                     }
@@ -125,11 +125,11 @@ namespace MasterOk.Controllers
         [HttpPost]
         public async Task<IActionResult> ResetPassword(RegisterModel registerModel)
         {
-            if(registerModel != null)
+            if (registerModel != null)
             {
                 Client client = await _context.Clients.Where(n => n.EmailClient.Equals(registerModel.EmailClient) && n.NumberPhone.Equals(registerModel.NumberPhone)).FirstOrDefaultAsync();
 
-                if(client != null)
+                if (client != null)
                 {
                     client.PasswordClient = client.EmailClient;
 
@@ -147,7 +147,7 @@ namespace MasterOk.Controllers
 
         public async Task<IActionResult> Logout()
         {
-            var user = User.FindFirstValue(ClaimsIdentity.DefaultRoleClaimType);
+            var user = User.FindFirst(ClaimsIdentity.DefaultRoleClaimType);
             await HttpContext.SignOutAsync();
 
             return RedirectToAction(nameof(Login));

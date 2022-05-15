@@ -50,11 +50,6 @@
                         @Html.DisplayNameFor(model => users.ActiveUser)
                     </a>
                 </th>
-                <th>
-                    <a asp-action="Index" asp-route-sort="@Model.SortModelUsers.RoleSort">
-                        @Html.DisplayNameFor(model => users.Role)
-                    </a>
-                </th>
                 <th>Функции</th>
             </tr>
         </thead>
@@ -82,9 +77,6 @@
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.ActiveUser)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Role.TitleRole)
                     </td>
                     <td>
                         <a asp-action="Edit" asp-route-id="@item.Id" role="button" class="btn btn-secondary">Редактировать</a>
