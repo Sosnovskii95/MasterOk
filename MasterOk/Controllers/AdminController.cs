@@ -6,7 +6,7 @@ using MasterOk.Models.ModelDataBase;
 
 namespace MasterOk.Controllers
 {
-    [Authorize(Roles = "user")]
+    //[Authorize(Roles = "user")]
     public class AdminController : Controller
     {
         private readonly DataBaseContext _context;
