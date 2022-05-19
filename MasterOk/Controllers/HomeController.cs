@@ -115,7 +115,7 @@ namespace MasterOk.Controllers
         {
             if (productId > 0)
             {
-                return View(await _context.Products.Include(s => s.SubCategory).ThenInclude(c => c.Category).FirstOrDefaultAsync(i => i.Id == productId));
+                return View(await _context.Products.Include(n=>n.NameImages).Include(s => s.SubCategory).ThenInclude(c => c.Category).FirstOrDefaultAsync(i => i.Id == productId));
             }
             else
             {
