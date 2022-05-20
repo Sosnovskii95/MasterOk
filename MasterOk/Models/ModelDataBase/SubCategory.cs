@@ -6,9 +6,11 @@ namespace MasterOk.Models.ModelDataBase
     public class SubCategory
     {
         [Key]
+        [Display(Name = "Номер")]
         public int Id { get; set; }
 
         [Display(Name = "Название подкатегории")]
+        [Required(ErrorMessage = "Название подкатегории")]
         public string TitleSubCategory { get; set; }
 
         [Display(Name = "Изображение")]

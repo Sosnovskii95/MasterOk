@@ -23,11 +23,11 @@ namespace MasterOk.Models.ModelDataBase
         public int CountSold { get; set; }
 
         [Display(Name = "Стоимость")]
-        [Range(0, double.MaxValue, ErrorMessage = "Стоимость отрицательная")]
-        public double PriceSold { get; set; }
+        [Range(typeof(decimal), "0,0", "100000,6", ErrorMessage = "Стоимость отрицательная")]
+        public decimal PriceSold { get; set; }
 
         [Display(Name = "Общая стоимость")]
-        [Range(0, double.MaxValue, ErrorMessage = "Общая стоимость отрицательная")]
-        public double TotalSold { get; set; }
+        [Range(typeof(decimal), "0,0", "100000,6", ErrorMessage = "Общая стоимость отрицательная")]
+        public decimal TotalSold { get; set; }
     }
 }

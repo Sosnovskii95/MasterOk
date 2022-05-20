@@ -8,6 +8,7 @@ namespace MasterOk.Models.ModelDataBase
         public int Id { get; set; }
 
         [Display(Name = "Статус заказа")]
+        [Required(ErrorMessage = "Статус заказа")]
         public string TitleState { get; set; }
     }
 }
