@@ -6,6 +6,7 @@ namespace MasterOk.Models.ModelAuthorization
     {
         [Display(Name = "Электронная почта")]
         [Required(ErrorMessage = "Заполните данное поле")]
+        [DataType(DataType.EmailAddress)]
         public string EmailClient { get; set; }
 
         [Display(Name = "Пароль")]

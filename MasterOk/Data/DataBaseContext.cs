@@ -43,6 +43,7 @@ namespace MasterOk.Data
             modelBuilder.Entity<PayMethod>().HasData(new List<PayMethod> { new PayMethod { Id = 1, TitlePayMethod = "Наличные" }, new PayMethod { Id = 2, TitlePayMethod = "Карта" } });
             modelBuilder.Entity<DeliveryMethod>().HasData(new List<DeliveryMethod> { new DeliveryMethod { Id = 1, TitleDeliveryMethod = "Самовывоз" }, new DeliveryMethod { Id = 2, TitleDeliveryMethod = "Доставка" } });
             modelBuilder.Entity<StateOrder>().HasData(new List<StateOrder> { new StateOrder { Id = 1, TitleState = "В обработке" }, new StateOrder { Id = 2, TitleState = "Одобрен" }, new StateOrder { Id = 3, TitleState = "Завершен" } });
+            modelBuilder.Entity<User>().HasData(new User { LoginUser = "admin", EmailUser = "admin@admin", PasswordUser = "admin", ActiveUser = true, FirstLastNameStaff = "Администратор", NumberPhoneStaff = 375333333, Age = 27, Id=1 });
         }
     }
 }
