@@ -1,8 +1,14 @@
-﻿@model MasterOk.Models.ModelDataBase.Category
+﻿@using System.Security.Claims
+@model MasterOk.Models.ModelDataBase.Category
 
 @{
     ViewData["Title"] = "Редактирование категории";
-    Layout = "~/Views/Shared/Admin_Layout.cshtml";
+    var role = User.FindFirstValue(ClaimsIdentity.DefaultRoleClaimType);
+    switch (role)
+    {
+        case "admin": Layout = "~/Views/Shared/Admin_Layout.cshtml"; break;
+        case "marketplacemanager": Layout = "~/Views/Shared/MarketManager_Layout.cshtml"; break;
+    };
 }
 
 <h1>Редактирование категории</h1>
@@ -43,6 +49,6 @@
 
 @section Scripts {
     @{
-    await Html.RenderPartialAsync("_ValidationScriptsPartial");
-}
-}
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    }

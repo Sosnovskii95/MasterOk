@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace MasterOk.Controllers
 {
-    [Authorize(Roles = "user")]
+    [Authorize(Roles = "admin, marketplacemanager")]
     public class SubCategoriesController : Controller
     {
         private readonly DataBaseContext _context;

@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MasterOk.Controllers
 {
@@ -18,6 +19,24 @@ namespace MasterOk.Controllers
             _context = context;
         }
 
+        [Authorize(Roles = "admin, marketplacemanager, clientmanager")]
+        public async Task<IActionResult> Index()
+        {
+            var id = Convert.ToInt32(User.FindFirstValue(ClaimsIdentity.DefaultNameClaimType));
+
+            User user = await _context.Users.Include(r => r.Role).FirstOrDefaultAsync(i=>i.Id == id);
+
+            if(user != null)
+            {
+                return View(user);
+            }
+            else
+            {
+                await Logout();
+                return RedirectToAction(nameof(Login));
+            }
+        }
+
         public IActionResult Login()
         {
             return View();
@@ -25,21 +44,32 @@ namespace MasterOk.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginModel loginModel, string? returnUrl)
+        public async Task<IActionResult> Login(LoginModel loginModel)
         {
             if (ModelState.IsValid)
             {
                 if (loginModel.InvateAdmin)
                 {
-                    User user = await _context.Users.FirstOrDefaultAsync(
+                    User user = await _context.Users.Include(r => r.Role).FirstOrDefaultAsync(
                                         l => l.EmailUser.Equals(loginModel.Email)
                                         && l.PasswordUser.Equals(loginModel.Password));
 
                     if (user != null)
                     {
-                        await Authenticate(user.Id, "user");
+                        if (user.ActiveUser)
+                        {
+                            await Authenticate(user.Id, user.Role.ValueRole);
 
-                        return RedirectToAction(nameof(Index), "Users");
+                            switch (user.Role.ValueRole)
+                            {
+                                case "admin": return RedirectToAction(nameof(Index), "Account");
+                                case "marketplacemanager": return RedirectToAction(nameof(Index), "Account");
+                                case "clientmanager": return RedirectToAction(nameof(Index), "Account");
+                                default: break;
+                            }
+                        }
+                        ModelState.AddModelError("", "Данному пользователю запрещен вход в систему! Обратитесь к администратору.");
+
                     }
                     ModelState.AddModelError("", "Такого пользователя не существует! Проверьте данные для входа");
 
@@ -48,8 +78,8 @@ namespace MasterOk.Controllers
                 else
                 {
                     Client client = await _context.Clients.FirstOrDefaultAsync(
-                    l => l.EmailClient.Equals(loginModel.Email)
-                    && l.PasswordClient.Equals(loginModel.Password));
+                                            l => l.EmailClient.Equals(loginModel.Email)
+                                            && l.PasswordClient.Equals(loginModel.Password));
 
                     if (client != null)
                     {
@@ -101,7 +131,8 @@ namespace MasterOk.Controllers
                     PasswordClient = registerModel.PasswordClient,
                     FirstLastNameClient = registerModel.FirstLastNameClient,
                     NumberPhone = registerModel.NumberPhone,
-                    Address = registerModel.Address
+                    Address = registerModel.Address,
+                    ProcentSalaryId = 1
                 };
 
                 _context.Add(client);

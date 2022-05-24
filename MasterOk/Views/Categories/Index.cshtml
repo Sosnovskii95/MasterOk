@@ -1,8 +1,14 @@
-﻿@model IEnumerable<MasterOk.Models.ModelDataBase.Category>
+﻿@using System.Security.Claims
+@model IEnumerable<MasterOk.Models.ModelDataBase.Category>
 
 @{
     ViewData["Title"] = "Категории";
-    Layout = "~/Views/Shared/Admin_Layout.cshtml";
+    var role = User.FindFirstValue(ClaimsIdentity.DefaultRoleClaimType);
+    switch (role)
+    {
+        case "admin": Layout = "~/Views/Shared/Admin_Layout.cshtml"; break;
+        case "marketplacemanager": Layout = "~/Views/Shared/MarketManager_Layout.cshtml"; break;
+    };
 }
 
 <h1>Список категорий</h1>

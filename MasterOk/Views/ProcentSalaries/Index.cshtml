@@ -1,0 +1,51 @@
+﻿@using System.Security.Claims
+@model IEnumerable<MasterOk.Models.ModelDataBase.ProcentSalary>
+
+@{
+    ViewData["Title"] = "Список скидок";
+    var role = User.FindFirstValue(ClaimsIdentity.DefaultRoleClaimType);
+    switch (role)
+    {
+        case "admin": Layout = "~/Views/Shared/Admin_Layout.cshtml"; break;
+        case "clientmanager": Layout = "~/Views/Shared/ClientManager_Layout.cshtml"; break;
+    };
+}
+
+<h1>Список скидок</h1>
+<hr />
+<p>
+    <a asp-action="Create" role="button" class="btn btn-primary">Добавить новые права доступа</a>
+</p>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.TitleProcentSalary)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ValueProcentSalary)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TitleProcentSalary)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ValueProcentSalary)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id" role="button" class="btn btn-secondary">Редактировать</a>
+                        <a asp-action="Details" asp-route-id="@item.Id" role="button" class="btn btn-info">Информация</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" role="button" class="btn btn-danger">Удалить</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

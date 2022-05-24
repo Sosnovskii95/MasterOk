@@ -30,9 +30,10 @@ namespace MasterOk.Models.ModelDataBase
         public string Address { get; set; }
 
         [Display(Name = "Процент скидки")]
-        [Required(ErrorMessage = "Процент скидки")]
-        [Range(0, int.MaxValue, ErrorMessage = "Процен отрицательный")]
-        public int ProcentSalary { get; set; }
+        public int ProcentSalaryId { get; set; }
+
+        [Display(Name = "Процент скидки")]
+        public ProcentSalary? ProcentSalary { get; set; }
 
         public ICollection<ProductCheck>? ProductChecks { get; set; }
 

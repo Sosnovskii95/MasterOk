@@ -18,6 +18,8 @@
 
         public ESortModelUsers Current { get; private set; }
 
+        public ESortModelUsers RoleSort { get; set; }
+
         public SortModelUsers(ESortModelUsers sort)
         {
             IdSort = sort == ESortModelUsers.IdAsc ? ESortModelUsers.IdDesc : ESortModelUsers.IdAsc;
@@ -27,6 +29,7 @@
             AgeSort = sort == ESortModelUsers.AgeAsc ? ESortModelUsers.AgeDesc : ESortModelUsers.AgeAsc;
             NumberPhoneSort = sort == ESortModelUsers.NumberPhoneAsc ? ESortModelUsers.NumberPhoneDesc : ESortModelUsers.NumberPhoneAsc;
             ActiveSort = sort == ESortModelUsers.ActiveAsc ? ESortModelUsers.ActiveDesc : ESortModelUsers.ActiveAsc;
+            RoleSort = sort == ESortModelUsers.RoleAsc ? ESortModelUsers.RoleDesc : ESortModelUsers.RoleAsc;
             Current = sort;
         }
     }
@@ -46,6 +49,8 @@
         NumberPhoneAsc,
         NumberPhoneDesc,
         ActiveAsc,
-        ActiveDesc
+        ActiveDesc,
+        RoleAsc,
+        RoleDesc
     }
 }

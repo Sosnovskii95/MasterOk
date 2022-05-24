@@ -1,0 +1,42 @@
+﻿@using System.Security.Claims
+@model MasterOk.Models.ModelDataBase.ProcentSalary
+
+@{
+    ViewData["Title"] = "Добавление скидок";
+    var role = User.FindFirstValue(ClaimsIdentity.DefaultRoleClaimType);
+    switch (role)
+    {
+        case "admin": Layout = "~/Views/Shared/Admin_Layout.cshtml"; break;
+        case "clientmanager": Layout = "~/Views/Shared/ClientManager_Layout.cshtml"; break;
+    };
+}
+
+<h1>Добавление скидок</h1>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group mb-3">
+                <label asp-for="TitleProcentSalary" class="control-label"></label>
+                <input asp-for="TitleProcentSalary" class="form-control" />
+                <span asp-validation-for="TitleProcentSalary" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="ValueProcentSalary" class="control-label"></label>
+                <input asp-for="ValueProcentSalary" class="form-control" />
+                <span asp-validation-for="ValueProcentSalary" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <input type="submit" value="Добавить" class="btn btn-primary" />
+                <a asp-action="Index" role="button" class="btn btn-secondary">Вернуться к списку</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    }

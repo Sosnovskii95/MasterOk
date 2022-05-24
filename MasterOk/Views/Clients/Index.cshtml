@@ -1,8 +1,14 @@
 ﻿@model MasterOk.Models.FilterSortViewModels.SortViewModelClient;
 @using MasterOk.Models.ModelDataBase;
+@using System.Security.Claims
 @{
     ViewData["Title"] = "Список клиентов";
-    Layout = "~/Views/Shared/Admin_Layout.cshtml";
+    var role = User.FindFirstValue(ClaimsIdentity.DefaultRoleClaimType);
+    switch (role)
+    {
+        case "admin": Layout = "~/Views/Shared/Admin_Layout.cshtml"; break;
+        case "clientmanager": Layout = "~/Views/Shared/ClientManager_Layout.cshtml"; break;
+    };
     Client client = new Client();
 }
 
@@ -53,10 +59,10 @@
             {
                 <tr>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Id)
+                        @Html.DisplayFor(modelItem => item.EmailClient)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.EmailClient)
+                        @Html.DisplayFor(modelItem => item.PasswordClient)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.FirstLastNameClient)
@@ -68,7 +74,7 @@
                         @Html.DisplayFor(modelItem => item.Address)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.ProcentSalary)
+                        @Html.DisplayFor(modelItem => item.ProcentSalary.TitleProcentSalary)
                     </td>
                     <td>
                         <a asp-action="Edit" asp-route-id="@item.Id" role="button" class="btn btn-secondary">Редактировать</a>

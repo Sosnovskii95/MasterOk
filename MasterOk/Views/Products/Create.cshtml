@@ -1,8 +1,14 @@
-﻿@model MasterOk.Models.ModelDataBase.Product
+﻿@using System.Security.Claims
+@model MasterOk.Models.ModelDataBase.Product
 
 @{
     ViewData["Title"] = "Добавление нового товара";
-    Layout = "~/Views/Shared/Admin_Layout.cshtml";
+    var role = User.FindFirstValue(ClaimsIdentity.DefaultRoleClaimType);
+    switch (role)
+    {
+        case "admin": Layout = "~/Views/Shared/Admin_Layout.cshtml"; break;
+        case "marketplacemanager": Layout = "~/Views/Shared/MarketManager_Layout.cshtml"; break;
+    };
 }
 
 <h1>Добавление нового товара</h1>
@@ -18,7 +24,7 @@
             </div>
             <div class="form-group mb-3">
                 <label asp-for="DescriptionProduct" class="control-label"></label>
-                <textarea asp-for="DescriptionProduct" class="form-control" ></textarea>
+                <textarea asp-for="DescriptionProduct" class="form-control"></textarea>
                 <span asp-validation-for="DescriptionProduct" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
@@ -58,6 +64,6 @@
 </div>
 @section Scripts {
     @{
-    await Html.RenderPartialAsync("_ValidationScriptsPartial");
-}
-}
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    }

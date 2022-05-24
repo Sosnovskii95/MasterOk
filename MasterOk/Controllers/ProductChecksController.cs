@@ -14,7 +14,7 @@ using MasterOk.Models.FilterSortViewModels;
 
 namespace MasterOk.Controllers
 {
-    [Authorize(Roles = "user")]
+    [Authorize(Roles = "admin, clientmanager")]
     public class ProductChecksController : Controller
     {
         private readonly DataBaseContext _context;
@@ -25,14 +25,21 @@ namespace MasterOk.Controllers
         }
 
         // GET: ProductChecks
-        public async Task<IActionResult> Index(ESortModelProductCheck sort)
+        public async Task<IActionResult> Index(ESortModelProductCheck sort, int? sId)
         {
+            ViewData["sId"] = sId;
+
             IQueryable<ProductCheck> dataBaseContext = _context.ProductChecks.
                 Include(p => p.Client).
                 Include(p => p.DeliveryMethod).
                 Include(p => p.PayMethod).
                 Include(p => p.StateOrder).
                 Include(p => p.User);
+
+            if (sId.HasValue)
+            {
+                dataBaseContext = dataBaseContext.Where(s => s.Id == sId.Value);
+            }
 
             dataBaseContext = sort switch
             {

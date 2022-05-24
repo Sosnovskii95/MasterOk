@@ -1,8 +1,14 @@
-﻿@model MasterOk.Models.ModelDataBase.ProductSold
+﻿@using System.Security.Claims
+@model MasterOk.Models.ModelDataBase.ProductSold
 
 @{
     ViewData["Title"] = "Добавление заказа";
-    Layout = "~/Views/Shared/Admin_Layout.cshtml";
+    var role = User.FindFirstValue(ClaimsIdentity.DefaultRoleClaimType);
+    switch (role)
+    {
+        case "admin": Layout = "~/Views/Shared/Admin_Layout.cshtml"; break;
+        case "clientmanager": Layout = "~/Views/Shared/ClientManager_Layout.cshtml"; break;
+    };
 }
 
 <h1>Добавление заказа</h1>
@@ -63,7 +69,7 @@
 
 
 <script type="text/javascript">
-    function addBlock(){
+    function addBlock() {
         let parent = document.getElementById("block");
         let child = parent.querySelector(".list-group");
 
@@ -71,16 +77,16 @@
         parent.appendChild(clone);
     }
 
-    function getClient(value){
-        const data = "idClient="+value;
+    function getClient(value) {
+        const data = "idClient=" + value;
 
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "/ProductChecks/GetClient", false);
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         xhr.send(data);
 
-        if(xhr.status==200){
-            document.getElementById("clientInfo").innerHTML= xhr.response;
+        if (xhr.status == 200) {
+            document.getElementById("clientInfo").innerHTML = xhr.response;
         }
     }
 </script>

@@ -5,6 +5,7 @@ namespace MasterOk.Models.ModelDataBase
     public class User
     {
         [Key]
+        [Display(Name = "Номер")]
         public int Id { get; set; }
 
         [Display(Name = "Электронная почта")]
@@ -36,5 +37,11 @@ namespace MasterOk.Models.ModelDataBase
         [Display(Name = "Активность")]
         [Required(ErrorMessage = "Активность")]
         public bool ActiveUser { get; set; }
+
+        [Display(Name = "Права доступа")]
+        public int RoleId { get; set; }
+
+        [Display(Name = "Права доступа")]
+        public Role? Role { get; set; }
     }
 }

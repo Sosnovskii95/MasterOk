@@ -1,5 +1,4 @@
-﻿#nullable disable
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,7 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace MasterOk.Controllers
 {
-    [Authorize(Roles = "user")]
+    [Authorize(Roles = "admin, clientmanager")]
     public class ClientsController : Controller
     {
         private readonly DataBaseContext _context;
@@ -26,7 +25,7 @@ namespace MasterOk.Controllers
         // GET: Clients
         public async Task<IActionResult> Index(ESortModelClient sort)
         {
-            IQueryable<Client> dataBaseContext = _context.Clients;
+            IQueryable<Client> dataBaseContext = _context.Clients.Include(c => c.ProcentSalary);
 
             dataBaseContext = sort switch
             {
@@ -40,8 +39,8 @@ namespace MasterOk.Controllers
                 ESortModelClient.NumberPhoneDesc => dataBaseContext.OrderByDescending(s => s.NumberPhone),
                 ESortModelClient.AddressAsc => dataBaseContext.OrderBy(s => s.Address),
                 ESortModelClient.AddressDesc => dataBaseContext.OrderByDescending(s => s.Address),
-                ESortModelClient.SalaryAsc => dataBaseContext.OrderBy(s => s.ProcentSalary),
-                ESortModelClient.SalaryDesc => dataBaseContext.OrderByDescending(s => s.ProcentSalary),
+                ESortModelClient.SalaryAsc => dataBaseContext.OrderBy(s => s.ProcentSalary.TitleProcentSalary),
+                ESortModelClient.SalaryDesc => dataBaseContext.OrderByDescending(s => s.ProcentSalary.TitleProcentSalary),
                 _ => dataBaseContext
             };
 
@@ -55,12 +54,13 @@ namespace MasterOk.Controllers
         // GET: Clients/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
+            if (id == null || _context.Clients == null)
             {
                 return NotFound();
             }
 
             var client = await _context.Clients
+                .Include(c => c.ProcentSalary)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (client == null)
             {
@@ -73,6 +73,7 @@ namespace MasterOk.Controllers
         // GET: Clients/Create
         public IActionResult Create()
         {
+            ViewData["ProcentSalaryId"] = new SelectList(_context.ProcentSalaries, "Id", "TitleProcentSalary");
             return View();
         }
 
@@ -81,7 +82,7 @@ namespace MasterOk.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,EmailClient,PasswordClient,FirstLastNameClient,NumberPhone,Address,ProcentSalary")] Client client)
+        public async Task<IActionResult> Create([Bind("Id,EmailClient,PasswordClient,FirstLastNameClient,NumberPhone,Address,ProcentSalaryId")] Client client)
         {
             if (ModelState.IsValid)
             {
@@ -89,13 +90,14 @@ namespace MasterOk.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["ProcentSalaryId"] = new SelectList(_context.ProcentSalaries, "Id", "TitleProcentSalary", client.ProcentSalaryId);
             return View(client);
         }
 
         // GET: Clients/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
+            if (id == null || _context.Clients == null)
             {
                 return NotFound();
             }
@@ -105,6 +107,7 @@ namespace MasterOk.Controllers
             {
                 return NotFound();
             }
+            ViewData["ProcentSalaryId"] = new SelectList(_context.ProcentSalaries, "Id", "TitleProcentSalary", client.ProcentSalaryId);
             return View(client);
         }
 
@@ -113,7 +116,7 @@ namespace MasterOk.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,EmailClient,PasswordClient,FirstLastNameClient,NumberPhone,Address,ProcentSalary")] Client client)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,EmailClient,PasswordClient,FirstLastNameClient,NumberPhone,Address,ProcentSalaryId")] Client client)
         {
             if (id != client.Id)
             {
@@ -140,18 +143,20 @@ namespace MasterOk.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["ProcentSalaryId"] = new SelectList(_context.ProcentSalaries, "Id", "TitleProcentSalary", client.ProcentSalaryId);
             return View(client);
         }
 
         // GET: Clients/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
+            if (id == null || _context.Clients == null)
             {
                 return NotFound();
             }
 
             var client = await _context.Clients
+                .Include(c => c.ProcentSalary)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (client == null)
             {
@@ -166,15 +171,23 @@ namespace MasterOk.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            if (_context.Clients == null)
+            {
+                return Problem("Entity set 'DataBaseContext.Clients'  is null.");
+            }
             var client = await _context.Clients.FindAsync(id);
-            _context.Clients.Remove(client);
+            if (client != null)
+            {
+                _context.Clients.Remove(client);
+            }
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool ClientExists(int id)
         {
-            return _context.Clients.Any(e => e.Id == id);
+            return (_context.Clients?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

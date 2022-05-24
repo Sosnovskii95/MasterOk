@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
@@ -31,6 +32,7 @@ namespace MasterOk.Controllers
 
             if (client != null)
             {
+                ViewData["ProcentSalaryId"] = new SelectList(_context.ProcentSalaries, "Id", "TitleProcentSalary", client.ProcentSalaryId);
                 return View(client);
             }
             else

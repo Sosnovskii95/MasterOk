@@ -1,8 +1,14 @@
 ﻿@model MasterOk.Models.ModelDataBase.ProductCheck
 @using MasterOk.Models.ModelDataBase;
+@using System.Security.Claims
 @{
     ViewData["Title"] = "Редактирование заказа";
-    Layout = "~/Views/Shared/Admin_Layout.cshtml";
+    var role = User.FindFirstValue(ClaimsIdentity.DefaultRoleClaimType);
+    switch (role)
+    {
+        case "admin": Layout = "~/Views/Shared/Admin_Layout.cshtml"; break;
+        case "clientmanager": Layout = "~/Views/Shared/ClientManager_Layout.cshtml"; break;
+    };
     ProductSold modelSold = new ProductSold();
 }
 

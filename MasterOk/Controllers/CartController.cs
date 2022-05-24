@@ -38,11 +38,11 @@ namespace MasterOk.Controllers
                 registerModel.EmailClient = client.EmailClient;
                 registerModel.NumberPhone = client.NumberPhone;
 
-                cartClient = await _context.CartClients.Include(p => p.Product).Where(i => i.ClientId == client.Id).ToListAsync();
+                cartClient = await _context.CartClients.Include(p => p.Product).Where(i => i.ClientId == client.Id).Include(c => c.Client).ThenInclude(s => s.ProcentSalary).ToListAsync();
                 cartClient.ForEach(f =>
                 {
                     f.PriceCartProduct = f.Product.Price;
-                    f.TotalCartProduct = f.Product.Price * f.CountCartProduct;
+                    f.TotalCartProduct = ((f.Product.Price * (100 - f.Client.ProcentSalary.TitleProcentSalary ))/100) * f.CountCartProduct;
                 });
             }
             else
@@ -53,7 +53,11 @@ namespace MasterOk.Controllers
                     cartClient = new List<CartClient>();
             }
 
-            return View(new CartRegisterModel { CartClients = cartClient, RegisterModel = registerModel });
+            return View(new CartRegisterModel
+            {
+                CartClients = cartClient,
+                RegisterModel = registerModel
+            });
         }
 
         public async Task<PartialViewResult> IndexPartital()
@@ -95,7 +99,7 @@ namespace MasterOk.Controllers
                     if (client != null)
                     {
                         //Получаем корзину клиента из бд с заданным товаром
-                        cartClient = await _context.CartClients.Where(c => c.ClientId == client.Id).Where(p => p.ProductId == product.Id).ToListAsync();
+                        cartClient = await _context.CartClients.Where(c => c.ClientId == client.Id).Where(p => p.ProductId == product.Id).Include(c => c.Client).ThenInclude(p => p.ProcentSalary).ToListAsync();
 
                         //Если товар есть в корзине
                         if (cartClient.Count > 0)
@@ -105,7 +109,7 @@ namespace MasterOk.Controllers
                             {
                                 f.CountCartProduct += 1;
                                 f.PriceCartProduct = product.Price;
-                                f.TotalCartProduct = f.CountCartProduct * product.Price;
+                                f.TotalCartProduct = ((f.Product.Price * (100 - f.Client.ProcentSalary.TitleProcentSalary)) / 100);
                             });
                             //сохраняем изменения в бд
                             _context.UpdateRange(cartClient);
@@ -138,7 +142,7 @@ namespace MasterOk.Controllers
                             {
                                 f.CountCartProduct += 1;
                                 f.PriceCartProduct = product.Price;
-                                f.TotalCartProduct = f.CountCartProduct * product.Price;
+                                f.TotalCartProduct = ((f.Product.Price * (100 - f.Client.ProcentSalary.TitleProcentSalary)) / 100);
                             });
                         }
                         else
@@ -286,13 +290,16 @@ namespace MasterOk.Controllers
                         PasswordClient = registerModel.EmailClient,
                         NumberPhone = registerModel.NumberPhone,
                         FirstLastNameClient = registerModel.FirstLastNameClient,
-                        Address = registerModel.Address
+                        Address = registerModel.Address,
+                        ProcentSalaryId = 1
                     };
 
                     aut = false;
 
-                    _context.Clients.Add(client);
+                    _context.Add(client);
                     await _context.SaveChangesAsync();
+
+                    client = await _context.Clients.Include(p => p.ProcentSalary).FirstOrDefaultAsync(i => i.Id == client.Id);
 
                     await Authenticate(client.Id, "client");
                 }
@@ -371,9 +378,12 @@ namespace MasterOk.Controllers
                             ProductId = item.Product.Id,
                             ProductCheckId = productCheck.Id,
                             CountSold = item.CountCartProduct,
-                            PriceSold = item.PriceCartProduct,
-                            TotalSold = item.CountCartProduct * item.PriceCartProduct
+                            PriceSold = item.PriceCartProduct * (100 - item.Client.ProcentSalary.TitleProcentSalary) / 100,
+                            TotalSold = ((item.Product.Price * (100 - item.Client.ProcentSalary.TitleProcentSalary)) / 100) * item.CountCartProduct
+                            //TotalSold = item.CountCartProduct * item.PriceCartProduct
                         });
+
+                        //((f.Product.Price * (100 - f.Client.ProcentSalary.TitleProcentSalary)) / 100) * f.CountCartProduct
 
                         Product product = await _context.Products.FirstOrDefaultAsync(i => i.Id == item.Product.Id);
 
@@ -383,6 +393,21 @@ namespace MasterOk.Controllers
 
                         await _context.SaveChangesAsync();
                     }
+
+                    decimal sum = await _context.ProductSolds.Where(c => c.ProductCheck.Client == client).SumAsync(s => s.TotalSold);
+
+                    var procentSalary = await _context.ProcentSalaries.ToListAsync();
+
+                    foreach(var item in procentSalary)
+                    {
+                        if(item.ValueProcentSalary <= sum)
+                        {
+                            client.ProcentSalaryId = item.Id;
+                        }
+                    }
+
+                    _context.Update(client);
+                    await _context.SaveChangesAsync();
                 }
 
                 return RedirectToAction(nameof(Index));
@@ -418,7 +443,7 @@ namespace MasterOk.Controllers
 
                 if (roleClient.Equals("client"))
                 {
-                    Client client = await _context.Clients.FindAsync(Convert.ToInt32(idClient));
+                    Client client = await _context.Clients.Include(p=>p.ProcentSalary).FirstOrDefaultAsync(i=>i.Id == Convert.ToInt32(idClient));
 
                     if (client == null)
                     {

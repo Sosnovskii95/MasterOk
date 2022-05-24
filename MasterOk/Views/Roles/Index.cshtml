@@ -1,0 +1,52 @@
+﻿@using System.Security.Claims
+@model IEnumerable<MasterOk.Models.ModelDataBase.Role>
+
+@{
+    ViewData["Title"] = "Список прав доступа";
+    Layout = "~/Views/Shared/Admin_Layout.cshtml";
+}
+
+<h1>Список прав доступа</h1>
+<hr />
+<p>
+    <a asp-action="Create" role="button" class="btn btn-primary">Добавить новые права доступа</a>
+</p>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model=>model.Id)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.TitleRole)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ValueRole)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TitleRole)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ValueRole)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id" role="button" class="btn btn-secondary">Редактировать</a>
+                        <a asp-action="Details" asp-route-id="@item.Id" role="button" class="btn btn-info">Информация</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" role="button" class="btn btn-danger">Удалить</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

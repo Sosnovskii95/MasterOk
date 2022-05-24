@@ -1,8 +1,14 @@
-﻿@model MasterOk.Models.ModelDataBase.ShipToStore
+﻿@using System.Security.Claims
+@model MasterOk.Models.ModelDataBase.ShipToStore
 
 @{
     ViewData["Title"] = "Создание отгрузки";
-    Layout = "~/Views/Shared/Admin_Layout.cshtml";
+    var role = User.FindFirstValue(ClaimsIdentity.DefaultRoleClaimType);
+    switch (role)
+    {
+        case "admin": Layout = "~/Views/Shared/Admin_Layout.cshtml"; break;
+        case "marketplacemanager": Layout = "~/Views/Shared/MarketManager_Layout.cshtml"; break;
+    };
 }
 
 <h1>Создание отгрузки</h1>
@@ -41,7 +47,7 @@
 
 
 <script type="text/javascript">
-    function addBlock(){
+    function addBlock() {
         let parent = document.getElementById("block");
         let child = parent.querySelector(".list-group");
 

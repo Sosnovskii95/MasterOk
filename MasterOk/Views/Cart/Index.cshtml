@@ -31,6 +31,9 @@
                                     @Html.DisplayNameFor(model => cartClient.CountCartProduct)
                                 </th>
                                 <th>
+                                    @Html.DisplayNameFor(model => cartClient.Client.ProcentSalary)
+                                </th>
+                                <th>
                                     @Html.DisplayNameFor(model => cartClient.TotalCartProduct)
                                 </th>
                                 <th></th>
@@ -51,6 +54,9 @@
                                     </td>
                                     <td>
                                         <input type="number" id="@item.Product.Id" name="@item.Product.Id" value="@item.CountCartProduct" onchange="changeCountProduct(this.id);">
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Client.ProcentSalary.TitleProcentSalary)
                                     </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.TotalCartProduct)
@@ -122,35 +128,35 @@ else
 
 @section scripts{
 
-<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
-<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 }
 
-<script type="text/javascript">
-    function changeCountProduct(id){
-        var valueId = document.getElementById(id).value;
+    <script type="text/javascript">
+        function changeCountProduct(id) {
+            var valueId = document.getElementById(id).value;
 
-        const formData = "id="+id+"&valueId="+valueId;
+            const formData = "id=" + id + "&valueId=" + valueId;
 
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "/Cart/Change", false);
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        xhr.send(formData);
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/Cart/Change", false);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.send(formData);
 
-        if(xhr.status ==200){
-            document.location.reload(true);
+            if (xhr.status == 200) {
+                document.location.reload(true);
+            }
         }
-    }
 
-    function checkCheckBoxProduct(){
-        var checkBoxs = document.querySelectorAll("input[type=checkbox]:checked").length;
+        function checkCheckBoxProduct() {
+            var checkBoxs = document.querySelectorAll("input[type=checkbox]:checked").length;
 
-        if(checkBoxs > 0){
-            return true;
+            if (checkBoxs > 0) {
+                return true;
+            }
+            else {
+                alert("Выберите товар для оформления заказа!")
+                return false;
+            }
         }
-        else{
-            alert("Выберите товар для оформления заказа!")
-            return false;
-        }
-    }
-</script>
+    </script>

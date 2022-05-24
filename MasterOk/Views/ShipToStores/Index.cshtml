@@ -1,8 +1,15 @@
 ﻿@model MasterOk.Models.FilterSortViewModels.SortViewModelDocShip
 @using MasterOk.Models.ModelDataBase;
+@using System.Security.Claims
 @{
     ViewData["Title"] = "Список отгрузок";
-    Layout = "~/Views/Shared/Admin_Layout.cshtml";
+    var role = User.FindFirstValue(ClaimsIdentity.DefaultRoleClaimType);
+    switch (role)
+    {
+        case "admin": Layout = "~/Views/Shared/Admin_Layout.cshtml"; break;
+        case "marketplacemanager" : Layout = "~/Views/Shared/MarketManager_Layout.cshtml"; break;
+    };
+
     DocShipToStore docShipToStore = new DocShipToStore();
 }
 

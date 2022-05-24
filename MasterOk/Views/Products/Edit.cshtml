@@ -1,8 +1,14 @@
-﻿@model MasterOk.Models.ModelDataBase.Product
+﻿@using System.Security.Claims
+@model MasterOk.Models.ModelDataBase.Product
 
 @{
     ViewData["Title"] = "Редактирование товара";
-    Layout = "~/Views/Shared/Admin_Layout.cshtml";
+    var role = User.FindFirstValue(ClaimsIdentity.DefaultRoleClaimType);
+    switch (role)
+    {
+        case "admin": Layout = "~/Views/Shared/Admin_Layout.cshtml"; break;
+        case "marketplacemanager": Layout = "~/Views/Shared/MarketManager_Layout.cshtml"; break;
+    };
 }
 
 <h1>Редактирование товара</h1>
@@ -68,6 +74,6 @@
 
 @section Scripts {
     @{
-    await Html.RenderPartialAsync("_ValidationScriptsPartial");
-}
-}
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    }

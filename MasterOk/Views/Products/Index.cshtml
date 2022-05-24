@@ -1,8 +1,14 @@
 ﻿@model MasterOk.Models.FilterSortViewModels.SortViewModelProduct
 @using MasterOk.Models.ModelDataBase;
+@using System.Security.Claims
 @{
     ViewData["Title"] = "Товары";
-    Layout = "~/Views/Shared/Admin_Layout.cshtml";
+    var role = User.FindFirstValue(ClaimsIdentity.DefaultRoleClaimType);
+    switch (role)
+    {
+        case "admin": Layout = "~/Views/Shared/Admin_Layout.cshtml"; break;
+        case "marketplacemanager": Layout = "~/Views/Shared/MarketManager_Layout.cshtml"; break;
+    };
     Product product = new Product();
 }
 
