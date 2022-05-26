@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace MasterOk.Controllers
 {
-    [Authorize(Roles = "user")]
+    [Authorize(Roles = "admin")]
     public class DeliveryMethodsController : Controller
     {
         private readonly DataBaseContext _context;

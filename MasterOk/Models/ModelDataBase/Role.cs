@@ -5,6 +5,7 @@ namespace MasterOk.Models.ModelDataBase
     public class Role
     {
         [Key]
+        [Display(Name = "Номер")]
         public int Id { get; set; }
 
         [Display(Name = "Права доступа")]

@@ -1,0 +1,42 @@
+﻿@model IEnumerable<MasterOk.Models.ModelDataBase.ShipToStore>
+@using MasterOk.Models.ModelDataBase;
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/Admin_Layout.cshtml";
+    DocShipToStore docShipToStore = ViewBag.docShip;
+}
+
+<h1>Информация по отгрузке</h1>
+<hr />
+<h3>Номер отгрузки: @docShipToStore.Id  Дата отгрузки: @docShipToStore.DateShip</h3>
+<div class="form-group">
+    <a asp-action="Edit" asp-route-id="@docShipToStore.Id" role="button" class="btn btn-primary">Редактировать</a>
+    <a asp-action="Index" role="button" class="btn btn-secondary">Вернуться к списку</a>
+</div>
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model=>model.Product.TitleProduct)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model=>model.CountShipProduct)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem =>item.Product.TitleProduct)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CountShipProduct)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

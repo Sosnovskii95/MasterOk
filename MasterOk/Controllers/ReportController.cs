@@ -4,9 +4,11 @@ using MasterOk.Models.ModelDataBase;
 using ClosedXML.Excel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MasterOk.Controllers
 {
+    [Authorize(Roles = "admin")]
     public class ReportController : Controller
     {
         private readonly DataBaseContext _context;

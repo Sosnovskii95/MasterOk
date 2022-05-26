@@ -5,6 +5,7 @@ namespace MasterOk.Models.ModelDataBase
     public class Client
     {
         [Key]
+        [Display(Name = "Номер")]
         public int Id { get; set; }
 
         [Display(Name = "Электронная почта")]

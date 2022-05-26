@@ -8,9 +8,12 @@ using Microsoft.EntityFrameworkCore;
 using MasterOk.Data;
 using MasterOk.Models.ModelDataBase;
 using MasterOk.Models.FilterSortViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MasterOk.Controllers
 {
+    [Authorize(Roles = "admin")]
+
     public class UsersController : Controller
     {
         private readonly DataBaseContext _context;

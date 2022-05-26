@@ -41,6 +41,24 @@ namespace MasterOk.Controllers
             });
         }
 
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null || _context.DocShipToStores == null)
+            {
+                return NotFound();
+            }
+
+            var shipToStores = await _context.ShipToStores.Include(p => p.Product).Where(d => d.DocShipToStoreId == id).ToListAsync();
+
+            if(shipToStores == null)
+            {
+                return NotFound();
+            }
+            ViewBag.docShip = await _context.DocShipToStores.FindAsync(id);
+
+            return View(shipToStores);
+        }
+
         public async Task<IActionResult> Create()
         {
             ViewData["ProductId"] = new SelectList(_context.Products, "Id", "TitleProduct");
