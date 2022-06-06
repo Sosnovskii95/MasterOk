@@ -5,12 +5,12 @@ namespace MasterOk.Models.ModelAuthorization
     public class LoginModel
     {
         [Display(Name = "Электронная почта")]
-        [Required(ErrorMessage = "Заполните данное поле")]
-        [DataType(DataType.EmailAddress)]
+        [Required(ErrorMessage = "Электронная почта")]
+        [EmailAddress(ErrorMessage = "Некорректная электронная почта")]
         public string Email { get; set; }
 
         [Display(Name = "Пароль")]
-        [Required(ErrorMessage = "Заполните данное поле")]
+        [Required(ErrorMessage = "Пароль")]
         [DataType(DataType.Password)]
         public string Password { get; set; }
 

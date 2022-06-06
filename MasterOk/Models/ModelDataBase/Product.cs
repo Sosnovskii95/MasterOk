@@ -24,7 +24,7 @@ namespace MasterOk.Models.ModelDataBase
 
         [Display(Name = "Стоимость")]
         [Required(ErrorMessage = "Стоимость")]
-        [Range(typeof(decimal), "0,0", "100000,6" , ErrorMessage = "Стоимость отрицательная")]
+        [Range(typeof(decimal), "0,0", "100000,9", ErrorMessage = "Стоимость отрицательная")]
         public decimal Price { get; set; }
 
         [Display(Name = "Подкатегория")]

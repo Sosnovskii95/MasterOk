@@ -1,8 +1,17 @@
 ﻿@{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Личный кабинет";
+    Layout = "~/Views/Shared/Client_Layout.cshtml";
 }
 
-<h1>Index</h1>
-
-@Html.ActionLink("Редактировать профиль", "Edit", "ClientPersonalArea")
-@Html.ActionLink("История покупок", "History", "ClientPersonalArea")
+<h1>Личный кабинет</h1>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <div class="form-group mb-3">
+            <a asp-action="Edit" role="button" class="btn btn-primary">Редактировать профиль</a>
+        </div>
+        <div class="form-group mb-3">
+            <a asp-action="History" role="button" class="btn btn-primary">История покупок</a>
+        </div>
+    </div>
+</div>

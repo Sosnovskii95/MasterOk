@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using MasterOk.Data;
-using MasterOk.Models.ModelDataBase;
-using System.Security.Claims;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Authorization;
+﻿using MasterOk.Data;
 using MasterOk.Models.FilterSortViewModels;
+using MasterOk.Models.ModelDataBase;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace MasterOk.Controllers
 {
@@ -50,7 +50,7 @@ namespace MasterOk.Controllers
 
             var shipToStores = await _context.ShipToStores.Include(p => p.Product).Where(d => d.DocShipToStoreId == id).ToListAsync();
 
-            if(shipToStores == null)
+            if (shipToStores == null)
             {
                 return NotFound();
             }

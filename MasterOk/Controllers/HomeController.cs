@@ -1,10 +1,10 @@
-﻿using MasterOk.Models;
-using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
-using MasterOk.Data;
-using Microsoft.EntityFrameworkCore;
+﻿using MasterOk.Data;
+using MasterOk.Models;
 using MasterOk.Models.ModelDataBase;
 using MasterOk.Models.Search;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace MasterOk.Controllers
 {
@@ -115,7 +115,7 @@ namespace MasterOk.Controllers
         {
             if (productId > 0)
             {
-                return View(await _context.Products.Include(n=>n.NameImages).Include(s => s.SubCategory).ThenInclude(c => c.Category).FirstOrDefaultAsync(i => i.Id == productId));
+                return View(await _context.Products.Include(n => n.NameImages).Include(s => s.SubCategory).ThenInclude(c => c.Category).FirstOrDefaultAsync(i => i.Id == productId));
             }
             else
             {
@@ -131,6 +131,8 @@ namespace MasterOk.Controllers
                 SubCategories = await _context.SubCategories.Where(s => s.TitleSubCategory.Contains(query)).Include(n => n.NameImages).ToListAsync(),
                 Products = await _context.Products.Where(s => s.TitleProduct.Contains(query)).Include(n => n.NameImages).ToListAsync()
             };
+
+            ViewData["SearchValue"] = query;
 
             return View(searchViewModel);
         }

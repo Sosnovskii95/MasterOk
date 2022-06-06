@@ -64,12 +64,12 @@ namespace MasterOk.Models.ModelDataBase
         {
             return "/Content/Category/";
         }
-        
+
         public static string GetDirectorySaveFile(SubCategory subCategory)
         {
             return "/Content/SubCategory/";
         }
-        
+
         public static string GetDirectorySaveFile(Product product)
         {
             return "/Content/Product/";

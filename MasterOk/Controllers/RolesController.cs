@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using MasterOk.Data;
+﻿using MasterOk.Data;
 using MasterOk.Models.ModelDataBase;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace MasterOk.Controllers
 {
@@ -25,7 +20,7 @@ namespace MasterOk.Controllers
         // GET: Roles
         public async Task<IActionResult> Index()
         {
-              return View(await _context.Roles.ToListAsync());
+            return View(await _context.Roles.ToListAsync());
         }
 
         // GET: Roles/Details/5
@@ -151,14 +146,14 @@ namespace MasterOk.Controllers
             {
                 _context.Roles.Remove(role);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool RoleExists(int id)
         {
-          return (_context.Roles?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Roles?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

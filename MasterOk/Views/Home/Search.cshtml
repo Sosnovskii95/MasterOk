@@ -1,6 +1,13 @@
-﻿@model MasterOk.Models.Search.SearchViewModel
+﻿@using System.Security.Claims
+@model MasterOk.Models.Search.SearchViewModel
 @{
-    ViewData["Title"] = "Search";
+    ViewData["Title"] = "Поиск";
+    var role = User.FindFirstValue(ClaimsIdentity.DefaultRoleClaimType);
+    switch (role)
+    {
+        case null: Layout = "~/Views/Shared/_Layout.cshtml"; break;
+        case "client": Layout = "~/Views/Shared/Client_Layout.cshtml"; break;
+    };
 }
 
 <h1>Результаты поиска</h1>
@@ -21,11 +28,7 @@
                         <h5 class="card-title">@Html.ActionLink(item.TitleProduct, "Product", new{productId = item.Id})</h5>
                     </div>
                     <div class="card-footer">
-                        <form asp-action="AddProductCart" asp-controller="Cart">
-                            @Html.Hidden("id", item.Id)
-                            <input type="text" name="countCart" />
-                            <input type="submit" value="Добавить" />
-                        </form>
+                        <a asp-action="AddProductCart" asp-controller="Cart" asp-route-id="@item.Id" class="btn btn-primary">В корзину</a>
                     </div>
                 </div>
             </div>

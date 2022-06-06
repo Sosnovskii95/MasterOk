@@ -1,12 +1,16 @@
 ﻿@model MasterOk.Models.ModelAuthorization.CartRegisterModel;
 @using MasterOk.Models.ModelAuthorization;
 @using MasterOk.Models.ModelDataBase;
+@using System.Security.Claims
 @{
+    ViewData["Title"] = "Корзина";
+    var role = User.FindFirstValue(ClaimsIdentity.DefaultRoleClaimType);
+    switch (role)
+    {
+        case null: Layout = "~/Views/Shared/_Layout.cshtml"; break;
+        case "client": Layout = "~/Views/Shared/Client_Layout.cshtml"; break;
+    };
     CartClient cartClient = new CartClient();
-}
-
-@{
-    ViewData["Title"] = "Index";
 }
 
 @if (Model.CartClients.Count() > 0)
@@ -94,7 +98,7 @@
                     </div>
                     <div class="p-1">
                         <label asp-for="RegisterModel.FirstLastNameClient" class="control-Label"></label>
-                        <input type="text" asp-for="RegisterModel.FirstLastNameClient" class="form-control" placeholder="test" />
+                        <input type="text" asp-for="RegisterModel.FirstLastNameClient" class="form-control" />
                         <span asp-validation-for="RegisterModel.FirstLastNameClient" class="text-danger"></span>
                     </div>
                     <div class="p-1">

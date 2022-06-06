@@ -3,11 +3,11 @@
     public class SortModelDocShip
     {
         public ESortModelDocShip IdSort { get; private set; }
-        
+
         public ESortModelDocShip DateSort { get; private set; }
-        
+
         public ESortModelDocShip UserSort { get; private set; }
-        
+
         public ESortModelDocShip Current { get; private set; }
 
         public SortModelDocShip(ESortModelDocShip sort)

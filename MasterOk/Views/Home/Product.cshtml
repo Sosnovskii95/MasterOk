@@ -1,6 +1,13 @@
-﻿@model MasterOk.Models.ModelDataBase.Product
+﻿@using System.Security.Claims
+@model MasterOk.Models.ModelDataBase.Product
 @{
-    ViewData["Title"] = "Product";
+    ViewData["Title"] = "Товар";
+    var role = User.FindFirstValue(ClaimsIdentity.DefaultRoleClaimType);
+    switch (role)
+    {
+        case null: Layout = "~/Views/Shared/_Layout.cshtml"; break;
+        case "client": Layout = "~/Views/Shared/Client_Layout.cshtml"; break;
+    };
 }
 
 <nav aria-label="breadcrumb">
@@ -52,15 +59,13 @@
             <label>В наличии</label>
             <br />
             <label>Стоимость: @Model.Price</label>
+            <a asp-action="AddProductCart" asp-controller="Cart" asp-route-id="@Model.Id" class="btn btn-primary">В корзину</a>
         }
         else
         {
             <label>Нет в наличии</label>
         }
-        <form asp-action="AddProductCart" asp-controller="Cart">
-            @Html.HiddenFor(m=>Model.Id)
-            <input type="submit" value="Добавить в корзину" />
-        </form>
+
         <label>Описание товара: @Model.DescriptionProduct</label>
         <br />
         <label>Гарантия @Model.Warranty</label>

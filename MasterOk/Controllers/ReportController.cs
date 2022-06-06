@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ClosedXML.Excel;
 using MasterOk.Data;
 using MasterOk.Models.ModelDataBase;
-using ClosedXML.Excel;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace MasterOk.Controllers
 {
@@ -20,7 +20,7 @@ namespace MasterOk.Controllers
             _webHost = webHost;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "FirstLastNameClient");
             return View();
@@ -52,7 +52,7 @@ namespace MasterOk.Controllers
             wortSheet.Cell(currentRow, 1).Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
             currentRow++;
 
-            wortSheet.Cell(currentRow, 1).Value = "c "+startDate.ToShortDateString()+" по " +endDate.ToShortDateString();
+            wortSheet.Cell(currentRow, 1).Value = "c " + startDate.ToShortDateString() + " по " + endDate.ToShortDateString();
             wortSheet.Range(currentRow, 1, currentRow, 5).Merge();
             wortSheet.Cell(currentRow, 1).Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
             currentRow++;

@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using MasterOk.Models.ModelDataBase;
+﻿using MasterOk.Models.ModelDataBase;
+using Microsoft.EntityFrameworkCore;
 
 namespace MasterOk.Data
 {

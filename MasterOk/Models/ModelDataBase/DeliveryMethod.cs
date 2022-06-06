@@ -7,7 +7,7 @@ namespace MasterOk.Models.ModelDataBase
         [Key]
         public int Id { get; set; }
 
-        [Display(Name ="Способ доставки")]
+        [Display(Name = "Способ доставки")]
         public string TitleDeliveryMethod { get; set; }
     }
 }

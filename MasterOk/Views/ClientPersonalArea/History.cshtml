@@ -1,8 +1,14 @@
 ﻿@model IEnumerable<MasterOk.Models.ModelDataBase.ProductCheck>
 
 @{
-    ViewData["Title"] = "History";
+    ViewData["Title"] = "История заказов";
+    Layout = "~/Views/Shared/Client_Layout.cshtml";
 }
+<h1>История заказов</h1>
+<hr />
+<p>
+    <a asp-action="Index" role="button" class="btn btn-primary">Вернуться назад</a>
+</p>
 
 @if (Model.Count() > 0)
 {

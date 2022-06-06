@@ -3,17 +3,17 @@
     public class SortModelClient
     {
         public ESortModelClient IdSort { get; private set; }
-        
+
         public ESortModelClient EmailSort { get; private set; }
-        
+
         public ESortModelClient NameSort { get; private set; }
-        
+
         public ESortModelClient NumberPhoneSort { get; private set; }
-        
+
         public ESortModelClient AddressSort { get; private set; }
-        
+
         public ESortModelClient SalarySort { get; private set; }
-        
+
         public ESortModelClient Current { get; private set; }
 
         public SortModelClient(ESortModelClient sort)

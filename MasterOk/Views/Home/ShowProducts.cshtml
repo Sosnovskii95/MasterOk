@@ -1,8 +1,15 @@
 ﻿@model IEnumerable<MasterOk.Models.ModelDataBase.Product>
 @using MasterOk.Models.ModelDataBase;
+@using System.Security.Claims
 @{
-    ViewData["Title"] = "ShowProducts";
+    ViewData["Title"] = "Подкатегории";
     SubCategory subCategory = ViewBag.SubCategory;
+    var role = User.FindFirstValue(ClaimsIdentity.DefaultRoleClaimType);
+    switch (role)
+    {
+        case null: Layout = "~/Views/Shared/_Layout.cshtml"; break;
+        case "client": Layout = "~/Views/Shared/Client_Layout.cshtml"; break;
+    };
 }
 
 <nav aria-label="breadcrumb">

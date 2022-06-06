@@ -1,6 +1,13 @@
-﻿@model IEnumerable<MasterOk.Models.ModelDataBase.SubCategory>
+﻿@using System.Security.Claims
+@model IEnumerable<MasterOk.Models.ModelDataBase.SubCategory>
 @{
-    ViewData["Title"] = "ShowSubCategories";
+    ViewData["Title"] = "Категории";
+    var role = User.FindFirstValue(ClaimsIdentity.DefaultRoleClaimType);
+    switch (role)
+    {
+        case null: Layout = "~/Views/Shared/_Layout.cshtml"; break;
+        case "client": Layout = "~/Views/Shared/Client_Layout.cshtml"; break;
+    };
 }
 <div class="row">
     <div class="col">

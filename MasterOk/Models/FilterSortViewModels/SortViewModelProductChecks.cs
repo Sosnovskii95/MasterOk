@@ -1,5 +1,4 @@
 ﻿using MasterOk.Models.ModelDataBase;
-using MasterOk.Models.FilterSortViewModels;
 namespace MasterOk.Models.FilterSortViewModels
 {
     public class SortViewModelProductChecks

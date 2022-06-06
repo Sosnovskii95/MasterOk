@@ -1,12 +1,12 @@
-﻿using MasterOk.Models.ModelAuthorization;
-using MasterOk.Data;
+﻿using MasterOk.Data;
+using MasterOk.Models.ModelAuthorization;
 using MasterOk.Models.ModelDataBase;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace MasterOk.Controllers
 {
@@ -24,9 +24,9 @@ namespace MasterOk.Controllers
         {
             var id = Convert.ToInt32(User.FindFirstValue(ClaimsIdentity.DefaultNameClaimType));
 
-            User user = await _context.Users.Include(r => r.Role).FirstOrDefaultAsync(i=>i.Id == id);
+            User user = await _context.Users.Include(r => r.Role).FirstOrDefaultAsync(i => i.Id == id);
 
-            if(user != null)
+            if (user != null)
             {
                 return View(user);
             }

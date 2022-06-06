@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
@@ -32,7 +31,7 @@ namespace MasterOk.Controllers
 
             if (client != null)
             {
-                ViewData["ProcentSalaryId"] = new SelectList(_context.ProcentSalaries, "Id", "TitleProcentSalary", client.ProcentSalaryId);
+                ViewData["ProcentSalaryId"] = await _context.ProcentSalaries.Where(c => c.Id == client.ProcentSalaryId).Select(s => s.TitleProcentSalary).FirstOrDefaultAsync();
                 return View(client);
             }
             else
@@ -62,24 +61,22 @@ namespace MasterOk.Controllers
         public async Task<IActionResult> History()
         {
             Client client = await GetAuthenticateClient(HttpContext);
-            List<ProductCheck> productChecks = new List<ProductCheck>();
 
             if (client != null)
             {
-                productChecks = await _context.ProductChecks.Where(i => i.ClientId == client.Id).
+                return View(await _context.ProductChecks.Where(i => i.ClientId == client.Id).
                                                              Include(p => p.ProductSolds).
                                                              Include(p => p.PayMethod).
                                                              Include(d => d.DeliveryMethod).
-                                                             Include(s => s.StateOrder).ToListAsync();
-                return View(productChecks);
+                                                             Include(s => s.StateOrder).ToListAsync());
             }
             else
             {
-                return View(productChecks);
+                return View(new List<ProductCheck>());
             }
         }
 
-        public async Task<IActionResult> Details(int id)
+        public async Task<IActionResult> Details(int? id)
         {
             if (id != null)
             {
