@@ -35,8 +35,34 @@
     </div>
 </div>
 
+<div class="toast-container position-fixed top-50 end-0 translate-middle-y p-3">
+    <div id="liveToast" class="toast bg-info" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header text-dark">
+            <strong class="me-auto">Сброс пароля!</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Закрыть"></button>
+        </div>
+        <div class="toast-body text-dark">
+            Ваш пароль - электронная почта
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="reset" value="@ViewBag.reset" />
+
 @section Scripts {
     @{
     await Html.RenderPartialAsync("_ValidationScriptsPartial");
 }
+<script type="text/javascript">
+
+        const toastLiveExample = document.getElementById('liveToast');
+
+        window.onload = function() {
+            var flagReset = document.getElementById("reset").value;
+            if (flagReset == true) {
+                const toast = new bootstrap.Toast(toastLiveExample);
+                toast.show();
+            }
+        }
+    </script>
 }

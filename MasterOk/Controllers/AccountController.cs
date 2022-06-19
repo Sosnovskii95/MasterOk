@@ -37,8 +37,9 @@ namespace MasterOk.Controllers
             }
         }
 
-        public IActionResult Login()
+        public IActionResult Login(bool reset)
         {
+            ViewData["reset"] = reset == true ? 1 : 0;
             return View();
         }
 
@@ -166,14 +167,16 @@ namespace MasterOk.Controllers
 
                     _context.Update(client);
                     await _context.SaveChangesAsync();
+
+                    return RedirectToAction(nameof(Login), new { reset = true });
                 }
 
-                return RedirectToAction(nameof(Login));
+                ModelState.AddModelError("", "Некорректные данные");
+
+                return View(registerModel);
             }
 
-            ModelState.AddModelError("", "Некорректные данные");
-
-            return View(registerModel);
+            return NotFound();
         }
 
         public async Task<IActionResult> Logout()
